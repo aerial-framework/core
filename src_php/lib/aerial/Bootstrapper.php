@@ -1,7 +1,6 @@
 <?php
 	require_once(DOCTRINE_PATH.'/Doctrine.php');
 	require_once(AMFPHP_PATH.'/globals.php');
-	require_once (dirname(__FILE__) . '/../../services/zx/collections/DataCollection.php');
 
 	class Bootstrapper
 	{

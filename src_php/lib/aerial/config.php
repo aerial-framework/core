@@ -5,7 +5,7 @@ date_default_timezone_set('UTC');
 define("AERIAL_BASE_PATH", realpath(dirname(__FILE__)));						// Aerial base path
 define("AERIAL_INTERNAL", realpath(AERIAL_BASE_PATH));				// Internal path for core functionality
 define("AERIAL_EXTERNAL", realpath(AERIAL_BASE_PATH."/.."));					// Path outside of aerial core
-define("DOCTRINE_PATH", realpath(AERIAL_BASE_PATH. "/.."));				// Path to Doctrine library
+define("DOCTRINE_PATH", realpath(AERIAL_BASE_PATH. "/../doctrine"));				// Path to Doctrine library
 define("AMFPHP_PATH", realpath(AERIAL_BASE_PATH."/../../public_html/amfphp"));					// Path to AMFPHP library
 
 define("BACKEND_PATH", realpath(AERIAL_EXTERNAL."/../model"));							// Path to project development backend

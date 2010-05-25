@@ -79,10 +79,10 @@
 			if(is_dir($path))
 			{
 				self::removeFolder($path, true);
-				self::createFolder($dirName);
+				self::createFolder($path);
 			}
 			else
-				self::createFolder($dirName);
+				self::createFolder($path);
 		}
 	
 	

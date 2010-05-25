@@ -1,0 +1,134 @@
+---
+detect_relations: true
+options:
+  collate: utf8_general_ci
+  charset: utf8
+  type: InnoDB
+
+User:
+  mapClass: model.vo.User
+  tableName: User
+  columns:
+    id:
+      type: integer(4)
+      primary: true
+      notnull: true
+      autoincrement: true
+    username:
+      type: string(45)
+    password:
+      type: string(45)
+    createDate:
+      type: timestamp
+    modDate:
+      type: timestamp
+      notnull: true
+      default: CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP
+
+Post:
+  mapClass: model.vo.Post
+  tableName: Post
+  columns:
+    id:
+      type: integer(4)
+      primary: true
+      notnull: true
+      autoincrement: true
+    userId:
+      type: integer(4)
+      notnull: true
+    categoryId:
+      type: integer(4)
+      default: null
+    title:
+      type: string(45)
+    message:
+      type: clob(65535)
+    createDate:
+      type: timestamp
+    modDate:
+      type: timestamp
+      default: CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP
+  relations:
+    User:
+      class: User
+      local: userId
+      foreign: id
+      foreignAlias: posts
+    Category:
+      class: Category
+      local: categoryId
+      foreign: id
+      foreignAlias: posts
+  indexes:
+    fk_Post_User1:
+      fields: [userId]
+    fk_Post_Category1:
+      fields: [categoryId]
+
+Comment:
+  mapClass: model.vo.Comment
+  tableName: Comment
+  columns:
+    id:
+      type: integer(4)
+      primary: true
+      notnull: true
+      autoincrement: true
+    message:
+      type: clob(65535)
+    createDate:
+      type: timestamp
+    modDate:
+      type: timestamp
+    userId:
+      type: integer(4)
+      notnull: true
+    postId:
+      type: integer(4)
+      notnull: true
+  relations:
+    User:
+      class: User
+      local: userId
+      foreign: id
+      foreignAlias: comments
+    Post:
+      class: Post
+      local: postId
+      foreign: id
+      foreignAlias: comments
+  indexes:
+    fk_Comment_User:
+      fields: [userId]
+    fk_Comment_Post1:
+      fields: [postId]
+
+Category:
+  mapClass: model.vo.Category
+  tableName: Category
+  columns:
+    id:
+      type: integer(4)
+      primary: true
+      notnull: true
+      autoincrement: true
+    userId:
+      type: integer(4)
+      notnull: true
+    title:
+      type: string(45)
+    createDate:
+      type: timestamp
+    modDate:
+      type: timestamp
+  relations:
+    User:
+      class: User
+      local: userId
+      foreign: id
+      foreignAlias: categories
+  indexes:
+    fk_Category_User1:
+      fields: [userId]
+

@@ -14,9 +14,9 @@
 			
 			public var user:User;
 			
-			public function inti():void
+			public function init():void
 			{
-				
+				this.userService.getUser(1);
 			}
 			
 
@@ -28,6 +28,9 @@
 				switch(operation)
 				{
 					
+					case "UserService.get":
+
+						break;
 					case "UserService.getAll":
 
 						break;

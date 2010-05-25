@@ -171,6 +171,15 @@
 			}
 		}
 			
+		
+		
+		public static function generateModelsAndServicesFromYaml()
+		{
+			Doctrine_Core::generateModelsFromYaml(AERIAL_BASE_PATH.'/schema.yml', BACKEND_MODELS_PATH);
+			self::generateModelsAndServices();
+		}
+		
+		
 		private static function getModels()
 		{
 			$models = Doctrine_Core::loadModels(BACKEND_MODELS_PATH);

@@ -164,7 +164,7 @@
 				$inflectSingle = self::inflect("singular", $model);
 				$inflectPlural = self::inflect("plural", $model);
 				
-				ActionScriptGenerator::generateASBaseService(FRONTEND_SERVICES_PACKAGE, $class, $object, $relations,
+				ActionScriptGenerator::generateASBaseService(FRONTEND_MODELS_PACKAGE, FRONTEND_SERVICES_PACKAGE, $class, $object, $relations,
 												$inflectSingle, $inflectPlural, $model, FRONTEND_SERVICES_PATH."/base");
 				if($numExisting != count($asServicesData))
 					ActionScriptGenerator::generateASService(FRONTEND_SERVICES_PACKAGE, "{$model}Service", FRONTEND_SERVICES_PATH);

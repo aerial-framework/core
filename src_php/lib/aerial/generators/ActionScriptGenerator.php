@@ -51,7 +51,7 @@
 			return implode("\n", $properties);
 		}
 		
-		public static function generateASBaseService($package, $class, $object, $relationsArr,
+		public static function generateASBaseService($modelPackage, $package, $class, $object, $relationsArr,
 													$inflectSingle, $inflectPlural, $model, $directory)
 		{
 			$availRelations = "\t\t\t";
@@ -69,7 +69,7 @@
 			}
 			
 			$relations = implode(",\n\t\t\t\t\t\t\t\t", $relations);
-			$replacementTokens = array("package", "class", "object", "availRelations", "relations", "inflectSingle", "inflectPlural", "model");
+			$replacementTokens = array("modelPackage","package", "class", "object", "availRelations", "relations", "inflectSingle", "inflectPlural", "model");
 			$contents = self::readTemplate("AS3.baseservice");
 			
 			foreach($replacementTokens as $token)

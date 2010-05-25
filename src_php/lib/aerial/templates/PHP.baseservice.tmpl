@@ -1,0 +1,223 @@
+<?php	
+	class {{class}}
+	{	
+		protected $connection;
+		protected $table;
+		protected $modelName = "{{model}}";
+		
+		public function __construct()
+		{
+			$this->connection = Doctrine_Manager::connection();
+			$this->table = $this->connection->getTable($this->modelName);
+		}
+
+		public function save{{inflectSingle}}(${{object}}, $related=null)
+		{
+			if($related)
+				foreach($related as $relation => $descriptor)
+				{
+					if($descriptor["type"] == "many")
+					{
+						for($x = 0; $x < count($descriptor["value"]); $x++)
+						{
+							$arr =& ${{object}}->$relation;
+							$arr[$x] = $descriptor["value"][$x];
+						}
+					}
+					else
+					{
+						// check for existence of related item
+						$testTable = $this->connection->getTable($descriptor["table"]);
+						$foreign_key = $descriptor["foreign_key"];
+						$test = $testTable->find($descriptor["value"]["$foreign_key"]);
+						
+						(is_object($test))
+						?	${{object}}->$descriptor["local_key"] = $descriptor["value"]["$foreign_key"]
+						:	${{object}}->$relation = $descriptor["value"];
+					}
+				}
+				
+			return ${{object}}->save();
+		}
+		
+		public function update{{inflectSingle}}(${{object}}_id, $fields)
+		{
+			$existing = $this->get{{inflectSingle}}(${{object}}_id);
+			if(!$existing)
+				return;
+			
+			foreach($fields as $key => $val)
+			{
+				if($existing->$key != $val)
+				{
+					if($val === null && $existing->$key !== null)
+						continue;
+						
+					$existing->$key = $val;
+				}
+			}
+				
+			return $existing->save();
+		}
+		
+		public function delete{{inflectSingle}}(${{object}})
+		{
+			$existing = $this->get{{inflectSingle}}(${{object}}->id);
+			if(!$existing)
+				return;
+				
+			return $existing->delete();
+		}
+		
+		public function get{{inflectSingle}}(${{object}}_id)
+		{
+			return $this->table->find(${{object}}_id);
+		}
+		
+		public function get{{inflectSingle}}ByField($field, $value, $paged=false, $limit=0, $offset=0)
+		{
+			$q = Doctrine_Query::create()
+					->select("x.*")
+					->where("x.$field = '$value'")
+					->from($this->modelName." x");
+			
+			if($paged)
+			{
+				if($limit)
+					$q->limit($limit);
+				if($offset)
+					$q->offset($offset);
+			}
+					
+			return $q->execute();
+		}
+		
+		public function get{{inflectSingle}}ByFields($fields, $values, $paged=false, $limit=0, $offset=0)
+		{
+			$q = Doctrine_Query::create()
+					->select("x.*");
+					
+			if($fields[0] && $values[0])
+				$q->where("x.".$fields[0]." = '".$values[0]."'");
+			
+			for($x = 1; $x < count($fields); $x++)
+				if($values[$x] !== null)
+					$q->andWhere("x.".$fields[$x]." = '".$values[$x]."'");
+				
+			$q->from($this->modelName." x");
+				
+			if($paged)
+			{
+				if($limit)
+					$q->limit($limit);
+				if($offset)
+					$q->offset($offset);
+			}
+					
+			return $q->execute();
+		}
+		
+		// get all relations and find related data
+		public function get{{inflectSingle}}WithRelated(${{object}}_id)
+		{
+			$relations = array({{relations}});
+			$complex = new stdClass();
+			
+			$record = $this->table->find(${{object}}_id);
+			foreach($record as $key => $value)
+				$complex->$key = $value;
+				
+			foreach($relations as $relation)
+				$complex->$relation["alias"] = $this->getRelated($relation["alias"], ${{object}}_id, $paged, $limit, $offset);
+				
+			return $complex;
+		}
+		
+		// get related data for field
+		public function getRelated($field, ${{object}}_id, $paged=false, $limit=0, $offset=0)
+		{
+			//	available relations:
+{{availRelations}}
+			$rel = $this->table->getRelation($field);
+			
+			$q = Doctrine_Query::create()
+					->select("x.*")
+					->from($rel->getClass()." x");
+					
+			if($rel->getType() == Doctrine_Relation::MANY)
+			{
+				if(get_class($rel) == Doctrine_Relation_Association)				// if relation is many-to-many
+				{
+					$foreignTable = $rel->getClass();
+					$joining = $rel->getAssociationTable()->getClassnameToReturn();
+					
+					$q = Doctrine_Query::create()
+							->select("x.*")
+							->from("$foreignTable x, $joining y")
+							->where("y.{$rel->getLocalFieldName()} = ${{object}}_id")
+							->andWhere("x.id = y.{$rel->getForeignFieldName()}");
+
+					return $q->execute();
+				}
+				else	
+					$q->where($rel->getForeignFieldName()." = ${{object}}_id");
+			}
+			else
+			{
+				$foreignRelations = $this->connection->getTable($rel->getClass())->getRelations();
+				$foreignRelation = null;
+				
+				foreach($foreignRelations as $key => $value)
+				{
+					if($value->getClass() == $this->modelName)
+					{
+						$foreignRelation = $value->getAlias();
+						break;
+					}
+				}
+
+				$q->leftJoin("x.$foreignRelation y")
+					->where("y.".$rel->getForeign()." = ${{object}}_id");
+			}
+					
+			if($paged)
+			{
+				if($limit)
+					$q->limit($limit);
+				if($offset)
+					$q->offset($offset);
+			}
+				
+			$result = $q->execute();
+			return ($rel->getType() == Doctrine_Relation::ONE)
+					?	$result[0]
+					:	$result;
+		}
+		
+		public function getAll{{inflectPlural}}($paged=false, $limit=0, $offset=0)
+		{
+			$q = Doctrine_Query::create()->select("*")->from("{{model}}");
+					
+			if($paged)
+			{
+				if($limit)
+					$q->limit($limit);
+				if($offset)
+					$q->offset($offset);
+			}
+				
+			return $q->execute();
+		}
+		
+		public function count{{inflectPlural}}()
+		{
+			return $this->table->count();
+		}
+		
+		public function countRelated($field, ${{object}}_id)
+		{
+			$related = $this->getRelated($field, ${{object}}_id);
+			return get_class($related) != "Doctrine_Collection" ? 1 : $related->count();
+		}
+	}
+?>

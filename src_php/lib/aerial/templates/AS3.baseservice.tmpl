@@ -1,0 +1,83 @@
+package {{package}}.base
+{
+	import flash.utils.describeType;
+
+	import models.{{model}};
+	
+	import mx.messaging.config.ServerConfig;
+	import mx.rpc.remoting.RemoteObject;
+	
+	public class {{class}} extends RemoteObject
+	{
+		public function {{class}}(destination:String="aerial")
+		{
+			super(destination);
+			
+			this.endpoint = ServerConfig.getChannel(destination).url;
+			this.source = "{{model}}Service";
+		}
+		
+		public function get{{inflectSingle}}({{object}}_id:uint):void
+		{
+			this.getOperation("get{{inflectSingle}}").send({{object}}_id);
+		}
+		
+		public function get{{inflectSingle}}ByField(field:String, value:*, paged:Boolean=false, limit:int=0, offset:int=0):void
+		{
+			this.getOperation("get{{inflectSingle}}ByField").send(field, value, paged, limit, offset);
+		}
+		
+		public function get{{inflectSingle}}ByFields(fields:Array, values:Array, paged:Boolean=false, limit:int=0, offset:int=0):void
+		{
+			this.getOperation("get{{inflectSingle}}ByFields").send(fields, values, paged, limit, offset);
+		}
+		
+		public function get{{inflectSingle}}WithRelated({{object}}_id:uint):void
+		{
+			this.getOperation("get{{inflectSingle}}WithRelated").send({{object}}_id);
+		}
+		
+		public function getRelated(field:String, id:uint, paged:Boolean=false, limit:int=0, offset:int=0):void
+		{
+			//	available relations:
+{{availRelations}}
+			this.getOperation("getRelated").send(field, id, paged, limit, offset);
+		}
+		
+		public function getAll{{inflectPlural}}(paged:Boolean=false, limit:int=0, offset:int=0):void
+		{
+			this.getOperation("getAll{{inflectPlural}}").send(paged, limit, offset);
+		}
+								   
+		public function save{{inflectSingle}}({{object}}:{{model}}):void
+		{
+			this.getOperation("save{{inflectSingle}}").send({{object}}, {{object}}.getRelatedData());
+		}
+		
+		public function update{{inflectSingle}}({{object}}:{{model}}):void
+		{
+			var props:XMLList = describeType({{object}})..variable;
+			
+			var fields:Object = {};
+			for each(var property:XML in props)
+				fields[property.@name] = {{object}}[property.@name];
+			
+			this.getOperation("update{{inflectSingle}}").send({{object}}.id, fields);
+		}
+		
+		public function delete{{inflectSingle}}({{object}}:{{model}}):void
+		{
+			this.getOperation("delete{{inflectSingle}}").send({{object}});
+		}
+		
+		public function count{{inflectPlural}}():void
+		{
+			this.getOperation("count{{inflectPlural}}").send();
+		}
+		
+		public function countRelated(field:String, {{object}}_id:uint):void
+		{
+			this.getOperation("countRelated").send(field, {{object}}_id);
+		}
+	}
+}

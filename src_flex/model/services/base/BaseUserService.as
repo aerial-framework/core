@@ -2,7 +2,7 @@ package model.services.base
 {
 	import flash.utils.describeType;
 
-	import models.User;
+	import model.vo.User;
 	
 	import mx.messaging.config.ServerConfig;
 	import mx.rpc.remoting.RemoteObject;

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%"
+		   xmlns:service="model.serices.*" xmlns:services="model.services.*"
+		   >
+	
+	<mx:Script>
+		<![CDATA[
+			import com.forum.event.LoginEvent;
+			
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			import mx.messaging.messages.RemotingMessage;
+			
+			
+			public function logout():void
+			{
+				var logoutEvent:LoginEvent = new LoginEvent(LoginEvent.LOGOUT_ACTION);
+				this.dispatchEvent(logoutEvent);
+			}
+			
+			
+
+			protected function resultHandler(event:ResultEvent):void
+			{
+				var message:RemotingMessage = event.token.message as RemotingMessage;
+				var operation:String = message.source + "." + message.operation;
+				
+				switch(operation)
+				{
+					
+					case "UserService.getUserByFields":
+					
+						break;
+					case "UserService.get":
+						
+						break;
+					case "UserService.getAll":
+						
+						break;
+					case "UserService.getRelatedUser":
+						if(message.body[0] == "inputLookups"){ //It would be nice to be able to wire a callBack.  This is kinda sketchy.
+							
+						}
+						break;
+					case "UserService.update":
+						
+						break;
+					case "UserService.save":
+						
+						break;
+					
+				}
+			}
+
+
+			protected function faultHandler(event:FaultEvent):void
+			{
+				// TODO Auto-generated method stub
+			}
+
+		]]>
+	</mx:Script>
+	
+	<services:UserService id="userService" result="resultHandler(event)" fault="faultHandler(event)"/>
+	<services:CategoryService id="categoryService" result="resultHandler(event)" fault="faultHandler(event)"/>
+	<services:PostService id="postService" result="resultHandler(event)" fault="faultHandler(event)"/>
+	<services:CommentService id="commentService" result="resultHandler(event)" fault="faultHandler(event)"/>
+	
+	<mx:LinkButton label="Logout" right="10" top="10" click="logout()"/>
+	
+</mx:Canvas>

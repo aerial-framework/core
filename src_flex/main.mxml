@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" minWidth="955" minHeight="600" creationComplete="init()"
+				xmlns:services="model.services.*"
+				xmlns:view="com.forum.view.*"
+				>
+	
+	<mx:Script>
+		<![CDATA[
+			import com.forum.event.LoginEvent;
+			
+			import model.vo.*;
+			
+			import mx.controls.Alert;
+			import mx.messaging.messages.RemotingMessage;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			
+			import mx.core.Container;
+			
+			public var user:User;
+			
+			private function init():void
+			{
+				this.addEventListener(LoginEvent.LOGIN_ACTION, loginHandler); 
+				this.addEventListener(LoginEvent.LOGOUT_ACTION, loginHandler); 
+			}
+			
+			public function loginHandler(e:LoginEvent):void{
+				
+				if(e.type == LoginEvent.LOGIN_ACTION){
+					if(e.authenticated){
+						this.loginViewStack.selectedChild = Container(this.loginViewStack.getChildByName("dashboardView"));
+					}else{
+						Alert.show("Login Failed!");
+					}
+				}else if(e.type == LoginEvent.LOGOUT_ACTION){
+					this.loginViewStack.selectedChild = Container(this.loginViewStack.getChildByName("loginView"));
+				}
+				
+			}
+			
+			public function resultHandler(event:ResultEvent):void
+			{
+				var message:RemotingMessage = event.token.message as RemotingMessage;
+				var operation:String = message.source + "." + message.operation;
+				
+				switch(operation)
+				{
+					
+					case "UserService.get":
+						
+						break;
+					case "UserService.getAll":
+						
+						break;
+					case "UserService.getRelated":
+						if(message.body[0] == "inputLookups"){
+							
+						}
+						break;
+					case "UserService.update":
+						
+						break;
+					case "UserService.save":
+						
+						break;
+					
+				}
+			}
+			
+			
+			protected function faultHandler(event:FaultEvent):void
+			{
+				Alert.show(event.fault.faultString);
+			}
+			
+		]]>
+	</mx:Script>
+	
+	
+	<mx:ViewStack id="loginViewStack" left="0" right="0" top="0" bottom="0">
+		<view:Login id="loginView" />
+		<view:Dashboard id="dashboardView" />
+	</mx:ViewStack>
+	
+</mx:Application>

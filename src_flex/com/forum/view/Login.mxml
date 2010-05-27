@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%"
+		   xmlns:service="model.services.*"
+		   >
+	
+	<mx:Script>
+		<![CDATA[
+			
+			import com.forum.event.LoginEvent;
+			import model.vo.User;
+			
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.messaging.messages.RemotingMessage;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			
+			//Big security whole maintaining authentication just on the client. -Rob
+			private function login(username:String, password:String):void
+			{
+				this.userService.getUserByFields(["username", "password"],[username, password]);
+			}
+			
+			private function result(event:ResultEvent):void
+			{
+				var message:RemotingMessage = event.token.message as RemotingMessage;
+				var operation:String = message.source + "." + message.operation;
+				
+				switch(operation){
+					
+					case "UserService.getUserByFields":
+						
+						var le:LoginEvent = new LoginEvent(LoginEvent.LOGIN_ACTION);
+						
+						if(event.result.length == 1){
+							le.user = event.result.getItemAt(0); 
+							le.authenticated = true;
+							
+						}else{
+							le.authenticated = false;
+						}
+						this.dispatchEvent(le);
+						break;
+				}	
+			}
+			
+			private function fault(event:FaultEvent):void
+			{
+				var message:RemotingMessage = event.token.message as RemotingMessage;
+				var operation:String = message.source + "." + message.operation;
+				
+				switch(operation)
+				{
+					case "UserService.getByFields":
+						Alert.show("An error occured while attempting to login this user!");
+						break;
+				}	
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:Panel x="385" y="225" width="330" height="200" layout="absolute" title="Blog Login">
+		<mx:Form y="10" horizontalCenter="0">
+			<mx:FormItem label="username:">
+				<mx:TextInput id="username" text="admin"/>
+			</mx:FormItem>
+			<mx:FormItem label="password:">
+				<mx:TextInput id="password" text="admin"/>
+			</mx:FormItem>
+		</mx:Form>
+		<mx:Button y="113" label="Login" horizontalCenter="0" click="login(this.username.text, this.password.text)"/>
+	</mx:Panel>
+	
+	<service:UserService id="userService" result="result(event)" fault="fault(event)"/>
+</mx:Canvas>

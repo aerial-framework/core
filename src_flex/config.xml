@@ -14,7 +14,7 @@
 	</services>
 	<channels>
 		<channel-definition id="aerial" class="mx.messaging.channels.AMFChannel">
-			<endpoint uri="http://aerial-test/amfphp/gateway.php" class="flex.messaging.endpoints.AMFEndpoint"/>
+			<endpoint uri="../src_php/public_html/amfphp/gateway.php" class="flex.messaging.endpoints.AMFEndpoint"/>
 		</channel-definition>
 	</channels>
 </services-config>

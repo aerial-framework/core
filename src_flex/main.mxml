@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" minWidth="955" minHeight="600" creationComplete="init()"
 				xmlns:services="model.services.*"
-				xmlns:view="com.forum.view.*"
-				>
+				xmlns:view="com.forum.view.*">
 	
 	<mx:Style source="com/forum/assets/stylesheet.css"/>
 	

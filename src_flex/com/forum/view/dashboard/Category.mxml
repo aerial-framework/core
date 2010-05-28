@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Panel xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="100%" minHeight="150"  minWidth="180" borderStyle="solid" creationComplete="init()"
+		  title="Categories({this.categories.length})"
+		  xmlns:service="model.serices.*"
+		  xmlns:services="model.services.*"
+		  >
+	
+	<mx:Script>
+		<![CDATA[
+			import model.vo.CategoryVO;
+			import model.vo.UserVO;
+			
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.events.ItemClickEvent;
+			import mx.events.ListEvent;
+			import mx.messaging.messages.RemotingMessage;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			
+			[Bindable]
+			public var user:UserVO;
+			
+			[Bindable]
+			public var categories:ArrayCollection;
+			
+			
+			public function init():void
+			{
+				this.categoryService.getAllCategories();
+			}
+			
+			public function insertCategory(name:String):void
+			{
+				var cat:CategoryVO = new CategoryVO();
+				cat.name = name;
+				cat.userId = this.user.id;
+				this.categoryService.saveCategory(cat);			
+			}
+			
+			
+			public function updateCategory(name:String):void
+			{
+				var cat:CategoryVO = new CategoryVO();
+				cat.id = 1;
+				cat.name = name;
+				this.categoryService.updateCategory(cat);			
+			}
+			
+			
+			public function clickCategoryItem(event:ListEvent):void
+			{
+				this.categoryName.text = (event.itemRenderer.data as CategoryVO).name;
+			}
+			
+			
+			private function resultHandler(event:ResultEvent):void
+			{
+				var message:RemotingMessage = event.token.message as RemotingMessage;
+				var operation:String = message.source + "." + message.operation;
+				
+				switch(operation)
+				{
+					
+					case "CategoryService.getAllCategories":
+						this.categories = event.result as ArrayCollection;
+						break;
+					case "CategoryService.saveCategory":
+						this.categoryService.getAllCategories();
+						break;
+					case "CategoryService.updateCategory":
+						this.categoryService.getAllCategories();
+						break;
+					case "UserService.getRelatedUser":
+						if(message.body[0] == "inputLookups"){ //It would be nice to be able to wire a callBack.  This is kinda sketchy.
+							
+						}
+						break;
+					case "UserService.update":
+						
+						break;
+					case "UserService.save":
+						
+						break;
+					
+				}
+			}
+			
+			
+			private function faultHandler(event:FaultEvent):void
+			{
+				Alert.show("error in Category.mxml");
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<services:CategoryService id="categoryService" result="resultHandler(event)" fault="faultHandler(event)"/>
+	<mx:List dataProvider="{this.categories}" labelField="name" top="0" bottom="0" left="0" right="0" change="clickCategoryItem(event)"/>
+	
+	<mx:ControlBar>
+		<mx:VBox>
+			<mx:HBox>
+				<mx:TextInput id="categoryName"  width="103"/>
+				<mx:Spacer width="100%"/>
+				<mx:Button label="Add" click="insertCategory(this.categoryName.text)" />
+			</mx:HBox>
+			<mx:HBox>
+				<mx:Spacer width="100%"/>
+				<mx:Button label="Update" click="updateCategory(this.categoryName.text)" />
+			</mx:HBox>
+		</mx:VBox>
+		
+	</mx:ControlBar>
+	
+</mx:Panel>

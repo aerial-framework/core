@@ -1,0 +1,18 @@
+/* CSS file */
+
+Panel {
+	borderStyle: solid;
+	roundedBottomCorners: true;
+	headerHeight: 22;
+	highlightAlphas: 1, 0;
+	headerColors: #cccccc, #cccccc;
+	footerColors: #cccccc, #cccccc;
+	backgroundColor: #ffffff;
+	shadowDirection: center;
+	dropShadowColor: #333333;
+	titleStyleName: "mypanelTitle";
+}
+
+.mypanelTitle {
+	color: #000000;
+}

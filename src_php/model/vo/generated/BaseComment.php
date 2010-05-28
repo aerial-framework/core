@@ -74,11 +74,15 @@ abstract class BaseComment extends Doctrine_Record
         parent::setUp();
         $this->hasOne('User', array(
              'local' => 'userId',
-             'foreign' => 'id'));
+             'foreign' => 'id',
+             'onDelete' => 'cascade',
+             'onUpdate' => 'cascade'));
 
         $this->hasOne('Post', array(
              'local' => 'postId',
-             'foreign' => 'id'));
+             'foreign' => 'id',
+             'onDelete' => 'cascade',
+             'onUpdate' => 'cascade'));
     }
 
     public function construct()

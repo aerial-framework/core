@@ -14,7 +14,7 @@ package {{package}}.base
 			super(destination);
 			
 			this.endpoint = ServerConfig.getChannel(destination).url;
-			this.source = "{{model}}Service";
+			this.source = "{{modelService}}Service";
 		}
 		
 		public function get{{inflectSingle}}({{object}}_id:uint):void

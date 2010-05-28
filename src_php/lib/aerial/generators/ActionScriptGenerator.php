@@ -52,7 +52,7 @@
 		}
 		
 		public static function generateASBaseService($modelPackage, $package, $class, $object, $relationsArr,
-													$inflectSingle, $inflectPlural, $model, $directory)
+													$inflectSingle, $inflectPlural, $model, $modelService, $directory)
 		{
 			$availRelations = "\t\t\t";
 			$relations = array();
@@ -69,7 +69,7 @@
 			}
 			
 			$relations = implode(",\n\t\t\t\t\t\t\t\t", $relations);
-			$replacementTokens = array("modelPackage","package", "class", "object", "availRelations", "relations", "inflectSingle", "inflectPlural", "model");
+			$replacementTokens = array("modelPackage","package", "class", "object", "availRelations", "relations", "inflectSingle", "inflectPlural", "model", "modelService");
 			$contents = self::readTemplate("AS3.baseservice");
 			
 			foreach($replacementTokens as $token)
@@ -127,9 +127,9 @@
 			self::writeFile("$directory/$class.as", $contents);
 		}
 		
-		public static function generateAS3Model($package, $class, $directory)
+		public static function generateAS3Model($package, $class, $remoteClass, $directory)
 		{
-			$replacementTokens = array("package", "class");
+			$replacementTokens = array("package", "class", "remoteClass");
 			$contents = self::readTemplate("AS3.model");
 			
 			foreach($replacementTokens as $token)

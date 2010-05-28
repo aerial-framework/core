@@ -80,11 +80,15 @@ abstract class BasePost extends Doctrine_Record
         parent::setUp();
         $this->hasOne('User', array(
              'local' => 'userId',
-             'foreign' => 'id'));
+             'foreign' => 'id',
+             'onDelete' => 'cascade',
+             'onUpdate' => 'cascade'));
 
         $this->hasOne('Category', array(
              'local' => 'categoryId',
-             'foreign' => 'id'));
+             'foreign' => 'id',
+             'onDelete' => 'set null',
+             'onUpdate' => 'cascade'));
 
         $this->hasMany('Comment as comments', array(
              'local' => 'id',

@@ -32,6 +32,7 @@ abstract class BaseUser extends Doctrine_Record
              ));
         $this->hasColumn('username', 'string', 45, array(
              'type' => 'string',
+             'unique' => true,
              'length' => '45',
              ));
         $this->hasColumn('password', 'string', 45, array(

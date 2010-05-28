@@ -118,7 +118,8 @@
 			
 			foreach($modelData as $model)
 			{
-				$class = $model["class"];
+				$class = $model["class"]."VO";
+				$remoteClass = $model["class"];
 				$properties = $model["properties"];
 				$relations = $model["relations"];
 				
@@ -126,7 +127,7 @@
 												$properties, $relations, FRONTEND_MODELS_PATH."/base");
 				
 				if($numExisting != count($modelData))
-					ActionScriptGenerator::generateAS3Model(FRONTEND_MODELS_PACKAGE, $class, FRONTEND_MODELS_PATH);
+					ActionScriptGenerator::generateAS3Model(FRONTEND_MODELS_PACKAGE, $class, $remoteClass, FRONTEND_MODELS_PATH);
 			}
 
 			GenerationController::emptyFolder(BACKEND_SERVICES_PATH."/base", "base");
@@ -165,7 +166,7 @@
 				$inflectPlural = self::inflect("plural", $model);
 				
 				ActionScriptGenerator::generateASBaseService(FRONTEND_MODELS_PACKAGE, FRONTEND_SERVICES_PACKAGE, $class, $object, $relations,
-												$inflectSingle, $inflectPlural, $model, FRONTEND_SERVICES_PATH."/base");
+												$inflectSingle, $inflectPlural, $model."VO", $model, FRONTEND_SERVICES_PATH."/base");
 				if($numExisting != count($asServicesData))
 					ActionScriptGenerator::generateASService(FRONTEND_SERVICES_PACKAGE, "{$model}Service", FRONTEND_SERVICES_PATH);
 			}

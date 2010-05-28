@@ -10,7 +10,7 @@
 		<![CDATA[
 			import com.forum.event.LoginEvent;
 			
-			import model.vo.Category;
+			import model.vo.CategoryVO;
 			import model.vo.UserVO;
 			
 			import mx.collections.ArrayCollection;

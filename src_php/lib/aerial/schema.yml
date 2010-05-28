@@ -16,6 +16,7 @@ User:
       autoincrement: true
     username:
       type: string(45)
+      unique: true
     password:
       type: string(45)
     createDate:
@@ -55,11 +56,15 @@ Post:
       local: userId
       foreign: id
       foreignAlias: posts
+      onDelete: cascade
+      onUpdate: cascade
     Category:
       class: Category
       local: categoryId
       foreign: id
       foreignAlias: posts
+      onDelete: set null
+      onUpdate: cascade
   indexes:
     fk_Post_User1:
       fields: [userId]
@@ -93,11 +98,15 @@ Comment:
       local: userId
       foreign: id
       foreignAlias: comments
+      onDelete: cascade
+      onUpdate: cascade
     Post:
       class: Post
       local: postId
       foreign: id
       foreignAlias: comments
+      onDelete: cascade
+      onUpdate: cascade
   indexes:
     fk_Comment_User:
       fields: [userId]

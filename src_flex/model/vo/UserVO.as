@@ -4,9 +4,9 @@ package model.vo
 	
 	[RemoteClass(alias="model.vo.User")]	
 	[Bindable]
-	public class User extends BaseUser
+	public class UserVO extends BaseUser
 	{		
-		public function User()
+		public function UserVO()
 		{
 		}
 	}

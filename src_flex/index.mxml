@@ -12,7 +12,7 @@
 			import mx.rpc.events.ResultEvent;
 			import mx.controls.Alert;
 			
-			public var user:User;
+			public var user:UserVO;
 			
 			public function init():void
 			{

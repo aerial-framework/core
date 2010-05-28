@@ -1,15 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%"
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%" creationComplete="init()"
 		   xmlns:service="model.serices.*" xmlns:services="model.services.*"
+		   xmlns:dashboard="com.forum.view.dashboard.*"
 		   >
+	
+	
 	
 	<mx:Script>
 		<![CDATA[
 			import com.forum.event.LoginEvent;
 			
+			import model.vo.Category;
+			import model.vo.UserVO;
+			
+			import mx.collections.ArrayCollection;
+			import mx.messaging.messages.RemotingMessage;
 			import mx.rpc.events.FaultEvent;
 			import mx.rpc.events.ResultEvent;
-			import mx.messaging.messages.RemotingMessage;
+			
+			
+			[Bindable]
+			public var user:UserVO;
+
+			
+			public function init():void
+			{
+				
+			}
 			
 			
 			public function logout():void
@@ -17,7 +34,6 @@
 				var logoutEvent:LoginEvent = new LoginEvent(LoginEvent.LOGOUT_ACTION);
 				this.dispatchEvent(logoutEvent);
 			}
-			
 			
 
 			protected function resultHandler(event:ResultEvent):void
@@ -28,9 +44,6 @@
 				switch(operation)
 				{
 					
-					case "UserService.getUserByFields":
-					
-						break;
 					case "UserService.get":
 						
 						break;
@@ -62,10 +75,24 @@
 	</mx:Script>
 	
 	<services:UserService id="userService" result="resultHandler(event)" fault="faultHandler(event)"/>
-	<services:CategoryService id="categoryService" result="resultHandler(event)" fault="faultHandler(event)"/>
 	<services:PostService id="postService" result="resultHandler(event)" fault="faultHandler(event)"/>
 	<services:CommentService id="commentService" result="resultHandler(event)" fault="faultHandler(event)"/>
 	
-	<mx:LinkButton label="Logout" right="10" top="10" click="logout()"/>
+	<mx:HDividedBox top="55" bottom="30" left="0" right="0" >
+		<mx:VBox width="210" height="100%" paddingLeft="10" paddingRight="10">
+			<dashboard:Category />
+			
+		</mx:VBox>
+		<mx:ViewStack width="100%" height="100%">
+			
+			
+		</mx:ViewStack>
+	</mx:HDividedBox>
+	<mx:ApplicationControlBar y="9" left="10" right="10">
+		<mx:Label text="Menu" />
+		<mx:Spacer width="100%" />
+		<mx:Label text="Welcome: {this.user.username}"/>
+		<mx:Button label="Logoutx" click="logout()"/>
+	</mx:ApplicationControlBar>
 	
 </mx:Canvas>

@@ -2,7 +2,7 @@ package model.services.base
 {
 	import flash.utils.describeType;
 
-	import model.vo.User;
+	import model.vo.UserVO;
 	
 	import mx.messaging.config.ServerConfig;
 	import mx.rpc.remoting.RemoteObject;
@@ -52,12 +52,12 @@ package model.services.base
 			this.getOperation("getAllUsers").send(paged, limit, offset);
 		}
 								   
-		public function saveUser(user:User):void
+		public function saveUser(user:UserVO):void
 		{
 			this.getOperation("saveUser").send(user, user.getRelatedData());
 		}
 		
-		public function updateUser(user:User):void
+		public function updateUser(user:UserVO):void
 		{
 			var props:XMLList = describeType(user)..variable;
 			
@@ -68,7 +68,7 @@ package model.services.base
 			this.getOperation("updateUser").send(user.id, fields);
 		}
 		
-		public function deleteUser(user:User):void
+		public function deleteUser(user:UserVO):void
 		{
 			this.getOperation("deleteUser").send(user);
 		}

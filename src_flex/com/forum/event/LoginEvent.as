@@ -6,7 +6,7 @@ package com.forum.event{
 		public static const LOGIN_ACTION:String = "login";
 		public static const LOGOUT_ACTION:String = "logout";
 		
-		public var user:Object;
+		public var user:Object; //We're going to leave this as object so that it can be re-used in other projects.
 		public var authenticated:Boolean = false;
 		
 		public function LoginEvent(type:String, bubbles:Boolean=true, cancelable:Boolean=false)

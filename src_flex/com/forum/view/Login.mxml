@@ -7,7 +7,7 @@
 		<![CDATA[
 			
 			import com.forum.event.LoginEvent;
-			import model.vo.User;
+			import model.vo.UserVO;
 			
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
@@ -15,7 +15,7 @@
 			import mx.rpc.events.FaultEvent;
 			import mx.rpc.events.ResultEvent;
 			
-			//Big security whole maintaining authentication just on the client. -Rob
+			//Big security issue maintaining authentication just on the client. -Rob
 			private function login(username:String, password:String):void
 			{
 				this.userService.getUserByFields(["username", "password"],[username, password]);

@@ -1,5 +1,7 @@
 package model.vo.base
 {
+	
+	[Bindable]
 	public class BaseUser
 	{
 		public var id:int;

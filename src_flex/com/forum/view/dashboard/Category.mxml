@@ -42,7 +42,7 @@
 			public function updateCategory(name:String):void
 			{
 				var cat:CategoryVO = new CategoryVO();
-				cat.id = 1;
+				cat.id = (this.categoryList.selectedItem as CategoryVO).id;
 				cat.name = name;
 				this.categoryService.updateCategory(cat);			
 			}
@@ -96,7 +96,7 @@
 	</mx:Script>
 	
 	<services:CategoryService id="categoryService" result="resultHandler(event)" fault="faultHandler(event)"/>
-	<mx:List dataProvider="{this.categories}" labelField="name" top="0" bottom="0" left="0" right="0" change="clickCategoryItem(event)"/>
+	<mx:List id="categoryList" dataProvider="{this.categories}" labelField="name" top="0" bottom="0" left="0" right="0" change="clickCategoryItem(event)"/>
 	
 	<mx:ControlBar>
 		<mx:VBox>

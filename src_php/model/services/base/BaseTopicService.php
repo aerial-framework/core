@@ -1,9 +1,9 @@
 <?php	
-	class BaseCommentService
+	class BaseTopicService
 	{	
 		protected $connection;
 		protected $table;
-		protected $modelName = "Comment";
+		protected $modelName = "Topic";
 		
 		public function __construct()
 		{
@@ -11,7 +11,7 @@
 			$this->table = $this->connection->getTable($this->modelName);
 		}
 
-		public function saveComment($comment, $related=null)
+		public function saveTopic($topic, $related=null)
 		{
 			if($related)
 				foreach($related as $relation => $descriptor)
@@ -20,7 +20,7 @@
 					{
 						for($x = 0; $x < count($descriptor["value"]); $x++)
 						{
-							$arr =& $comment->$relation;
+							$arr =& $topic->$relation;
 							$arr[$x] = $descriptor["value"][$x];
 						}
 					}
@@ -32,17 +32,17 @@
 						$test = $testTable->find($descriptor["value"]["$foreign_key"]);
 						
 						(is_object($test))
-						?	$comment->$descriptor["local_key"] = $descriptor["value"]["$foreign_key"]
-						:	$comment->$relation = $descriptor["value"];
+						?	$topic->$descriptor["local_key"] = $descriptor["value"]["$foreign_key"]
+						:	$topic->$relation = $descriptor["value"];
 					}
 				}
 				
-			return $comment->save();
+			return $topic->save();
 		}
 		
-		public function updateComment($comment_id, $fields)
+		public function updateTopic($topic_id, $fields)
 		{
-			$existing = $this->getComment($comment_id);
+			$existing = $this->getTopic($topic_id);
 			if(!$existing)
 				return;
 			
@@ -60,21 +60,21 @@
 			return $existing->save();
 		}
 		
-		public function deleteComment($comment)
+		public function deleteTopic($topic)
 		{
-			$existing = $this->getComment($comment->id);
+			$existing = $this->getTopic($topic->id);
 			if(!$existing)
 				return;
 				
 			return $existing->delete();
 		}
 		
-		public function getComment($comment_id)
+		public function getTopic($topic_id)
 		{
-			return $this->table->find($comment_id);
+			return $this->table->find($topic_id);
 		}
 		
-		public function getCommentByField($field, $value, $paged=false, $limit=0, $offset=0)
+		public function getTopicByField($field, $value, $paged=false, $limit=0, $offset=0)
 		{
 			$q = Doctrine_Query::create()
 					->select("x.*")
@@ -92,7 +92,7 @@
 			return $q->execute();
 		}
 		
-		public function getCommentByFields($fields, $values, $paged=false, $limit=0, $offset=0)
+		public function getTopicByFields($fields, $values, $paged=false, $limit=0, $offset=0)
 		{
 			$q = Doctrine_Query::create()
 					->select("x.*");
@@ -118,49 +118,61 @@
 		}
 		
 		// get all relations and find related data
-		public function getCommentWithRelated($comment_id)
+		public function getTopicWithRelated($topic_id)
 		{
-			$relations = array("User" => array("type" => "one",
+			$relations = array("Category" => array("type" => "one",
+													"alias" => "Category",
+													"table" => "Category",
+													"local_key" => "categoryid",
+													"foreign_key" => "id",
+													"refTable" => ""),
+								"User" => array("type" => "one",
 													"alias" => "User",
 													"table" => "User",
 													"local_key" => "userid",
 													"foreign_key" => "id",
 													"refTable" => ""),
-								"Post" => array("type" => "one",
-													"alias" => "Post",
+								"posts" => array("type" => "many",
+													"alias" => "posts",
 													"table" => "Post",
-													"local_key" => "postid",
-													"foreign_key" => "id",
+													"local_key" => "id",
+													"foreign_key" => "topicId",
 													"refTable" => ""));
 			$complex = new stdClass();
 			
-			$record = $this->table->find($comment_id);
+			$record = $this->table->find($topic_id);
 			foreach($record as $key => $value)
 				$complex->$key = $value;
 				
 			foreach($relations as $relation)
-				$complex->$relation["alias"] = $this->getRelated($relation["alias"], $comment_id, $paged, $limit, $offset);
+				$complex->$relation["alias"] = $this->getRelated($relation["alias"], $topic_id, $paged, $limit, $offset);
 				
 			return $complex;
 		}
 		
-		public function getAllCommentWithRelated($criteria = null)
+		public function getAllTopicWithRelated($criteria = null)
 		{
-			$relations = array("User" => array("type" => "one",
+			$relations = array("Category" => array("type" => "one",
+													"alias" => "Category",
+													"table" => "Category",
+													"local_key" => "categoryid",
+													"foreign_key" => "id",
+													"refTable" => ""),
+								"User" => array("type" => "one",
 													"alias" => "User",
 													"table" => "User",
 													"local_key" => "userid",
 													"foreign_key" => "id",
 													"refTable" => ""),
-								"Post" => array("type" => "one",
-													"alias" => "Post",
+								"posts" => array("type" => "many",
+													"alias" => "posts",
 													"table" => "Post",
-													"local_key" => "postid",
-													"foreign_key" => "id",
+													"local_key" => "id",
+													"foreign_key" => "topicId",
 													"refTable" => ""));
 				
 				
-			$q = Doctrine_Query::create()->from('Comment y');
+			$q = Doctrine_Query::create()->from('Topic y');
 			$selectTables = 'y.*';
 			
 			foreach($relations as $relation)
@@ -196,11 +208,12 @@
 		}
 		
 		// get related data for field
-		public function getRelated($field, $comment_id, $paged=false, $limit=0, $offset=0)
+		public function getRelated($field, $topic_id, $paged=false, $limit=0, $offset=0)
 		{
 			//	available relations:
+			//		Alias: Category, Type: one
 			//		Alias: User, Type: one
-			//		Alias: Post, Type: one
+			//		Alias: posts, Type: many
 			
 			$rel = $this->table->getRelation($field);
 			
@@ -218,13 +231,13 @@
 					$q = Doctrine_Query::create()
 							->select("x.*")
 							->from("$foreignTable x, $joining y")
-							->where("y.{$rel->getLocalFieldName()} = $comment_id")
+							->where("y.{$rel->getLocalFieldName()} = $topic_id")
 							->andWhere("x.id = y.{$rel->getForeignFieldName()}");
 
 					return $q->execute();
 				}
 				else	
-					$q->where($rel->getForeignFieldName()." = $comment_id");
+					$q->where($rel->getForeignFieldName()." = $topic_id");
 			}
 			else
 			{
@@ -241,7 +254,7 @@
 				}
 
 				$q->leftJoin("x.$foreignRelation y")
-					->where("y.".$rel->getForeign()." = $comment_id");
+					->where("y.".$rel->getForeign()." = $topic_id");
 			}
 					
 			if($paged)
@@ -258,9 +271,9 @@
 					:	$result;
 		}
 		
-		public function getAllComments($paged=false, $limit=0, $offset=0)
+		public function getAllTopics($paged=false, $limit=0, $offset=0)
 		{
-			$q = Doctrine_Query::create()->select("*")->from("Comment");
+			$q = Doctrine_Query::create()->select("*")->from("Topic");
 					
 			if($paged)
 			{
@@ -273,14 +286,14 @@
 			return $q->execute();
 		}
 		
-		public function countComments()
+		public function countTopics()
 		{
 			return $this->table->count();
 		}
 		
-		public function countRelated($field, $comment_id)
+		public function countRelated($field, $topic_id)
 		{
-			$related = $this->getRelated($field, $comment_id);
+			$related = $this->getRelated($field, $topic_id);
 			return get_class($related) != "Doctrine_Collection" ? 1 : $related->count();
 		}
 	}

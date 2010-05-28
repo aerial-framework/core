@@ -203,7 +203,7 @@
 				$q->offset($offset);
 			}
 	
-			return $q->execute()->toAmf(true);
+			return $q->execute();
 			
 		}
 		

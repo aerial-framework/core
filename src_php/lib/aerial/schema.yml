@@ -160,7 +160,6 @@ Topic:
       notnull: true
     categoryId:
       type: integer(4)
-      notnull: true
     name:
       type: string(45)
       unique: true

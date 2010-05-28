@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Panel xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="100%" height="500" creationComplete="init()"
+		  title="Topics ({this.topics.length})"
+		  xmlns:service="model.services.*"
+		  >
+	
+	
+	<mx:Script>
+		<![CDATA[
+			import model.vo.CategoryVO;
+			import model.vo.TopicVO;
+			
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.messaging.messages.RemotingMessage;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			
+			[Bindable]
+			public var topics:ArrayCollection;
+			
+			
+			private var _currentCategory:CategoryVO;
+			
+			
+			public function init():void
+			{
+			}
+			
+			
+			public function get currentCategory():CategoryVO
+			{
+				return _currentCategory;
+			}
+			
+			[Bindable]
+			public function set currentCategory(cat:CategoryVO):void
+			{
+				_currentCategory = cat;	
+				this.topicService.getAllTopicWithRelated({"categoryId":this.currentCategory.id});
+			}
+			
+			
+			private function resultHandler(event:ResultEvent):void
+			{
+				var message:RemotingMessage = event.token.message as RemotingMessage;
+				var operation:String = message.source + "." + message.operation;
+				
+				switch(operation)
+				{
+					
+					case "TopicService.getAllTopics":
+						this.topics = event.result as ArrayCollection;
+						break;
+					case "TopicService.saveTopic":
+						this.topicService.getAllTopicWithRelated({"categoryId":this.currentCategory.id});
+						break;
+					case "TopicService.updateTopic":
+						this.topicService.getAllTopics();
+						break;
+					case "TopicService.deleteTopic":
+						this.topicService.getAllTopics();
+						break;
+					case "TopicService.getAllTopicWithRelated":
+						this.topics = (event.result as ArrayCollection);
+						break;
+				}
+			}
+			
+			private function faultHandler(event:FaultEvent):void
+			{
+				Alert.show("Error in Category.mxml: " + event.fault.faultString);
+			}
+			
+			public function insertTopic(name:String, description:String):void
+			{
+				var topic:TopicVO = new TopicVO();
+				if(this.currentCategory) topic.categoryId = this.currentCategory.id;
+				topic.name = name;
+				topic.description = description;
+				this.topicService.saveTopic(topic);
+			}
+
+		
+
+		]]>
+	</mx:Script>
+	
+	<service:TopicService id="topicService" result="resultHandler(event)" fault="faultHandler(event)"/>
+	<service:CategoryService id="categoryService" result="resultHandler(event)" fault="faultHandler(event)"/>
+	
+	
+	<mx:ControlBar>
+		<mx:HBox>
+			<mx:Label text="Topic Name:" />
+			<mx:TextInput id="topicName" text="" />
+			<mx:Label text="Description" />
+			<mx:TextInput id="topicDescription" text="" />
+			<mx:Button label="Add" click="insertTopic(this.topicName.text, this.topicDescription.text)" />
+			<!--<mx:Button label="Update" click="updateTopic(this.categoryName.text)"  enabled="{(categoryList.selectedItem == null ? false : true)}" />
+			<mx:Button label="Delete" click="deleteTopic()" enabled="{(categoryList.selectedItem == null ? false : true)}" />-->
+		</mx:HBox>
+	</mx:ControlBar>
+	
+</mx:Panel>

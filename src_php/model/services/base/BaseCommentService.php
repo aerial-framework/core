@@ -144,6 +144,57 @@
 			return $complex;
 		}
 		
+		public function getAllCommentWithRelated($criteria = null)
+		{
+			$relations = array("User" => array("type" => "one",
+													"alias" => "User",
+													"table" => "User",
+													"local_key" => "userid",
+													"foreign_key" => "id",
+													"refTable" => ""),
+								"Post" => array("type" => "one",
+													"alias" => "Post",
+													"table" => "Post",
+													"local_key" => "postid",
+													"foreign_key" => "id",
+													"refTable" => ""));
+				
+				
+			$q = Doctrine_Query::create()->from('Comment y');
+			$selectTables = 'y.*';
+			
+			foreach($relations as $relation)
+			{
+				$i++;
+				if($relation["type"] == "many" )
+				{
+					$selectTables .= ',z' . $i . '.*';
+					$q = $q->leftJoin('y.' . $relation["alias"] . ' z' . $i);
+				}
+			}
+	
+			$q = $q->select($selectTables);
+			
+			if($criteria <> null)
+			{
+				foreach($criteria as $key=>$value)
+				{
+					$q = $q->where("y.$key =?", $value);
+				}
+			}
+	
+			if($paged)
+			{
+				if($limit)
+				$q->limit($limit);
+				if($offset)
+				$q->offset($offset);
+			}
+	
+			return $q->execute()->toAmf(true);
+			
+		}
+		
 		// get related data for field
 		public function getRelated($field, $comment_id, $paged=false, $limit=0, $offset=0)
 		{

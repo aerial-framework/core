@@ -24,14 +24,14 @@ package model.vo.base
 		}
 			
 		[Transient]
-		public function get posts():*
+		public function get topics():*
 		{
-			return related["posts"];
+			return related["topics"];
 		}
 			
-		public function set posts(value:*):void
+		public function set topics(value:*):void
 		{
-			related["posts"] = {table:"Post", value:value, type:"many",
+			related["topics"] = {table:"Topic", value:value, type:"many",
 									local_key:"id", foreign_key:"categoryId", refTable:""};
 		}
 		

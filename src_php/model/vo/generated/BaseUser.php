@@ -13,6 +13,7 @@
  * @property Doctrine_Collection $posts
  * @property Doctrine_Collection $comments
  * @property Doctrine_Collection $categories
+ * @property Doctrine_Collection $topics
  * 
  * @package    ##PACKAGE##
  * @subpackage ##SUBPACKAGE##
@@ -65,6 +66,10 @@ abstract class BaseUser extends Doctrine_Record
              'foreign' => 'userId'));
 
         $this->hasMany('Category as categories', array(
+             'local' => 'id',
+             'foreign' => 'userId'));
+
+        $this->hasMany('Topic as topics', array(
              'local' => 'id',
              'foreign' => 'userId'));
     }

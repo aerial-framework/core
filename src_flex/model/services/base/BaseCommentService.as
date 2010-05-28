@@ -37,6 +37,11 @@ package model.services.base
 			this.getOperation("getCommentWithRelated").send(comment_id);
 		}
 		
+		public function getAllCommentWithRelated(criteria:Object=null):void
+		{
+			this.getOperation("getAllCommentWithRelated").send(criteria);
+		}
+		
 		public function getRelated(field:String, id:uint, paged:Boolean=false, limit:int=0, offset:int=0):void
 		{
 			//	available relations:

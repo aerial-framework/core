@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%" creationComplete="init()"
-		   xmlns:service="model.serices.*" xmlns:services="model.services.*"
+		   xmlns:service="model.services.*" 
 		   xmlns:dashboard="com.forum.view.dashboard.*"
 		   >
 	
@@ -60,7 +60,6 @@
 					case "UserService.save":
 						
 						break;
-					
 				}
 			}
 
@@ -73,19 +72,26 @@
 		]]>
 	</mx:Script>
 	
-	<services:UserService id="userService" result="resultHandler(event)" fault="faultHandler(event)"/>
-	<services:PostService id="postService" result="resultHandler(event)" fault="faultHandler(event)"/>
-	<services:CommentService id="commentService" result="resultHandler(event)" fault="faultHandler(event)"/>
+	<service:UserService id="userService" result="resultHandler(event)" fault="faultHandler(event)"/>
+	<service:PostService id="postService" result="resultHandler(event)" fault="faultHandler(event)"/>
+	<service:CommentService id="commentService" result="resultHandler(event)" fault="faultHandler(event)"/>
 	
 	<mx:HDividedBox top="55" bottom="30" left="0" right="0" >
-		<mx:VBox width="210" height="100%" paddingLeft="10" paddingRight="10">
-			<dashboard:Category user="{this.user}" />
+		
+		<!--Side Menus-->
+		<mx:VBox width="235" height="100%" paddingLeft="10" paddingRight="0">
+			<dashboard:Category id="category" user="{this.user}" />
 			
 		</mx:VBox>
+		
+		<!--Main View-->
 		<mx:ViewStack width="100%" height="100%">
-			
-			
+			<mx:VDividedBox width="100%" height="100%">
+				<dashboard:Topic currentCategory="{this.category.categoryList.selectedItem as CategoryVO}" />
+				
+			</mx:VDividedBox>
 		</mx:ViewStack>
+		
 	</mx:HDividedBox>
 	<mx:ApplicationControlBar y="9" left="10" right="10">
 		<mx:Label text="Menu" />

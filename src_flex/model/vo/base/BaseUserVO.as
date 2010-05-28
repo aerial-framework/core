@@ -46,6 +46,18 @@ package model.vo.base
 			related["categories"] = {table:"Category", value:value, type:"many",
 									local_key:"id", foreign_key:"userId", refTable:""};
 		}
+			
+		[Transient]
+		public function get topics():*
+		{
+			return related["topics"];
+		}
+			
+		public function set topics(value:*):void
+		{
+			related["topics"] = {table:"Topic", value:value, type:"many",
+									local_key:"id", foreign_key:"userId", refTable:""};
+		}
 		
 		public function getRelatedData():Object
 		{

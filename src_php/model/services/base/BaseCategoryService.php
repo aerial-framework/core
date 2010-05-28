@@ -126,9 +126,9 @@
 													"local_key" => "userid",
 													"foreign_key" => "id",
 													"refTable" => ""),
-								"posts" => array("type" => "many",
-													"alias" => "posts",
-													"table" => "Post",
+								"topics" => array("type" => "many",
+													"alias" => "topics",
+													"table" => "Topic",
 													"local_key" => "id",
 													"foreign_key" => "categoryId",
 													"refTable" => ""));
@@ -144,12 +144,63 @@
 			return $complex;
 		}
 		
+		public function getAllCategoryWithRelated($criteria = null)
+		{
+			$relations = array("User" => array("type" => "one",
+													"alias" => "User",
+													"table" => "User",
+													"local_key" => "userid",
+													"foreign_key" => "id",
+													"refTable" => ""),
+								"topics" => array("type" => "many",
+													"alias" => "topics",
+													"table" => "Topic",
+													"local_key" => "id",
+													"foreign_key" => "categoryId",
+													"refTable" => ""));
+				
+				
+			$q = Doctrine_Query::create()->from('Category y');
+			$selectTables = 'y.*';
+			
+			foreach($relations as $relation)
+			{
+				$i++;
+				if($relation["type"] == "many" )
+				{
+					$selectTables .= ',z' . $i . '.*';
+					$q = $q->leftJoin('y.' . $relation["alias"] . ' z' . $i);
+				}
+			}
+	
+			$q = $q->select($selectTables);
+			
+			if($criteria <> null)
+			{
+				foreach($criteria as $key=>$value)
+				{
+					$q = $q->where("y.$key =?", $value);
+				}
+			}
+	
+			if($paged)
+			{
+				if($limit)
+				$q->limit($limit);
+				if($offset)
+				$q->offset($offset);
+			}
+	
+			return $q->execute()->toAmf(true);
+			
+		}
+		
 		// get related data for field
 		public function getRelated($field, $category_id, $paged=false, $limit=0, $offset=0)
 		{
 			//	available relations:
 			//		Alias: User, Type: one
-			//		Alias: posts, Type: many
+			//		Alias: topics, Type: many
 			
 			$rel = $this->table->getRelation($field);
 			

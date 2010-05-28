@@ -5,7 +5,7 @@ package model.vo.base
 	{
 		public var id:int;
 		public var userId:int;
-		public var categoryId:int;
+		public var topicId:int;
 		public var title:String;
 		public var message:String;
 		public var createDate:String;
@@ -26,15 +26,15 @@ package model.vo.base
 		}
 			
 		[Transient]
-		public function get Category():*
+		public function get Topic():*
 		{
-			return related["Category"];
+			return related["Topic"];
 		}
 			
-		public function set Category(value:*):void
+		public function set Topic(value:*):void
 		{
-			related["Category"] = {table:"Category", value:value, type:"one",
-									local_key:"categoryid", foreign_key:"id", refTable:""};
+			related["Topic"] = {table:"Topic", value:value, type:"one",
+									local_key:"topicid", foreign_key:"id", refTable:""};
 		}
 			
 		[Transient]

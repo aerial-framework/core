@@ -7,13 +7,13 @@
  * 
  * @property integer $id
  * @property integer $userId
- * @property integer $categoryId
+ * @property integer $topicId
  * @property string $title
  * @property clob $message
  * @property timestamp $createDate
  * @property timestamp $modDate
  * @property User $User
- * @property Category $Category
+ * @property Topic $Topic
  * @property Doctrine_Collection $comments
  * 
  * @package    ##PACKAGE##
@@ -37,12 +37,14 @@ abstract class BasePost extends Doctrine_Record
              'notnull' => true,
              'length' => '4',
              ));
-        $this->hasColumn('categoryId', 'integer', 4, array(
+        $this->hasColumn('topicId', 'integer', 4, array(
              'type' => 'integer',
+             'notnull' => true,
              'length' => '4',
              ));
         $this->hasColumn('title', 'string', 45, array(
              'type' => 'string',
+             'notnull' => true,
              'length' => '45',
              ));
         $this->hasColumn('message', 'clob', 65535, array(
@@ -54,6 +56,7 @@ abstract class BasePost extends Doctrine_Record
              ));
         $this->hasColumn('modDate', 'timestamp', null, array(
              'type' => 'timestamp',
+             'notnull' => true,
              'default' => 'CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP',
              ));
 
@@ -64,10 +67,10 @@ abstract class BasePost extends Doctrine_Record
               0 => 'userId',
              ),
              ));
-        $this->index('fk_Post_Category1', array(
+        $this->index('fk_Post_Topic1', array(
              'fields' => 
              array(
-              0 => 'categoryId',
+              0 => 'topicId',
              ),
              ));
         $this->option('collate', 'utf8_general_ci');
@@ -84,11 +87,9 @@ abstract class BasePost extends Doctrine_Record
              'onDelete' => 'cascade',
              'onUpdate' => 'cascade'));
 
-        $this->hasOne('Category', array(
-             'local' => 'categoryId',
-             'foreign' => 'id',
-             'onDelete' => 'set null',
-             'onUpdate' => 'cascade'));
+        $this->hasOne('Topic', array(
+             'local' => 'topicId',
+             'foreign' => 'id'));
 
         $this->hasMany('Comment as comments', array(
              'local' => 'id',

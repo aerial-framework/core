@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:Panel xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="100%" minWidth="180" borderStyle="solid" creationComplete="init()"
+<mx:Panel xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="100%" minWidth="210" height="316" borderStyle="solid" creationComplete="init()"
 		  title="Categories({this.categories.length})"
-		  xmlns:service="model.serices.*"
-		  xmlns:services="model.services.*"
-		   height="316">
+		  xmlns:service="model.services.*"
+		   >
 	
 	<mx:Script>
 		<![CDATA[
@@ -47,6 +46,13 @@
 				this.categoryService.updateCategory(cat);			
 			}
 			
+			public function deleteCategory():void
+			{
+				var cat:CategoryVO = new CategoryVO();
+				cat.id = (this.categoryList.selectedItem as CategoryVO).id;
+				this.categoryService.deleteCategory(cat);
+			}
+			
 			
 			public function clickCategoryItem(event:ListEvent):void
 			{
@@ -71,43 +77,35 @@
 					case "CategoryService.updateCategory":
 						this.categoryService.getAllCategories();
 						break;
-					case "UserService.getRelatedUser":
-						if(message.body[0] == "inputLookups"){ //It would be nice to be able to wire a callBack.  This is kinda sketchy.
-							
-						}
+					case "CategoryService.deleteCategory":
+						this.categoryService.getAllCategories();
 						break;
-					case "UserService.update":
-						
-						break;
-					case "UserService.save":
-						
-						break;
-					
 				}
 			}
 			
 			
 			private function faultHandler(event:FaultEvent):void
 			{
-				Alert.show("error in Category.mxml");
+				Alert.show("Error in Category.mxml: " + event.fault.faultString);
 			}
 			
 		]]>
 	</mx:Script>
 	
-	<services:CategoryService id="categoryService" result="resultHandler(event)" fault="faultHandler(event)"/>
-	<mx:List id="categoryList" dataProvider="{this.categories}" labelField="name" top="0" bottom="0" left="0" right="0" change="clickCategoryItem(event)"/>
+	<service:CategoryService id="categoryService" result="resultHandler(event)" fault="faultHandler(event)"/>
+	<mx:List id="categoryList" dataProvider="{this.categories}" labelField="name" top="0" bottom="0" left="0" right="0" change="clickCategoryItem(event)" borderStyle="none"/>
 	
 	<mx:ControlBar>
 		<mx:VBox>
 			<mx:HBox>
-				<mx:TextInput id="categoryName"  width="103"/>
+				<mx:TextInput id="categoryName"  width="194"/>
 				<mx:Spacer width="100%"/>
-				<mx:Button label="Add" click="insertCategory(this.categoryName.text)" />
 			</mx:HBox>
 			<mx:HBox>
-				<mx:Spacer width="100%"/>
-				<mx:Button label="Update" click="updateCategory(this.categoryName.text)" />
+				<mx:Button label="Add" click="insertCategory(this.categoryName.text)" />
+				<mx:Button label="Update" click="updateCategory(this.categoryName.text)"  enabled="{(categoryList.selectedItem == null ? false : true)}" />
+				<mx:Button label="Delete" click="deleteCategory()" enabled="{(categoryList.selectedItem == null ? false : true)}" />
+				
 			</mx:HBox>
 		</mx:VBox>
 		

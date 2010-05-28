@@ -38,17 +38,19 @@ Post:
     userId:
       type: integer(4)
       notnull: true
-    categoryId:
+    topicId:
       type: integer(4)
-      default: null
+      notnull: true
     title:
       type: string(45)
+      notnull: true
     message:
       type: clob(65535)
     createDate:
       type: timestamp
     modDate:
       type: timestamp
+      notnull: true
       default: CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP
   relations:
     User:
@@ -58,18 +60,16 @@ Post:
       foreignAlias: posts
       onDelete: cascade
       onUpdate: cascade
-    Category:
-      class: Category
-      local: categoryId
+    Topic:
+      class: Topic
+      local: topicId
       foreign: id
       foreignAlias: posts
-      onDelete: set null
-      onUpdate: cascade
   indexes:
     fk_Post_User1:
       fields: [userId]
-    fk_Post_Category1:
-      fields: [categoryId]
+    fk_Post_Topic1:
+      fields: [topicId]
 
 Comment:
   mapClass: model.vo.Comment
@@ -80,18 +80,20 @@ Comment:
       primary: true
       notnull: true
       autoincrement: true
-    message:
-      type: clob(65535)
-    createDate:
-      type: timestamp
-    modDate:
-      type: timestamp
     userId:
       type: integer(4)
       notnull: true
     postId:
       type: integer(4)
       notnull: true
+    message:
+      type: clob(65535)
+    createDate:
+      type: timestamp
+    modDate:
+      type: timestamp
+      notnull: true
+      default: CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP
   relations:
     User:
       class: User
@@ -127,10 +129,13 @@ Category:
       notnull: true
     name:
       type: string(45)
+      notnull: true
     createDate:
       type: timestamp
     modDate:
       type: timestamp
+      notnull: true
+      default: CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP
   relations:
     User:
       class: User
@@ -139,5 +144,49 @@ Category:
       foreignAlias: categories
   indexes:
     fk_Category_User1:
+      fields: [userId]
+
+Topic:
+  mapClass: model.vo.Topic
+  tableName: Topic
+  columns:
+    id:
+      type: integer(4)
+      primary: true
+      notnull: true
+      autoincrement: true
+    userId:
+      type: integer(4)
+      notnull: true
+    categoryId:
+      type: integer(4)
+      notnull: true
+    name:
+      type: string(45)
+      unique: true
+      notnull: true
+    description:
+      type: clob(65535)
+    createDate:
+      type: timestamp
+    modDate:
+      type: timestamp
+      notnull: true
+      default: CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP
+  relations:
+    Category:
+      class: Category
+      local: categoryId
+      foreign: id
+      foreignAlias: topics
+    User:
+      class: User
+      local: userId
+      foreign: id
+      foreignAlias: topics
+  indexes:
+    fk_Topic_Category1:
+      fields: [categoryId]
+    fk_Topic_User1:
       fields: [userId]
 

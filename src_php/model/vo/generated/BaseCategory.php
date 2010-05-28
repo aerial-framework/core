@@ -11,7 +11,7 @@
  * @property timestamp $createDate
  * @property timestamp $modDate
  * @property User $User
- * @property Doctrine_Collection $posts
+ * @property Doctrine_Collection $topics
  * 
  * @package    ##PACKAGE##
  * @subpackage ##SUBPACKAGE##
@@ -36,6 +36,7 @@ abstract class BaseCategory extends Doctrine_Record
              ));
         $this->hasColumn('name', 'string', 45, array(
              'type' => 'string',
+             'notnull' => true,
              'length' => '45',
              ));
         $this->hasColumn('createDate', 'timestamp', null, array(
@@ -43,6 +44,8 @@ abstract class BaseCategory extends Doctrine_Record
              ));
         $this->hasColumn('modDate', 'timestamp', null, array(
              'type' => 'timestamp',
+             'notnull' => true,
+             'default' => 'CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP',
              ));
 
 
@@ -64,7 +67,7 @@ abstract class BaseCategory extends Doctrine_Record
              'local' => 'userId',
              'foreign' => 'id'));
 
-        $this->hasMany('Post as posts', array(
+        $this->hasMany('Topic as topics', array(
              'local' => 'id',
              'foreign' => 'categoryId'));
     }

@@ -37,12 +37,18 @@ package model.services.base
 			this.getOperation("getUserWithRelated").send(user_id);
 		}
 		
+		public function getAllUserWithRelated(criteria:Object=null):void
+		{
+			this.getOperation("getAllUserWithRelated").send(criteria);
+		}
+		
 		public function getRelated(field:String, id:uint, paged:Boolean=false, limit:int=0, offset:int=0):void
 		{
 			//	available relations:
 			//		Alias: posts, Type: many
 			//		Alias: comments, Type: many
 			//		Alias: categories, Type: many
+			//		Alias: topics, Type: many
 			
 			this.getOperation("getRelated").send(field, id, paged, limit, offset);
 		}

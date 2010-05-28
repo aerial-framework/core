@@ -2,7 +2,7 @@
 <mx:Panel xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="100%" minWidth="210" height="316" borderStyle="solid" creationComplete="init()"
 		  title="Categories({this.categories.length})"
 		  xmlns:service="model.services.*"
-		   >
+		  >
 	
 	<mx:Script>
 		<![CDATA[
@@ -20,8 +20,7 @@
 			[Bindable]
 			public var user:UserVO;
 			
-			[Bindable]
-			public var categories:ArrayCollection;
+			private var _categories:ArrayCollection;
 			
 			
 			public function init():void
@@ -29,12 +28,32 @@
 				this.categoryService.getAllCategories();
 			}
 			
+			public function get categories():ArrayCollection
+			{
+				return _categories;
+			}
+			
+			[Bindable]
+			public function set categories(cats:ArrayCollection):void
+			{
+				_categories = cats;
+				//Add "Uncategorized" to the list
+				var cat:CategoryVO = new CategoryVO();
+				cat.name = "Uncategorized";
+				_categories.addItemAt(cat,0);
+				
+			}
+			
 			public function insertCategory(name:String):void
 			{
-				var cat:CategoryVO = new CategoryVO();
-				cat.name = name;
-				cat.userId = this.user.id;
-				this.categoryService.saveCategory(cat);			
+				if(name == "Uncategorized"){
+					Alert.show("Uncategorized is a reserved.  Please try another name.");
+				}else{
+					var cat:CategoryVO = new CategoryVO();
+					cat.name = name;
+					cat.userId = this.user.id;
+					this.categoryService.saveCategory(cat);			
+				}
 			}
 			
 			
@@ -43,6 +62,10 @@
 				var cat:CategoryVO = new CategoryVO();
 				cat.id = (this.categoryList.selectedItem as CategoryVO).id;
 				cat.name = name;
+				
+				//I shouldn't hae to add the following on an UPDATE.
+				cat.userId = (this.categoryList.selectedItem as CategoryVO).userId
+				
 				this.categoryService.updateCategory(cat);			
 			}
 			
@@ -103,8 +126,8 @@
 			</mx:HBox>
 			<mx:HBox>
 				<mx:Button label="Add" click="insertCategory(this.categoryName.text)" />
-				<mx:Button label="Update" click="updateCategory(this.categoryName.text)"  enabled="{(categoryList.selectedItem == null ? false : true)}" />
-				<mx:Button label="Delete" click="deleteCategory()" enabled="{(categoryList.selectedItem == null ? false : true)}" />
+				<mx:Button label="Update" click="updateCategory(this.categoryName.text)"  enabled="{( categoryList.selectedIndex > 0  ? true : false)}" />
+				<mx:Button label="Delete" click="deleteCategory()" enabled="{(categoryList.selectedIndex > 0 ? true : false)}" />
 				
 			</mx:HBox>
 		</mx:VBox>

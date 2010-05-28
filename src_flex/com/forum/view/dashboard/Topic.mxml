@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:Panel xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="100%" height="500" creationComplete="init()"
+<mx:Panel xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="100%" height="35%" 
 		  title="Topics ({this.topics.length})"
 		  xmlns:service="model.services.*"
 		  >
@@ -13,6 +13,8 @@
 			
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
+			import mx.events.ItemClickEvent;
+			import mx.events.ListEvent;
 			import mx.messaging.messages.RemotingMessage;
 			import mx.rpc.events.FaultEvent;
 			import mx.rpc.events.ResultEvent;
@@ -26,11 +28,6 @@
 			private var _currentCategory:CategoryVO;
 			
 			
-			public function init():void
-			{
-			}
-			
-			
 			public function get currentCategory():CategoryVO
 			{
 				return _currentCategory;
@@ -40,7 +37,12 @@
 			public function set currentCategory(cat:CategoryVO):void
 			{
 				_currentCategory = cat;	
-				this.topicService.getAllTopicWithRelated({"categoryId":this.currentCategory.id});
+				if(cat.name == "Uncategorized"){
+					//Need to figure out how to retrieve orphaned topics.
+					this.topics = new ArrayCollection();
+				}else{
+					this.topicService.getAllTopicWithRelated({"categoryId":this.currentCategory.id});
+				}
 			}
 			
 			
@@ -59,10 +61,10 @@
 						this.topicService.getAllTopicWithRelated({"categoryId":this.currentCategory.id});
 						break;
 					case "TopicService.updateTopic":
-						this.topicService.getAllTopics();
+						this.topicService.getAllTopicWithRelated({"categoryId":this.currentCategory.id});
 						break;
 					case "TopicService.deleteTopic":
-						this.topicService.getAllTopics();
+						this.topicService.getAllTopicWithRelated({"categoryId":this.currentCategory.id});
 						break;
 					case "TopicService.getAllTopicWithRelated":
 						this.topics = (event.result as ArrayCollection);
@@ -72,7 +74,7 @@
 			
 			private function faultHandler(event:FaultEvent):void
 			{
-				Alert.show("Error in Category.mxml: " + event.fault.faultString);
+				Alert.show("Error in Topic.mxml: " + event.fault.faultString);
 			}
 			
 			public function insertTopic(name:String, description:String):void
@@ -85,18 +87,46 @@
 				this.topicService.saveTopic(topic);
 			}
 
+			
+			public function updateTopic(name:String, description:String):void
+			{
+				var topic:TopicVO = new TopicVO();
+				topic.name = name;
+				topic.description = description;
+				topic.id = (this.topicList.selectedItem as TopicVO).id;
+				
+				//I shouldn't hae to add the following on an UPDATE.
+				if(this.currentCategory) topic.categoryId = (this.topicList.selectedItem as TopicVO).categoryId;
+				topic.userId = (this.topicList.selectedItem as TopicVO).userId;
+				
+				this.topicService.updateTopic(topic);
+			}
+			
+			public function deleteTopic():void
+			{
+				var topic:TopicVO = new TopicVO();
+				topic.id = (this.topicList.selectedItem as TopicVO).id;
+				this.topicService.deleteTopic(topic);
+			}
+			
+			public function clickTopicItem(event:ListEvent):void
+			{
+				this.topicName.text = (event.itemRenderer.data as TopicVO).name;
+				this.topicDescription.text = (event.itemRenderer.data as TopicVO).description;
+			}
 		
 
 		]]>
 	</mx:Script>
 	
 	<service:TopicService id="topicService" result="resultHandler(event)" fault="faultHandler(event)"/>
-	<service:CategoryService id="categoryService" result="resultHandler(event)" fault="faultHandler(event)"/>
-	<mx:DataGrid left="0" right="0" top="0" bottom="0" dataProvider="{this.topics}">
+	
+	<mx:DataGrid id="topicList" left="0" right="0" top="0" bottom="0" dataProvider="{this.topics}" change="clickTopicItem(event)">
 		<mx:columns>
 			<mx:DataGridColumn headerText="Topic Name" dataField="name"/>
 			<mx:DataGridColumn headerText="Description" dataField="description"/>
 			<mx:DataGridColumn headerText="Category" dataField="categoryId"/>
+			<mx:DataGridColumn headerText="User" dataField="userId"/>
 		</mx:columns>
 	</mx:DataGrid>
 	
@@ -107,9 +137,9 @@
 			<mx:TextInput id="topicName" text="" />
 			<mx:Label text="Description" />
 			<mx:TextInput id="topicDescription" text="" />
-			<mx:Button label="Add" click="insertTopic(this.topicName.text, this.topicDescription.text)" />
-			<!--<mx:Button label="Update" click="updateTopic(this.categoryName.text)"  enabled="{(categoryList.selectedItem == null ? false : true)}" />
-			<mx:Button label="Delete" click="deleteTopic()" enabled="{(categoryList.selectedItem == null ? false : true)}" />-->
+			<mx:Button label="Add" click="insertTopic(this.topicName.text, this.topicDescription.text)" enabled="{(currentCategory == null ? false : true)}"  />
+			<mx:Button label="Update" click="updateTopic(this.topicName.text, this.topicDescription.text)"  enabled="{(topicList.selectedItem == null ? false : true)}" />
+			<mx:Button label="Delete" click="deleteTopic()" enabled="{(topicList.selectedItem == null ? false : true)}" />
 		</mx:HBox>
 	</mx:ControlBar>
 	

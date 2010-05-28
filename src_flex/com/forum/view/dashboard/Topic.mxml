@@ -40,7 +40,7 @@
 				if(cat.name == "Uncategorized"){
 					//Need to figure out how to retrieve orphaned topics.
 					this.topics = new ArrayCollection();
-				}else{
+				}else if(cat != null){
 					this.topicService.getAllTopicWithRelated({"categoryId":this.currentCategory.id});
 				}
 			}
@@ -104,8 +104,7 @@
 			
 			public function deleteTopic():void
 			{
-				var topic:TopicVO = new TopicVO();
-				topic.id = (this.topicList.selectedItem as TopicVO).id;
+				var topic:TopicVO = this.topicList.selectedItem as TopicVO;
 				this.topicService.deleteTopic(topic);
 			}
 			
@@ -137,9 +136,9 @@
 			<mx:TextInput id="topicName" text="" />
 			<mx:Label text="Description" />
 			<mx:TextInput id="topicDescription" text="" />
-			<mx:Button label="Add" click="insertTopic(this.topicName.text, this.topicDescription.text)" enabled="{(currentCategory == null ? false : true)}"  />
-			<mx:Button label="Update" click="updateTopic(this.topicName.text, this.topicDescription.text)"  enabled="{(topicList.selectedItem == null ? false : true)}" />
-			<mx:Button label="Delete" click="deleteTopic()" enabled="{(topicList.selectedItem == null ? false : true)}" />
+			<mx:Button label="Add" click="insertTopic(this.topicName.text, this.topicDescription.text)" enabled="{Boolean(currentCategory != null)}"  />
+			<mx:Button label="Update" click="updateTopic(this.topicName.text, this.topicDescription.text)"  enabled="{Boolean(topicList.selectedItem != null)}" />
+			<mx:Button label="Delete" click="deleteTopic()" enabled="{Boolean(topicList.selectedItem != null)}" />
 		</mx:HBox>
 	</mx:ControlBar>
 	

@@ -13,7 +13,7 @@ package model.services.base
 		{
 			super(destination);
 			
-			this.endpoint = ServerConfig.getChannel(destination).url;
+			this.endpoint = "../src_php/public_html/amfphp/gateway.php";
 			this.source = "CategoryService";
 		}
 		

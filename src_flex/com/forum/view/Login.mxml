@@ -5,7 +5,7 @@
 	
 	<mx:Script>
 		<![CDATA[
-			
+			/* This is a test - git */
 			import com.forum.event.LoginEvent;
 			import model.vo.UserVO;
 			

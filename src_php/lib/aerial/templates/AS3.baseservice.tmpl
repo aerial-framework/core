@@ -56,7 +56,9 @@ package {{package}}.base
 		
 		public function update{{inflectSingle}}({{object}}:{{model}}):void
 		{
-			var props:XMLList = describeType({{object}})..variable;
+			
+			var reflection:XML = describeType({{object}});
+			var props:XMLList = reflection..variable + reflection..accessor;
 			
 			var fields:Object = {};
 			for each(var property:XML in props)

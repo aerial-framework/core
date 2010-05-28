@@ -125,7 +125,7 @@ Category:
     userId:
       type: integer(4)
       notnull: true
-    title:
+    name:
       type: string(45)
     createDate:
       type: timestamp

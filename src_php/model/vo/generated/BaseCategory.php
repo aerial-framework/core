@@ -7,7 +7,7 @@
  * 
  * @property integer $id
  * @property integer $userId
- * @property string $title
+ * @property string $name
  * @property timestamp $createDate
  * @property timestamp $modDate
  * @property User $User
@@ -34,7 +34,7 @@ abstract class BaseCategory extends Doctrine_Record
              'notnull' => true,
              'length' => '4',
              ));
-        $this->hasColumn('title', 'string', 45, array(
+        $this->hasColumn('name', 'string', 45, array(
              'type' => 'string',
              'length' => '45',
              ));

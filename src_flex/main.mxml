@@ -25,8 +25,8 @@
 				this.addEventListener(LoginEvent.LOGOUT_ACTION, loginHandler); 
 			}
 			
-			public function loginHandler(e:LoginEvent):void{
-				
+			public function loginHandler(e:LoginEvent):void
+			{
 				if(e.type == LoginEvent.LOGIN_ACTION){
 					if(e.authenticated){
 						this.dashboardView.user = UserVO(e.user);
@@ -36,36 +36,6 @@
 					}
 				}else if(e.type == LoginEvent.LOGOUT_ACTION){
 					this.loginViewStack.selectedChild = Container(this.loginViewStack.getChildByName("loginView"));
-				}
-				
-			}
-			
-			public function resultHandler(event:ResultEvent):void
-			{
-				var message:RemotingMessage = event.token.message as RemotingMessage;
-				var operation:String = message.source + "." + message.operation;
-				
-				switch(operation)
-				{
-					
-					case "UserService.get":
-						
-						break;
-					case "UserService.getAll":
-						
-						break;
-					case "UserService.getRelated":
-						if(message.body[0] == "inputLookups"){
-							
-						}
-						break;
-					case "UserService.update":
-						
-						break;
-					case "UserService.save":
-						
-						break;
-					
 				}
 			}
 			
@@ -80,8 +50,8 @@
 	
 	
 	<mx:ViewStack id="loginViewStack" left="0" right="0" top="0" bottom="0">
-		<view:Dashboard id="dashboardView" />
 		<view:Login id="loginView" />
+		<view:Dashboard id="dashboardView" />
 	</mx:ViewStack>
 	
 </mx:Application>

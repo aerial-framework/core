@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:Panel xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="100%" minHeight="150"  minWidth="180" borderStyle="solid" creationComplete="init()"
+<mx:Panel xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="100%" minWidth="180" borderStyle="solid" creationComplete="init()"
 		  title="Categories({this.categories.length})"
 		  xmlns:service="model.serices.*"
 		  xmlns:services="model.services.*"
-		  >
+		   height="316">
 	
 	<mx:Script>
 		<![CDATA[

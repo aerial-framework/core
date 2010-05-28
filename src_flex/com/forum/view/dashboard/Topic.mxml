@@ -9,6 +9,7 @@
 		<![CDATA[
 			import model.vo.CategoryVO;
 			import model.vo.TopicVO;
+			import model.vo.UserVO;
 			
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
@@ -19,6 +20,8 @@
 			[Bindable]
 			public var topics:ArrayCollection;
 			
+			[Bindable]
+			public var user:UserVO;
 			
 			private var _currentCategory:CategoryVO;
 			
@@ -76,6 +79,7 @@
 			{
 				var topic:TopicVO = new TopicVO();
 				if(this.currentCategory) topic.categoryId = this.currentCategory.id;
+				topic.userId = this.user.id;
 				topic.name = name;
 				topic.description = description;
 				this.topicService.saveTopic(topic);
@@ -88,6 +92,13 @@
 	
 	<service:TopicService id="topicService" result="resultHandler(event)" fault="faultHandler(event)"/>
 	<service:CategoryService id="categoryService" result="resultHandler(event)" fault="faultHandler(event)"/>
+	<mx:DataGrid left="0" right="0" top="0" bottom="0" dataProvider="{this.topics}">
+		<mx:columns>
+			<mx:DataGridColumn headerText="Topic Name" dataField="name"/>
+			<mx:DataGridColumn headerText="Description" dataField="description"/>
+			<mx:DataGridColumn headerText="Category" dataField="categoryId"/>
+		</mx:columns>
+	</mx:DataGrid>
 	
 	
 	<mx:ControlBar>

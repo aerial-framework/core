@@ -13,7 +13,7 @@ package {{package}}.base
 		{
 			super(destination);
 			
-			this.endpoint = ServerConfig.getChannel(destination).url;
+			this.endpoint = "{{gatewayURL}}";
 			this.source = "{{modelService}}Service";
 		}
 		

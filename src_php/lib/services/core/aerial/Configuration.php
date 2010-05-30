@@ -109,8 +109,8 @@
 		}
 		
 		public static function generateModelsAndServices()
-		{			
-			GenerationController::emptyFolder(FRONTEND_MODELS_PATH."/base", FRONTEND_SERVICES_PACKAGE);
+		{
+			GenerationController::emptyFolder(FRONTEND_MODELS_PATH."/base");
 			$modelData = ActionScriptGenerator::getModelData();
 			
 			// check if models have been generated previously
@@ -130,7 +130,7 @@
 					ActionScriptGenerator::generateAS3Model(FRONTEND_MODELS_PACKAGE, $class, $remoteClass, FRONTEND_MODELS_PATH);
 			}
 
-			GenerationController::emptyFolder(BACKEND_SERVICES_PATH."/base", "base");
+			GenerationController::emptyFolder(BACKEND_SERVICES_PATH."/base");
 			$phpServicesData = PHPGenerator::getPHPServiceData();
 			
 			// check if models have been generated previously
@@ -151,7 +151,7 @@
 					PHPGenerator::generatePHPService("{$model}Service", BACKEND_SERVICES_PATH);
 			}			
 		
-			GenerationController::emptyFolder(FRONTEND_SERVICES_PATH."/base", "base");
+			GenerationController::emptyFolder(FRONTEND_SERVICES_PATH."/base");
 			$asServicesData = ActionScriptGenerator::getASServiceData();
 			
 			$numExisting = GenerationController::getNumFiles(FRONTEND_SERVICES_PATH);

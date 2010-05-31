@@ -19,7 +19,12 @@ class GenerationController
 	{
 		if(!is_dir($path))
 		{
-			mkdir($path, 0777, true);
+			if(defined('AERIAL_DIR_CHMOD') && trim(AERIAL_DIR_CHMOD)  <> ""){
+				mkdir($path, AERIAL_DIR_CHMOD, true);
+				chmod($path, AERIAL_DIR_CHMOD); //There are some caveats to mkdir setting permissions so we'll reinforce the permissions here.
+			}else{
+				mkdir($path, 0777, true);
+			}
 		}
 	}
 
@@ -100,6 +105,7 @@ class GenerationController
 		$f = fopen($path, "w");
 		fwrite($f, $contents);
 		fclose($f);
+		if(defined('AERIAL_FILE_CHMOD') && trim(AERIAL_FILE_CHMOD)  <> "") chmod($path, AERIAL_FILE_CHMOD);
 	}
 
 	public static function getTemplatePart($stub)

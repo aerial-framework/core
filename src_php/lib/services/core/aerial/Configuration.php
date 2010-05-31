@@ -176,7 +176,8 @@
 		
 		public static function generateModelsAndServicesFromYaml()
 		{
-			Doctrine_Core::generateModelsFromYaml(AERIAL_BASE_PATH.'/schema.yml', BACKEND_MODELS_PATH);
+			$options = array('baseClassesDirectory'  =>  'base');
+			Doctrine_Core::generateModelsFromYaml(AERIAL_BASE_PATH.'/schema.yml', BACKEND_MODELS_PATH, $options);
 			self::generateModelsAndServices();
 		}
 		

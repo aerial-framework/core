@@ -102,9 +102,7 @@ class GenerationController
 
 	public function writeFile($path, $contents)
 	{
-		$f = fopen($path, "w");
-		fwrite($f, $contents);
-		fclose($f);
+		file_put_contents($path, $contents);
 		if(defined('AERIAL_FILE_CHMOD') && trim(AERIAL_FILE_CHMOD)  <> "") chmod($path, AERIAL_FILE_CHMOD);
 	}
 

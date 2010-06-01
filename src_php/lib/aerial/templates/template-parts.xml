@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <parts>
 	<part name="as3ServiceStub">
-	<content><![CDATA[
+		<content><![CDATA[
 		public function {{function}}({{argument}}_id:uint):void
 		{
 			var operation:AbstractOperation = this.getOperation("{{function}}");
@@ -10,7 +10,7 @@
 		}]]></content>
 	</part>
 	<part name="as3SetterStub">
-	<content><![CDATA[
+		<content><![CDATA[
 		public function set {{alias}}(value:*):void
 		{
 			related["{{alias}}"] = {table:"{{table}}", value:value, type:"{{type}}",
@@ -18,7 +18,7 @@
 		}]]></content>
 	</part>
 	<part name="as3GetterStub">
-	<content><![CDATA[
+		<content><![CDATA[
 		[Transient]
 		public function get {{alias}}():*
 		{
@@ -26,7 +26,7 @@
 		}]]></content>
 	</part>
 	<part name="phpServiceStub">
-	<content><![CDATA[
+		<content><![CDATA[
 		public function {{function}}(${{argument}}_id)
 		{
 			$record = $this->table->find(${{argument}}_id);
@@ -38,7 +38,7 @@
 		}]]></content>
 	</part>
 	<part name="phpGetRelatedFunctionStub">
-	<content><![CDATA[
+		<content><![CDATA[
 		public function {{function}}(${{field}}, ${{argument}}_id)
 		{
 			switch(${{field}})

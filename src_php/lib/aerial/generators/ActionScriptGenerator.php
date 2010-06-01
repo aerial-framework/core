@@ -56,6 +56,8 @@
 		{
 			$availRelations = "\t\t\t";
 			$relations = array();
+			$inflectSingleUpper = strtoupper($inflectSingle);
+			$inflectPluralUpper = strtoupper($inflectPlural);
 			
 			foreach($relationsArr as $relation)
 			{
@@ -69,8 +71,8 @@
 			}
 			
 			$relations = implode(",\n\t\t\t\t\t\t\t\t", $relations);
-			$replacementTokens = array("modelPackage","package", "class", "object", "availRelations", "relations", "inflectSingle",
-											"inflectPlural", "model", "modelService", "gatewayURL");
+			$replacementTokens = array("modelPackage","package", "class", "object", "availRelations", "relations", "inflectSingle", "inflectSingleUpper",
+											"inflectPlural", "inflectPluralUpper", "model", "modelService", "gatewayURL");
 			$contents = self::readTemplate("AS3.baseservice");
 			
 			$gatewayURL = AMFPHP_GATEWAY_URL;

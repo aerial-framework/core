@@ -9,6 +9,21 @@ package {{package}}.base
 	
 	public class {{class}} extends RemoteObject
 	{
+	
+		public static const GET_{{inflectSingleUpper}}:String = "get{{inflectSingle}}";
+		public static const GET_{{inflectSingleUpper}}_BY_FIELD:String = "get{{inflectSingle}}ByField";
+		public static const GET_{{inflectSingleUpper}}_BY_FIELDS:String = "get{{inflectSingle}}ByFields";
+		public static const GET_{{inflectSingleUpper}}_WITH_RELATED:String = "get{{inflectSingle}}WithRelated";
+		public static const GET_ALL_{{inflectSingleUpper}}_WITH_RELATED:String = "getAll{{inflectSingle}}WithRelated";
+		public static const GET_RELATED:String = "getRelated";
+		public static const GET_ALL_{{inflectPluralUpper}}:String = "getAll{{inflectPlural}}";
+		public static const SAVE_{{inflectSingleUpper}}:String = "save{{inflectSingle}}";
+		public static const UPDATE_{{inflectSingleUpper}}:String = "update{{inflectSingle}}";
+		public static const DELETE_{{inflectSingleUpper}}:String = "delete{{inflectSingle}}";
+		public static const COUNT_{{inflectPluralUpper}}:String = "count{{inflectPlural}}";
+		public static const COUNT_RELATED:String = "countRelated";
+		
+
 		public function {{class}}(destination:String="aerial")
 		{
 			super(destination);

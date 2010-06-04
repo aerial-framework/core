@@ -10,18 +10,18 @@ package {{package}}.base
 	public class {{class}} extends RemoteObject
 	{
 	
-		public const GET_{{inflectSingleUpper}}:String = "get{{inflectSingle}}";
-		public const GET_{{inflectSingleUpper}}_BY_FIELD:String = "get{{inflectSingle}}ByField";
-		public const GET_{{inflectSingleUpper}}_BY_FIELDS:String = "get{{inflectSingle}}ByFields";
-		public const GET_{{inflectSingleUpper}}_WITH_RELATED:String = "get{{inflectSingle}}WithRelated";
-		public const GET_ALL_{{inflectSingleUpper}}_WITH_RELATED:String = "getAll{{inflectSingle}}WithRelated";
-		public const GET_RELATED:String = "getRelated";
-		public const GET_ALL_{{inflectPluralUpper}}:String = "getAll{{inflectPlural}}";
-		public const SAVE_{{inflectSingleUpper}}:String = "save{{inflectSingle}}";
-		public const UPDATE_{{inflectSingleUpper}}:String = "update{{inflectSingle}}";
-		public const DELETE_{{inflectSingleUpper}}:String = "delete{{inflectSingle}}";
-		public const COUNT_{{inflectPluralUpper}}:String = "count{{inflectPlural}}";
-		public const COUNT_RELATED:String = "countRelated";
+		public const GET_{{inflectSingleUpper}}:String = "{{modelService}}Service.get{{inflectSingle}}";
+		public const GET_{{inflectSingleUpper}}_BY_FIELD:String = "{{modelService}}Service.get{{inflectSingle}}ByField";
+		public const GET_{{inflectSingleUpper}}_BY_FIELDS:String = "{{modelService}}Service.get{{inflectSingle}}ByFields";
+		public const GET_{{inflectSingleUpper}}_WITH_RELATED:String = "{{modelService}}Service.get{{inflectSingle}}WithRelated";
+		public const GET_ALL_{{inflectSingleUpper}}_WITH_RELATED:String = "{{modelService}}Service.getAll{{inflectSingle}}WithRelated";
+		public const GET_RELATED:String = "{{modelService}}Service.getRelated";
+		public const GET_ALL_{{inflectPluralUpper}}:String = "{{modelService}}Service.getAll{{inflectPlural}}";
+		public const SAVE_{{inflectSingleUpper}}:String = "{{modelService}}Service.save{{inflectSingle}}";
+		public const UPDATE_{{inflectSingleUpper}}:String = "{{modelService}}Service.update{{inflectSingle}}";
+		public const DELETE_{{inflectSingleUpper}}:String = "{{modelService}}Service.delete{{inflectSingle}}";
+		public const COUNT_{{inflectPluralUpper}}:String = "{{modelService}}Service.count{{inflectPlural}}";
+		public const COUNT_RELATED:String = "{{modelService}}Service.countRelated";
 		
 
 		public function {{class}}(destination:String="aerial")

@@ -50,19 +50,19 @@
 				switch(operation)
 				{
 					
-					case "PostService.getAllPosts":
+					case postService.GET_ALL_POSTS:
 						this.posts = event.result as ArrayCollection;
 						break;
-					case "PostService.savePost":
+					case postService.SAVE_POST:
 						this.postService.getAllPostWithRelated({"topicId":this.currentTopic.id});
 						break;
-					case "PostService.updatePost":
+					case postService.UPDATE_POST:
 						this.postService.getAllPostWithRelated({"topicId":this.currentTopic.id});
 						break;
-					case "PostService.deletePost":
+					case postService.DELETE_POST:
 						this.postService.getAllPostWithRelated({"topicId":this.currentTopic.id});
 						break;
-					case "PostService.getAllPostWithRelated":
+					case postService.GET_ALL_POST_WITH_RELATED:
 						this.posts = (event.result as ArrayCollection);
 						break;
 				}

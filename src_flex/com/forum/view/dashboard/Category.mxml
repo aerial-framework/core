@@ -90,16 +90,16 @@
 				switch(operation)
 				{
 					
-					case "CategoryService.getAllCategories":
+					case categoryService.GET_ALL_CATEGORIES:
 						this.categories = event.result as ArrayCollection;
 						break;
-					case "CategoryService.saveCategory":
+					case categoryService.SAVE_CATEGORY:
 						this.categoryService.getAllCategories();
 						break;
-					case "CategoryService.updateCategory":
+					case categoryService.UPDATE_CATEGORY:
 						this.categoryService.getAllCategories();
 						break;
-					case "CategoryService.deleteCategory":
+					case categoryService.DELETE_CATEGORY:
 						this.categoryService.getAllCategories();
 						break;
 				}

@@ -27,7 +27,7 @@
 				
 				switch(operation){
 					
-					case "UserService.getUserByFields":
+					case userService.GET_USER_BY_FIELDS:
 						
 						var le:LoginEvent = new LoginEvent(LoginEvent.LOGIN_ACTION);
 						
@@ -50,7 +50,7 @@
 				
 				switch(operation)
 				{
-					case "UserService.getByFields":
+					case userService.GET_USER_BY_FIELDS:
 						Alert.show("An error occured while attempting to login this user!");
 						break;
 				}	

@@ -37,7 +37,10 @@
 			public function set currentCategory(cat:CategoryVO):void
 			{
 				_currentCategory = cat;	
-				if(cat.name == "Uncategorized"){
+				
+				if(cat == null){
+					topics = new ArrayCollection(); //Clear the topics if a category isn't selected.
+				}else if(cat.name == "Uncategorized"){
 					//Need to figure out how to retrieve orphaned topics.
 					this.topics = new ArrayCollection();
 				}else if(cat != null){
@@ -54,19 +57,19 @@
 				switch(operation)
 				{
 					
-					case "TopicService.getAllTopics":
+					case topicService.GET_ALL_TOPICS:
 						this.topics = event.result as ArrayCollection;
 						break;
-					case "TopicService.saveTopic":
+					case topicService.SAVE_TOPIC:
 						this.topicService.getAllTopicWithRelated({"categoryId":this.currentCategory.id});
 						break;
-					case "TopicService.updateTopic":
+					case topicService.UPDATE_TOPIC:
 						this.topicService.getAllTopicWithRelated({"categoryId":this.currentCategory.id});
 						break;
-					case "TopicService.deleteTopic":
+					case topicService.DELETE_TOPIC:
 						this.topicService.getAllTopicWithRelated({"categoryId":this.currentCategory.id});
 						break;
-					case "TopicService.getAllTopicWithRelated":
+					case topicService.GET_ALL_TOPIC_WITH_RELATED:
 						this.topics = (event.result as ArrayCollection);
 						break;
 				}

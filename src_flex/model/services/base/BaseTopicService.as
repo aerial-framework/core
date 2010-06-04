@@ -9,11 +9,26 @@ package model.services.base
 	
 	public class BaseTopicService extends RemoteObject
 	{
+	
+		public const GET_TOPIC:String = "TopicService.getTopic";
+		public const GET_TOPIC_BY_FIELD:String = "TopicService.getTopicByField";
+		public const GET_TOPIC_BY_FIELDS:String = "TopicService.getTopicByFields";
+		public const GET_TOPIC_WITH_RELATED:String = "TopicService.getTopicWithRelated";
+		public const GET_ALL_TOPIC_WITH_RELATED:String = "TopicService.getAllTopicWithRelated";
+		public const GET_RELATED:String = "TopicService.getRelated";
+		public const GET_ALL_TOPICS:String = "TopicService.getAllTopics";
+		public const SAVE_TOPIC:String = "TopicService.saveTopic";
+		public const UPDATE_TOPIC:String = "TopicService.updateTopic";
+		public const DELETE_TOPIC:String = "TopicService.deleteTopic";
+		public const COUNT_TOPICS:String = "TopicService.countTopics";
+		public const COUNT_RELATED:String = "TopicService.countRelated";
+		
+
 		public function BaseTopicService(destination:String="aerial")
 		{
 			super(destination);
 			
-			this.endpoint = "../src_php/public_html/amfphp/gateway.php";
+			this.endpoint = "http://aerial-test/amfphp/gateway.php";
 			this.source = "TopicService";
 		}
 		

@@ -9,11 +9,26 @@ package model.services.base
 	
 	public class BaseCategoryService extends RemoteObject
 	{
+	
+		public const GET_CATEGORY:String = "CategoryService.getCategory";
+		public const GET_CATEGORY_BY_FIELD:String = "CategoryService.getCategoryByField";
+		public const GET_CATEGORY_BY_FIELDS:String = "CategoryService.getCategoryByFields";
+		public const GET_CATEGORY_WITH_RELATED:String = "CategoryService.getCategoryWithRelated";
+		public const GET_ALL_CATEGORY_WITH_RELATED:String = "CategoryService.getAllCategoryWithRelated";
+		public const GET_RELATED:String = "CategoryService.getRelated";
+		public const GET_ALL_CATEGORIES:String = "CategoryService.getAllCategories";
+		public const SAVE_CATEGORY:String = "CategoryService.saveCategory";
+		public const UPDATE_CATEGORY:String = "CategoryService.updateCategory";
+		public const DELETE_CATEGORY:String = "CategoryService.deleteCategory";
+		public const COUNT_CATEGORIES:String = "CategoryService.countCategories";
+		public const COUNT_RELATED:String = "CategoryService.countRelated";
+		
+
 		public function BaseCategoryService(destination:String="aerial")
 		{
 			super(destination);
 			
-			this.endpoint = "../src_php/public_html/amfphp/gateway.php";
+			this.endpoint = "http://aerial-test/amfphp/gateway.php";
 			this.source = "CategoryService";
 		}
 		

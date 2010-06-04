@@ -9,11 +9,26 @@ package model.services.base
 	
 	public class BaseUserService extends RemoteObject
 	{
+	
+		public const GET_USER:String = "UserService.getUser";
+		public const GET_USER_BY_FIELD:String = "UserService.getUserByField";
+		public const GET_USER_BY_FIELDS:String = "UserService.getUserByFields";
+		public const GET_USER_WITH_RELATED:String = "UserService.getUserWithRelated";
+		public const GET_ALL_USER_WITH_RELATED:String = "UserService.getAllUserWithRelated";
+		public const GET_RELATED:String = "UserService.getRelated";
+		public const GET_ALL_USERS:String = "UserService.getAllUsers";
+		public const SAVE_USER:String = "UserService.saveUser";
+		public const UPDATE_USER:String = "UserService.updateUser";
+		public const DELETE_USER:String = "UserService.deleteUser";
+		public const COUNT_USERS:String = "UserService.countUsers";
+		public const COUNT_RELATED:String = "UserService.countRelated";
+		
+
 		public function BaseUserService(destination:String="aerial")
 		{
 			super(destination);
 			
-			this.endpoint = "../src_php/public_html/amfphp/gateway.php";
+			this.endpoint = "http://aerial-test/amfphp/gateway.php";
 			this.source = "UserService";
 		}
 		

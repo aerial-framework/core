@@ -9,11 +9,26 @@ package model.services.base
 	
 	public class BasePostService extends RemoteObject
 	{
+	
+		public const GET_POST:String = "PostService.getPost";
+		public const GET_POST_BY_FIELD:String = "PostService.getPostByField";
+		public const GET_POST_BY_FIELDS:String = "PostService.getPostByFields";
+		public const GET_POST_WITH_RELATED:String = "PostService.getPostWithRelated";
+		public const GET_ALL_POST_WITH_RELATED:String = "PostService.getAllPostWithRelated";
+		public const GET_RELATED:String = "PostService.getRelated";
+		public const GET_ALL_POSTS:String = "PostService.getAllPosts";
+		public const SAVE_POST:String = "PostService.savePost";
+		public const UPDATE_POST:String = "PostService.updatePost";
+		public const DELETE_POST:String = "PostService.deletePost";
+		public const COUNT_POSTS:String = "PostService.countPosts";
+		public const COUNT_RELATED:String = "PostService.countRelated";
+		
+
 		public function BasePostService(destination:String="aerial")
 		{
 			super(destination);
 			
-			this.endpoint = "../src_php/public_html/amfphp/gateway.php";
+			this.endpoint = "http://aerial-test/amfphp/gateway.php";
 			this.source = "PostService";
 		}
 		

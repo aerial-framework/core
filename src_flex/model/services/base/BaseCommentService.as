@@ -9,11 +9,26 @@ package model.services.base
 	
 	public class BaseCommentService extends RemoteObject
 	{
+	
+		public const GET_COMMENT:String = "CommentService.getComment";
+		public const GET_COMMENT_BY_FIELD:String = "CommentService.getCommentByField";
+		public const GET_COMMENT_BY_FIELDS:String = "CommentService.getCommentByFields";
+		public const GET_COMMENT_WITH_RELATED:String = "CommentService.getCommentWithRelated";
+		public const GET_ALL_COMMENT_WITH_RELATED:String = "CommentService.getAllCommentWithRelated";
+		public const GET_RELATED:String = "CommentService.getRelated";
+		public const GET_ALL_COMMENTS:String = "CommentService.getAllComments";
+		public const SAVE_COMMENT:String = "CommentService.saveComment";
+		public const UPDATE_COMMENT:String = "CommentService.updateComment";
+		public const DELETE_COMMENT:String = "CommentService.deleteComment";
+		public const COUNT_COMMENTS:String = "CommentService.countComments";
+		public const COUNT_RELATED:String = "CommentService.countRelated";
+		
+
 		public function BaseCommentService(destination:String="aerial")
 		{
 			super(destination);
 			
-			this.endpoint = "../src_php/public_html/amfphp/gateway.php";
+			this.endpoint = "http://aerial-test/amfphp/gateway.php";
 			this.source = "CommentService";
 		}
 		

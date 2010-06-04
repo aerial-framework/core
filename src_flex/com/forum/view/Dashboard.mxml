@@ -7,18 +7,10 @@
 	
 	<mx:Script>
 		<![CDATA[
+			
 			import com.forum.event.LoginEvent;
-			
-			import model.vo.CategoryVO;
-			import model.vo.TopicVO;
 			import model.vo.UserVO;
-			
-			import mx.collections.ArrayCollection;
-			import mx.messaging.messages.RemotingMessage;
-			import mx.rpc.events.FaultEvent;
-			import mx.rpc.events.ResultEvent;
-			import mx.controls.Alert;
-			
+
 			
 			[Bindable]
 			public var user:UserVO;
@@ -26,7 +18,6 @@
 			
 			public function init():void
 			{
-				
 			}
 			
 			
@@ -37,46 +28,9 @@
 			}
 			
 
-			protected function resultHandler(event:ResultEvent):void
-			{
-				var message:RemotingMessage = event.token.message as RemotingMessage;
-				var operation:String = message.source + "." + message.operation;
-				
-				switch(operation)
-				{
-					
-					case "UserService.get":
-						
-						break;
-					case "UserService.getAll":
-						
-						break;
-					case "UserService.getRelatedUser":
-						if(message.body[0] == "inputLookups"){ //It would be nice to be able to wire a callBack.  This is kinda sketchy.
-							
-						}
-						break;
-					case "UserService.update":
-						
-						break;
-					case "UserService.save":
-						
-						break;
-				}
-			}
-
-
-			protected function faultHandler(event:FaultEvent):void
-			{
-				Alert.show("Error in Dashboard.mxml: " + event.fault.faultString);
-			}
-
 		]]>
 	</mx:Script>
 	
-	<service:UserService id="userService" result="resultHandler(event)" fault="faultHandler(event)"/>
-	<service:PostService id="postService" result="resultHandler(event)" fault="faultHandler(event)"/>
-	<service:CommentService id="commentService" result="resultHandler(event)" fault="faultHandler(event)"/>
 	
 	<mx:HDividedBox top="55" bottom="30" left="0" right="0" >
 		

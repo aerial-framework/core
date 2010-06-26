@@ -1,15 +1,10 @@
 package {{package}}
 {
-	[Bindable]
+	{{imports}}[Bindable]
 	public class {{class}}
 	{
 {{properties}}
-		
-		private var related:Object = {};{{gettersAndSetters}}
-		
-		public function getRelatedData():Object
-		{
-			return related;
-		}
+
+{{relations}}{{gettersAndSetters}}
 	}
 }

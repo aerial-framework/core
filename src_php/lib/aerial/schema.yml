@@ -1,191 +1,92 @@
----
-detect_relations: true
-options:
-  collate: utf8_general_ci
-  charset: utf8
-  type: InnoDB
-
 User:
-  mapClass: model.vo.User
-  tableName: User
+  actAs: [Timestampable]
+  tableName: users
   columns:
-    id:
-      type: integer(4)
-      primary: true
-      notnull: true
-      autoincrement: true
-    username:
-      type: string(45)
-      unique: true
+    first_name:
+      name: first_name as firstName
+      type: string(255)
+    last_name:
+      name: last_name as lastName
+      type: string(255)
+    email:
+      type: string(255)
     password:
-      type: string(45)
-    createDate:
-      type: timestamp
-    modDate:
-      type: timestamp
-      notnull: true
-      default: CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP
-
-Post:
-  mapClass: model.vo.Post
-  tableName: Post
-  columns:
-    id:
-      type: integer(4)
-      primary: true
-      notnull: true
-      autoincrement: true
-    userId:
-      type: integer(4)
-      notnull: true
-    topicId:
-      type: integer(4)
-      notnull: true
-    title:
-      type: string(45)
-      notnull: true
-    message:
-      type: clob(65535)
-    createDate:
-      type: timestamp
-    modDate:
-      type: timestamp
-      notnull: true
-      default: CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP
+      type: string(40)
   relations:
-    User:
+    images:
+      class: Image
+      local: id
+      foreign: user_id
+      type: many
+  mapClass: models.User
+    
+Image:
+  actAs: [Timestampable]
+  tableName: images
+  columns:
+    image_name:
+      name: image_name as name
+      type: string(255)
+    user_id:
+      type: integer
+  relations:
+    user:
       class: User
-      local: userId
+      local: user_id
       foreign: id
-      foreignAlias: posts
-      onDelete: cascade
-      onUpdate: cascade
-    Topic:
-      class: Topic
-      local: topicId
-      foreign: id
-      foreignAlias: posts
-  indexes:
-    fk_Post_User1:
-      fields: [userId]
-    fk_Post_Topic1:
-      fields: [topicId]
-
+      foreignAlias: images
+      type: one
+    themes:
+      class: Theme
+      type: many
+      local: image_id
+      foreign: theme_id
+      refClass: ImageTheme
+  mapClass: models.Image
+  attributes:
+    export: all
+  
+Theme:
+  tableName: themes
+  columns:
+    theme_name:
+      name: theme_name as name
+      type: string(255)
+    keywords:
+      type: array
+  relations:
+    images:
+      class: Image
+      type: many
+      local: theme_id
+      foreign: image_id
+      refClass: ImageTheme
+  mapClass: models.Theme
+      
+ImageTheme:
+  tableName: image_themes
+  columns:
+    image_id:
+      type: integer
+      primary: true
+    theme_id:
+      type: integer
+      primary: true
+  mapClass: models.ImageTheme
+  
 Comment:
-  mapClass: model.vo.Comment
-  tableName: Comment
+  actAs: [Timestampable]
+  tableName: comments
   columns:
-    id:
-      type: integer(4)
-      primary: true
-      notnull: true
-      autoincrement: true
-    userId:
-      type: integer(4)
-      notnull: true
-    postId:
-      type: integer(4)
-      notnull: true
     message:
-      type: clob(65535)
-    createDate:
-      type: timestamp
-    modDate:
-      type: timestamp
-      notnull: true
-      default: CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP
+      type: string(1000)
+    user_id:
+      type: integer
   relations:
-    User:
+    user:
       class: User
-      local: userId
+      local: user_id
       foreign: id
       foreignAlias: comments
-      onDelete: cascade
-      onUpdate: cascade
-    Post:
-      class: Post
-      local: postId
-      foreign: id
-      foreignAlias: comments
-      onDelete: cascade
-      onUpdate: cascade
-  indexes:
-    fk_Comment_User:
-      fields: [userId]
-    fk_Comment_Post1:
-      fields: [postId]
-
-Category:
-  mapClass: model.vo.Category
-  tableName: Category
-  columns:
-    id:
-      type: integer(4)
-      primary: true
-      notnull: true
-      autoincrement: true
-    userId:
-      type: integer(4)
-      notnull: true
-    name:
-      type: string(45)
-      notnull: true
-    createDate:
-      type: timestamp
-    modDate:
-      type: timestamp
-      notnull: true
-      default: CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP
-  relations:
-    User:
-      class: User
-      local: userId
-      foreign: id
-      foreignAlias: categories
-  indexes:
-    fk_Category_User1:
-      fields: [userId]
-
-Topic:
-  mapClass: model.vo.Topic
-  tableName: Topic
-  columns:
-    id:
-      type: integer(4)
-      primary: true
-      notnull: true
-      autoincrement: true
-    userId:
-      type: integer(4)
-      notnull: true
-    categoryId:
-      type: integer(4)
-    name:
-      type: string(45)
-      unique: true
-      notnull: true
-    description:
-      type: clob(65535)
-    createDate:
-      type: timestamp
-    modDate:
-      type: timestamp
-      notnull: true
-      default: CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP
-  relations:
-    Category:
-      class: Category
-      local: categoryId
-      foreign: id
-      foreignAlias: topics
-    User:
-      class: User
-      local: userId
-      foreign: id
-      foreignAlias: topics
-  indexes:
-    fk_Topic_Category1:
-      fields: [categoryId]
-    fk_Topic_User1:
-      fields: [userId]
-
+      type: one
+  mapClass: models.Comment

@@ -85,6 +85,8 @@ function adapterAction (&$amfbody) {
 			
 			if(!$handled)
 			{
+				NetDebug::trace($messageType);
+				
 				//print_r($amfbody);
 				//die();
 				$uriclasspath = "amfphp/Amf3Broker.php";
@@ -125,7 +127,13 @@ function adapterAction (&$amfbody) {
 				}
 				else {
 					$uriclasspath = $trunced . ".php";
-					$classpath = $baseClassPath . $trunced . ".php";
+					//$classpath = $baseClassPath . $trunced . ".php";
+					
+					if(realpath(INTERNAL_SERVICES_PATH."/".$uriclasspath))
+						$classpath = realpath(INTERNAL_SERVICES_PATH."/".$uriclasspath);
+						
+					if(realpath(BACKEND_SERVICES_PATH."/".$uriclasspath))
+						$classpath = realpath(BACKEND_SERVICES_PATH."/".$uriclasspath);
 				} 
 			} else {
 				$classname = substr($trunced, $lpos + 1);

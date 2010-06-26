@@ -9,21 +9,6 @@ package {{package}}.base
 	
 	public class {{class}} extends RemoteObject
 	{
-	
-		public const GET_{{inflectSingleUpper}}:String = "{{modelService}}Service.get{{inflectSingle}}";
-		public const GET_{{inflectSingleUpper}}_BY_FIELD:String = "{{modelService}}Service.get{{inflectSingle}}ByField";
-		public const GET_{{inflectSingleUpper}}_BY_FIELDS:String = "{{modelService}}Service.get{{inflectSingle}}ByFields";
-		public const GET_{{inflectSingleUpper}}_WITH_RELATED:String = "{{modelService}}Service.get{{inflectSingle}}WithRelated";
-		public const GET_ALL_{{inflectSingleUpper}}_WITH_RELATED:String = "{{modelService}}Service.getAll{{inflectSingle}}WithRelated";
-		public const GET_RELATED:String = "{{modelService}}Service.getRelated";
-		public const GET_ALL_{{inflectPluralUpper}}:String = "{{modelService}}Service.getAll{{inflectPlural}}";
-		public const SAVE_{{inflectSingleUpper}}:String = "{{modelService}}Service.save{{inflectSingle}}";
-		public const UPDATE_{{inflectSingleUpper}}:String = "{{modelService}}Service.update{{inflectSingle}}";
-		public const DELETE_{{inflectSingleUpper}}:String = "{{modelService}}Service.delete{{inflectSingle}}";
-		public const COUNT_{{inflectPluralUpper}}:String = "{{modelService}}Service.count{{inflectPlural}}";
-		public const COUNT_RELATED:String = "{{modelService}}Service.countRelated";
-		
-
 		public function {{class}}(destination:String="aerial")
 		{
 			super(destination);
@@ -32,9 +17,9 @@ package {{package}}.base
 			this.source = "{{modelService}}Service";
 		}
 		
-		public function get{{inflectSingle}}({{object}}_id:uint):void
+		public function get{{inflectSingle}}({{object}}_id:uint, withRelated:Boolean=true):void
 		{
-			this.getOperation("get{{inflectSingle}}").send({{object}}_id);
+			this.getOperation("get{{inflectSingle}}").send({{object}}_id, withRelated);
 		}
 		
 		public function get{{inflectSingle}}ByField(field:String, value:*, paged:Boolean=false, limit:int=0, offset:int=0):void
@@ -52,11 +37,6 @@ package {{package}}.base
 			this.getOperation("get{{inflectSingle}}WithRelated").send({{object}}_id);
 		}
 		
-		public function getAll{{inflectSingle}}WithRelated(criteria:Object=null):void
-		{
-			this.getOperation("getAll{{inflectSingle}}WithRelated").send(criteria);
-		}
-		
 		public function getRelated(field:String, id:uint, paged:Boolean=false, limit:int=0, offset:int=0):void
 		{
 			//	available relations:
@@ -71,20 +51,12 @@ package {{package}}.base
 								   
 		public function save{{inflectSingle}}({{object}}:{{model}}):void
 		{
-			this.getOperation("save{{inflectSingle}}").send({{object}}, {{object}}.getRelatedData());
+			this.getOperation("save{{inflectSingle}}").send({{object}});
 		}
 		
 		public function update{{inflectSingle}}({{object}}:{{model}}):void
 		{
-			
-			var reflection:XML = describeType({{object}});
-			var props:XMLList = reflection..variable + reflection..accessor;
-			
-			var fields:Object = {};
-			for each(var property:XML in props)
-				fields[property.@name] = {{object}}[property.@name];
-			
-			this.getOperation("update{{inflectSingle}}").send({{object}}.id, fields);
+			this.getOperation("update{{inflectSingle}}").send({{object}});
 		}
 		
 		public function delete{{inflectSingle}}({{object}}:{{model}}):void

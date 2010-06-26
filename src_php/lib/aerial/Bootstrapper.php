@@ -32,8 +32,11 @@
 								"@".DB_HOST."/".
 								DB_NAME;
 			self::$_instance->conn = Doctrine_Manager::connection($connectionString, CONNECTION_NAME);
-			Doctrine_Core::loadModels(BACKEND_MODELS_PATH);
 			
+			if(!file_exists(BACKEND_MODELS_PATH))					// if the folder does not exist, create it to avoid errors!
+				mkdir(BACKEND_MODELS_PATH, AERIAL_DIR_CHMOD);
+			
+			Doctrine_Core::loadModels(BACKEND_MODELS_PATH);
 		}
 
 		public static function getInstance()

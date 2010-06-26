@@ -10,54 +10,216 @@
 			$this->connection = Doctrine_Manager::connection();
 			$this->table = $this->connection->getTable($this->modelName);
 		}
-
-		public function saveComment($comment, $related=null)
+		
+		private function mergeDeep($object, $mergeProperties=true, $update=false)
 		{
-			if($related)
-				foreach($related as $relation => $descriptor)
+			if(is_null($object) || is_undefined($object))
+				return null;
+			
+			$class = get_class($object);
+			$new = new $class();
+			if($mergeProperties)
+				$new->merge($object, false);
+			
+			$relations = $object->getTable()->getRelations();
+			foreach($relations as $key => $val)
+			{
+				if(is_undefined($object->$key) || is_null($object->$key))
+					continue;
+				
+				if($val["type"] == Doctrine_Relation::MANY)
 				{
-					if($descriptor["type"] == "many")
+					foreach($object->$key as $item)
 					{
-						for($x = 0; $x < count($descriptor["value"]); $x++)
-						{
-							$arr =& $comment->$relation;
-							$arr[$x] = $descriptor["value"][$x];
-						}
-					}
-					else
-					{
-						// check for existence of related item
-						$testTable = $this->connection->getTable($descriptor["table"]);
-						$foreign_key = $descriptor["foreign_key"];
-						$test = $testTable->find($descriptor["value"]["$foreign_key"]);
+						$itemClass = get_class($item);
+						$newItem = new $itemClass;
+												
+						$rel =& $new->$key;
 						
-						(is_object($test))
-						?	$comment->$descriptor["local_key"] = $descriptor["value"]["$foreign_key"]
-						:	$comment->$relation = $descriptor["value"];
+						if(!is_nan($item->id))
+						{
+							$table = $val["table"];
+							$test = $table->find($item->id);
+							
+							$newItem = $this->mergeDeep($item, false);
+							
+							(is_object($test))
+							?	$newItem->assignIdentifier($item->id)
+							:	trigger_error("Attempt to relate non-existent record in table '".$table->getTableName().
+														"' with primary key of {$item->id}");
+						}
+						else
+							$newItem = $this->mergeDeep($item);
+						
+						$rel[] = $newItem;
 					}
 				}
-				
-			return $comment->save();
+				else
+					$new->$key = $this->mergeDeep($object->$key);
+			}
+			
+			return $new;
 		}
 		
-		public function updateComment($comment_id, $fields)
+		public function getCompleteGraph($object)
 		{
-			$existing = $this->getComment($comment_id);
-			if(!$existing)
-				return;
+			$new = new stdClass();
+			$new->_explicitType = $object->_explicitType;
+			foreach($object as $key => $val)
+				$new->$key = $val;
+				
+			$rels = $object->getTable()->getRelations();
+			foreach($rels as $key => $val)
+				$new->$key = $object->$key;
 			
-			foreach($fields as $key => $val)
+			return $new;
+		}
+
+		public function saveComment(Comment $comment)
+		{
+			$new = $this->mergeDeep($comment);
+
+			// try save the object
+			$result = $new->trySave();
+			if($result === true)
 			{
-				if($existing->$key != $val)
+				return $this->getCompleteGraph($new);
+			}
+			else
+				$new->save();			// this will throw an error if it cannot successfully execute the request
+		}
+		
+		public function updateComment(Comment $comment)
+		{		
+			$new = new Comment();
+			$new->assignIdentifier($comment->id);
+
+			$t = $new->getTable();
+			foreach($comment as $key => $val)				// modify the regular fields
+			{
+				$definition = $t->getColumnDefinition($t->getColumnName($key));
+				//$nullable = !((boolean) $definition["notnull"]);
+				
+				$changed = ($new->$key !== $comment->$key);
+				
+				if($definition["primary"])				// don't screw with the primary key
+					continue;
+				
+				if($changed)
 				{
-					if($val === null && $existing->$key !== null)
-						continue;
-						
-					$existing->$key = $val;
+					$type = gettype($comment->$key);
+					switch($type)
+					{
+						// if datatype is string and the value is an empty string, ignore this since the default value in ActionScript is ""
+						case "string":
+							if($val != null)
+								$new->$key = $val;
+							break;
+							
+						// if datatype is null and the value is null, assume that the developer wants to null the value in the database
+						case "null":
+						case "NULL":
+							$new->$key = null;
+							break;
+							
+						// if datatype is double and the value is NAN, ignore this since the default value in ActionScript is NaN
+						case "double":
+							if(!is_nan($val))
+								$new->$key = $val;
+							break;
+							
+						default:
+							$new->$key = $val;
+							break;
+					}
 				}
 			}
+			
+			//then the relations...
+			$relations = $new->getTable()->getRelations();
+			foreach($relations as $key => $val)
+			{
+				// if the related data is undefined, ignore it because the property was unset
+				// if the related data is null, remove the relation
+				// it the related data is an empty Doctrine_Collection or an empty array, set the value
 				
-			return $existing->save();
+				if(is_null($comment->$key))
+				{
+					$new->$key = null;
+				}
+				else if(is_undefined($comment->$key))
+				{
+					continue;
+				}
+				else if(gettype($comment->$key) == "array" || get_class($comment->$key) == "Doctrine_Collection")
+				{
+					if((gettype($comment->$key) == "array" && count($comment->$key) == 0) || 
+								(get_class($comment->$key) == "Doctrine_Collection" && $comment->$key->count() == 0))
+					{
+						$coll = new Doctrine_Collection($val["class"]);
+						
+						foreach($new->$key as $item)
+						{
+							$foreign = $val["foreign"];
+							$item->$foreign = null;
+							
+							$coll->add($item);
+						}
+						
+						$new->$key = $coll;
+					}
+					
+					if($val["type"] == Doctrine_Relation::MANY)
+					{
+						$coll = new Doctrine_Collection($val["class"]);
+						
+						foreach($new->$key as $item)
+						{
+							$foreign = $val["foreign"];
+							$item->$foreign = null;
+							
+							$coll->add($item);
+						}
+						
+						foreach($comment->$key as $item)
+						{
+							$c = $val["class"];
+							$typed = new $c;
+							$typed->merge($item, false);
+							if($item["id"] != 0 && !is_nan($item["id"]))
+								$typed->assignIdentifier($item["id"]);
+							else
+							{
+								$foreign = $val["foreign"];
+								$typed->$foreign = $new->id;
+							}
+								
+							$coll->add($typed);
+						}
+						
+						$new->$key = $coll;
+					}
+				}
+				else
+				{
+					$item = $comment->$key;
+					
+					$c = $val["class"];
+					$typed = new $c;
+					$typed->merge($item, false);
+					if($item["id"] != 0 && !is_nan($item["id"]))
+						$typed->assignIdentifier($item["id"]);
+						
+					$new->$key = $typed;
+				}
+			}
+
+			// try save the object
+			$result = $new->trySave();
+			if($result === true)
+				return $new;
+			else
+				$new->save();			// this will throw an error if it cannot successfully execute the request
 		}
 		
 		public function deleteComment($comment)
@@ -69,9 +231,23 @@
 			return $existing->delete();
 		}
 		
-		public function getComment($comment_id)
+		public function getComment($comment_id, $deep=true)
 		{
-			return $this->table->find($comment_id);
+			$comment = $this->table->find($comment_id);
+			if(!$deep)
+				return $comment;
+			
+			$toReturn = new stdClass();
+			$toReturn->_explicitType = $comment->_explicitType;
+
+			foreach($comment as $key => $val)
+				$toReturn->$key = $val;
+			
+			$relations = $comment->getTable()->getRelations();
+			foreach($relations as $alias => $val)
+				$toReturn->$alias = $comment->$alias;
+				
+			return $toReturn;
 		}
 		
 		public function getCommentByField($field, $value, $paged=false, $limit=0, $offset=0)
@@ -120,16 +296,10 @@
 		// get all relations and find related data
 		public function getCommentWithRelated($comment_id)
 		{
-			$relations = array("User" => array("type" => "one",
-													"alias" => "User",
+			$relations = array("user" => array("type" => "one",
+													"alias" => "user",
 													"table" => "User",
-													"local_key" => "userid",
-													"foreign_key" => "id",
-													"refTable" => ""),
-								"Post" => array("type" => "one",
-													"alias" => "Post",
-													"table" => "Post",
-													"local_key" => "postid",
+													"local_key" => "user_id",
 													"foreign_key" => "id",
 													"refTable" => ""));
 			$complex = new stdClass();
@@ -144,63 +314,11 @@
 			return $complex;
 		}
 		
-		public function getAllCommentWithRelated($criteria = null)
-		{
-			$relations = array("User" => array("type" => "one",
-													"alias" => "User",
-													"table" => "User",
-													"local_key" => "userid",
-													"foreign_key" => "id",
-													"refTable" => ""),
-								"Post" => array("type" => "one",
-													"alias" => "Post",
-													"table" => "Post",
-													"local_key" => "postid",
-													"foreign_key" => "id",
-													"refTable" => ""));
-				
-				
-			$q = Doctrine_Query::create()->from('Comment y');
-			$selectTables = 'y.*';
-			
-			foreach($relations as $relation)
-			{
-				$i++;
-				if($relation["type"] == "many" )
-				{
-					$selectTables .= ',z' . $i . '.*';
-					$q = $q->leftJoin('y.' . $relation["alias"] . ' z' . $i);
-				}
-			}
-	
-			$q = $q->select($selectTables);
-			
-			if($criteria <> null)
-			{
-				foreach($criteria as $key=>$value)
-				{
-					$q = $q->where("y.$key =?", $value);
-				}
-			}
-	
-			if($paged)
-			{
-				if($limit)
-				$q->limit($limit);
-				if($offset)
-				$q->offset($offset);
-			}
-	
-			return $q->execute();
-			
-		}
-		
 		// get related data for field
 		public function getRelated($field, $comment_id, $paged=false, $limit=0, $offset=0)
 		{
 			//	available relations:
-			//		Alias: User, Type: one
-			//		Alias: Post, Type: one
+			//		Alias: user, Type: one
 			
 			$rel = $this->table->getRelation($field);
 			

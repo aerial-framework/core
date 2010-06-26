@@ -1,56 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" minWidth="955" minHeight="600" creationComplete="init()"
-				xmlns:services="model.services.*"
-				xmlns:view="com.forum.view.*">
+<mx:WindowedApplication xmlns:mx="http://www.adobe.com/2006/mxml" layout="vertical" width="200" height="50"
+						paddingBottom="0" paddingLeft="0" paddingRight="0" paddingTop="0">
 	
-	<mx:Style source="com/forum/assets/stylesheet.css"/>
+	<mx:Button label="Run" click="init()" width="100%" height="100%"/>
 	
 	<mx:Script>
 		<![CDATA[
-			import com.forum.event.LoginEvent;
+			import model.services.UserService;
+			import model.vo.CommentVO;
+			import model.vo.ImageVO;
+			import model.vo.UserVO;
 			
-			import model.vo.*;
-			
-			import mx.controls.Alert;
-			import mx.core.Container;
-			import mx.messaging.messages.RemotingMessage;
-			import mx.rpc.events.FaultEvent;
-			import mx.rpc.events.ResultEvent;
-			
+			import mx.collections.ArrayCollection;
 			
 			private function init():void
 			{
-				this.addEventListener(LoginEvent.LOGIN_ACTION, loginHandler); 
-				this.addEventListener(LoginEvent.LOGOUT_ACTION, loginHandler); 
+				var u:UserVO = new UserVO();
+				u.firstName = "Danny";
+				u.lastName = "Kopping";
+				u.email = "danny@ria-coder.com";
+				u.password = "1234";
+				
+				var i:ImageVO = new ImageVO();
+				i.name = "test.png";
+				
+				var c:CommentVO = new CommentVO();
+				c.message = "Hello Bob!";
+				
+				u.images = [i];
+				u.comments = [c];
+				
+				new UserService().saveUser(u);
 			}
-			
-			public function loginHandler(e:LoginEvent):void
-			{
-				if(e.type == LoginEvent.LOGIN_ACTION){
-					if(e.authenticated){
-						this.dashboardView.user = UserVO(e.user);
-						this.loginViewStack.selectedChild = Container(this.loginViewStack.getChildByName("dashboardView"));
-					}else{
-						Alert.show("Login Failed!");
-					}
-				}else if(e.type == LoginEvent.LOGOUT_ACTION){
-					this.loginViewStack.selectedChild = Container(this.loginViewStack.getChildByName("loginView"));
-				}
-			}
-			
-			
-			protected function faultHandler(event:FaultEvent):void
-			{
-				Alert.show(event.fault.faultString);
-			}
-			
 		]]>
 	</mx:Script>
-	
-	
-	<mx:ViewStack id="loginViewStack" left="0" right="0" top="0" bottom="0">
-		<view:Login id="loginView" />
-		<view:Dashboard id="dashboardView" />
-	</mx:ViewStack>
-	
-</mx:Application>
+</mx:WindowedApplication>

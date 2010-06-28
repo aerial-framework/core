@@ -1,3 +1,7 @@
 /.actionScriptProperties
 /.flexProperties
 /.project
+
+/src_php/model/vo/Image.php
+/src_php/model/vo/ImageTheme.php
+/src_php/model/vo/Theme.php

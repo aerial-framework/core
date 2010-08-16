@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:WindowedApplication xmlns:mx="http://www.adobe.com/2006/mxml" layout="vertical" width="200" height="50"
-						paddingBottom="0" paddingLeft="0" paddingRight="0" paddingTop="0">
+						paddingBottom="0" paddingLeft="0" paddingRight="0" paddingTop="0" applicationComplete="windowStuff()">
 	
 	<mx:Button label="Run" click="init()" width="100%" height="100%"/>
 	
@@ -12,8 +12,46 @@
 			import model.vo.UserVO;
 			
 			import mx.collections.ArrayCollection;
+			import mx.controls.Image;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			
+			private function windowStuff():void
+			{
+				nativeWindow.x = Screen.mainScreen.bounds.width - width - 50;
+				nativeWindow.y = Screen.mainScreen.bounds.height - height - 150;
+				
+				nativeWindow.alwaysInFront = true;
+				nativeWindow.orderToFront();
+			}
 			
 			private function init():void
+			{		
+				getStuff();
+				//update();
+				//save();
+			}
+			
+			private function getStuff():void
+			{
+				var u:UserService = new UserService();
+				u.setCredentials("danny", "1234");
+				u.addEventListener(ResultEvent.RESULT, onResult);
+				u.addEventListener(FaultEvent.FAULT, onFault);
+				u.getAllUsers();
+			}
+
+			private function onResult(event:ResultEvent):void
+			{
+				
+			}
+			
+			private function onFault(event:FaultEvent):void
+			{
+				
+			}
+			
+			private function save():void
 			{
 				var u:UserVO = new UserVO();
 				u.firstName = "Danny";
@@ -31,6 +69,22 @@
 				u.comments = [c];
 				
 				new UserService().saveUser(u);
+			}
+			
+			private function update():void
+			{
+				var u:UserVO = new UserVO();
+				u.id = 1;
+				u.firstName = "Broodley";
+				u.lastName = null;
+				
+				var i:ImageVO = new ImageVO();
+				i.name = "test.png";
+				i.id = 1;
+				
+				u.images = [i];
+				
+				new UserService().updateUser(u);
 			}
 		]]>
 	</mx:Script>

@@ -12,11 +12,13 @@
 	define("AERIAL_EXTERNAL", realpath(AERIAL_BASE_PATH."/.."));						// Path outside of aerial core
 	define("DOCTRINE_PATH", realpath(AERIAL_BASE_PATH. "/../doctrine"));				// Path to Doctrine library
 	define("AMFPHP_PATH", realpath(AERIAL_BASE_PATH."/../../public_html/amfphp"));		// Path to AMFPHP library
-	define("AMFPHP_GATEWAY_URL", "http://192.168.56.102/open-source/aerial/0.8-release/src_php/public_html/amfphp/gateway.php");				// Path to AMFPHP gateway.php file
+	define("AMFPHP_GATEWAY_URL", "http://localhost./open-source/aerial/0.8-release/src_php/public_html/amfphp/gateway.php");				// Path to AMFPHP gateway.php file
 	
 	define("BACKEND_PATH", AERIAL_EXTERNAL."/../model");								// Path to project development backend
 	
 	define("FRONTEND_PATH", AERIAL_EXTERNAL."/../../src_flex");							// Path to project development fronend
+    
+    define("USE_AUTH", true);
 	
 	// models & services
 	
@@ -34,9 +36,9 @@
 
 	define("DB_ENGINE", "mysql");													// Database engine type
 	define("DB_NAME", "aerial_release");															// Database name
-	define("DB_HOST", "192.168.56.102");													// Database host
-	define("DB_USER", "aerial");															// Database user
-	define("DB_PASSWORD", "aerialtest");														// Database password
+	define("DB_HOST", "localhost.");													// Database host
+	define("DB_USER", "root");															// Database user
+	define("DB_PASSWORD", "mac150189");														// Database password
 	define("CONNECTION_NAME", "doctrine");											// Connection name (internal feature)
 	
 	require_once(AERIAL_BASE_PATH."/Bootstrapper.php");

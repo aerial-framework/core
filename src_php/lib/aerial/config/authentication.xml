@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<acl>
+    <group name="General">
+        <user name="danny" password="12345">
+            <services type="exclude"></services>
+            <methods type="exclude"></methods>
+            <members type="exclude"></members>
+        </user>
+    </group>
+</acl>

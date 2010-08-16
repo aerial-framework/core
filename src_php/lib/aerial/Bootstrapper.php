@@ -1,6 +1,7 @@
 <?php
 	require_once(DOCTRINE_PATH.'/Doctrine.php');
 	require_once(AMFPHP_PATH.'/globals.php');
+	require_once("config/Authentication.php");
 
 	class Bootstrapper
 	{
@@ -37,6 +38,18 @@
 				mkdir(BACKEND_MODELS_PATH, AERIAL_DIR_CHMOD);
 			
 			Doctrine_Core::loadModels(BACKEND_MODELS_PATH);
+			
+			Authentication::getInstance();
+		}
+		
+		public static function setCredentials($username, $password)
+		{
+			 $credentials = new stdClass();
+			 $credentials->username = $username;
+			 $credentials->password = $password;
+			 
+			 session_start();
+			 $_SESSION["credentials"] = $credentials;
 		}
 
 		public static function getInstance()

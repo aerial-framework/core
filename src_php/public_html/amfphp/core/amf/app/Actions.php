@@ -81,18 +81,25 @@ function adapterAction (&$amfbody) {
 					$amfbody->setMetadata("messageId", $body[0]->messageId);
 					$amfbody->noExec = true;
 				}
+					
+				if(!empty($body[0]->body))
+				{
+					$credentials = explode(":", base64_decode($body[0]->body));
+					Bootstrapper::getInstance()->setCredentials($credentials[0], $credentials[1]);
+				}
 			}
 			
 			if(!$handled)
 			{
-				NetDebug::trace($messageType);
+				//NetDebug::trace($messageType);
 				
 				//print_r($amfbody);
 				//die();
-				$uriclasspath = "amfphp/Amf3Broker.php";
-				$classpath = $baseClassPath . "amfphp/Amf3Broker.php";
-				$classname = "Amf3Broker";
-				$methodname = "handleMessage";
+				$handled = true;
+				$amfbody->setSpecialHandling("Ping");
+				$amfbody->setMetadata("clientId", $body[0]->clientId);
+				$amfbody->setMetadata("messageId", $body[0]->messageId);
+				$amfbody->noExec = true;
 			}
 		} else {
 			$methodname = substr($target, $lpos + 1);

@@ -3,11 +3,11 @@
     <!-- Access Groups-->
     <groups>
         <group name="General" role="safe" encryption="sha1|md5|none">
-            <user name="danny" password="12345"/>
-            <user name="rob" password="54321" override="admin"/>
+            <user username="danny" password="1234"/>
+            <user username="rob" password="54321" override="admin"/>
         </group>
         <group name="External" role="trusted" encryption="sha1|md5|none">
-            <user name="joe" password="ABCDE"/>
+            <user username="joe" password="ABCDE"/>
         </group>
     </groups>
     

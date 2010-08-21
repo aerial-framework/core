@@ -73,19 +73,32 @@ function adapterAction (&$amfbody) {
 			}
 			elseif($messageType == "flex.messaging.messages.CommandMessage")
 			{
-				if($body[0]->operation == 5)
+				$operation = (int) $body[0]->operation;
+				switch($operation)
 				{
-					$handled = true;
-					$amfbody->setSpecialHandling("Ping");
-					$amfbody->setMetadata("clientId", $body[0]->clientId);
-					$amfbody->setMetadata("messageId", $body[0]->messageId);
-					$amfbody->noExec = true;
-				}
-					
-				if(!empty($body[0]->body))
-				{
-					$credentials = explode(":", base64_decode($body[0]->body));
-					Bootstrapper::getInstance()->setCredentials($credentials[0], $credentials[1]);
+					case 5:			// PING
+						$handled = true;
+						$amfbody->setSpecialHandling("Ping");
+						$amfbody->setMetadata("clientId", $body[0]->clientId);
+						$amfbody->setMetadata("messageId", $body[0]->messageId);
+						$amfbody->noExec = true;
+						break;
+					case 8:
+						if(!USE_AUTH)
+							break;
+						
+						if(!empty($body[0]->body) && $body[0]->destination == "auth")
+						{
+							$credentials = explode(":", base64_decode($body[0]->body));
+							Bootstrapper::getInstance()->setCredentials($credentials[0], $credentials[1]);
+						}
+						break;
+					case 9:
+						if(!USE_AUTH)
+							break;
+						
+						//die("Logout");
+						break;
 				}
 			}
 			
@@ -156,6 +169,9 @@ function adapterAction (&$amfbody) {
 	$amfbody->uriClassPath = $uriclasspath;
 	$amfbody->className = $classname;
 	$amfbody->methodName = $methodname;
+	
+	if($amfbody->className != "" && $amfbody->methodName != "")
+		Bootstrapper::setNextInvokation($amfbody->className, $amfbody->methodName);
 
 	return true;
 } 
@@ -182,7 +198,6 @@ function executionAction (&$amfbody)
 		else if($specialHandling == 'pageFetch')
 		{
 			$args[count($args) - 2] = $args[count($args) - 2] - 1;
-			
 			$dataset = Executive::doMethodCall($amfbody, $construct, $method, $args);
 			$results = array("cursor" => $args[count($args) - 2] + 1,
 							 "data" => $dataset);
@@ -220,6 +235,11 @@ function executionAction (&$amfbody)
 			//{
 				//The usual
 				$time = microtime_float();
+				
+				Authentication::$nextClass = get_class($construct);
+				Authentication::$nextMethod = $method;
+				Authentication::$nextArgs = $args;
+				
 				$results = Executive::doMethodCall($amfbody, $construct, $method, $args); // do the magic
 				global $amfphp;
 				$amfphp['callTime'] += microtime_float() - $time;

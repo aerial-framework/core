@@ -1,12 +1,12 @@
 <?php
 	// path constants
 	date_default_timezone_set('Africa/Johannesburg');										// Required for PHP >= 5.3
-
+	
 	define("AERIAL_FILE_CHMOD", 0664);													// Default Aerial permission for generated files
 	define("AERIAL_DIR_CHMOD", 0777);													// Default Aerial permission for generated directories
 	
 	define("AMFPHP_USE_ARRAYCOLLECTION", true);											// False will return Array (Flash based projects)
-
+	
 	define("AERIAL_BASE_PATH", realpath(dirname(__FILE__)));							// Aerial base path
 	define("AERIAL_INTERNAL", realpath(AERIAL_BASE_PATH));								// Internal path for core functionality
 	define("AERIAL_EXTERNAL", realpath(AERIAL_BASE_PATH."/.."));						// Path outside of aerial core
@@ -17,6 +17,7 @@
 	define("BACKEND_PATH", AERIAL_EXTERNAL."/../model");								// Path to project development backend
 	
 	define("FRONTEND_PATH", AERIAL_EXTERNAL."/../../src_flex");							// Path to project development fronend
+    define("PLUGINS_PATH", AERIAL_BASE_PATH."/plugins");							    // Path to plugins
     
     define("USE_AUTH", true);
 	
@@ -38,7 +39,7 @@
 	define("DB_NAME", "aerial_release");															// Database name
 	define("DB_HOST", "localhost.");													// Database host
 	define("DB_USER", "root");															// Database user
-	define("DB_PASSWORD", "mac150189");														// Database password
+	define("DB_PASSWORD", "mac150189``");														// Database password
 	define("CONNECTION_NAME", "doctrine");											// Connection name (internal feature)
 	
 	require_once(AERIAL_BASE_PATH."/Bootstrapper.php");

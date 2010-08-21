@@ -1,7 +1,7 @@
 <?php
 	require_once(DOCTRINE_PATH.'/Doctrine.php');
 	require_once(AMFPHP_PATH.'/globals.php');
-	require_once("config/Authentication.php");
+	require_once(PLUGINS_PATH."/acl-auth/Authentication.php");
 
 	class Bootstrapper
 	{
@@ -50,6 +50,12 @@
 			 
 			 session_start();
 			 $_SESSION["credentials"] = $credentials;
+		}
+		
+		public static function setNextInvokation($class, $method)
+		{
+			Authentication::$nextClass = $class;
+			Authentication::$nextMethod = $method;
 		}
 
 		public static function getInstance()

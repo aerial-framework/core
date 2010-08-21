@@ -4,6 +4,8 @@
 	
 	<mx:Button label="Run" click="init()" width="100%" height="100%"/>
 	
+	<!--<mx:TraceTarget/>-->
+	
 	<mx:Script>
 		<![CDATA[
 			import model.services.UserService;
@@ -13,6 +15,11 @@
 			
 			import mx.collections.ArrayCollection;
 			import mx.controls.Image;
+			import mx.logging.targets.TraceTarget;
+			import mx.messaging.ChannelSet;
+			import mx.messaging.channels.AMFChannel;
+			import mx.messaging.channels.HTTPChannel;
+			import mx.messaging.messages.RemotingMessage;
 			import mx.rpc.events.FaultEvent;
 			import mx.rpc.events.ResultEvent;
 			
@@ -32,23 +39,34 @@
 				//save();
 			}
 			
+			private var u:UserService;
 			private function getStuff():void
 			{
-				var u:UserService = new UserService();
-				u.setCredentials("danny", "1234");
+				u = new UserService();
+				u.channelSet.login("danny", "1234");
+				//u.channelSet.login("danny", "1234");
+				
+				u.addEventListener(InvokeEvent.INVOKE, onInvoke);
 				u.addEventListener(ResultEvent.RESULT, onResult);
 				u.addEventListener(FaultEvent.FAULT, onFault);
 				u.getAllUsers();
 			}
 
+			private function onInvoke(event:mx.rpc.events.InvokeEvent):void
+			{
+				var message:RemotingMessage = RemotingMessage(event.token.message);
+				trace("invoked " + message.source + "." + message.operation);
+			}
+
 			private function onResult(event:ResultEvent):void
 			{
-				
+				trace("AUTHENTICATED? " + u.channelSet.authenticated);
+				u.channelSet.logout();
 			}
 			
 			private function onFault(event:FaultEvent):void
 			{
-				
+				trace("AUTHENTICATED? " + u.channelSet.authenticated);
 			}
 			
 			private function save():void

@@ -63,7 +63,7 @@
 				cat.id = (this.categoryList.selectedItem as CategoryVO).id;
 				cat.name = name;
 				
-				//I shouldn't hae to add the following on an UPDATE.
+				//I shouldn't have to add the following on an UPDATE.
 				cat.userId = (this.categoryList.selectedItem as CategoryVO).userId
 				
 				this.categoryService.updateCategory(cat);			

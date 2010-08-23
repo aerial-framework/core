@@ -1,109 +1,56 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" layout="vertical" width="200" height="50"
-						paddingBottom="0" paddingLeft="0" paddingRight="0" paddingTop="0" applicationComplete="//windowStuff()">
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" minWidth="955" minHeight="600" creationComplete="init()"
+				xmlns:services="model.services.*"
+				xmlns:view="com.forum.view.*">
 	
-	<mx:Button label="Run" click="init()" width="100%" height="100%"/>
+	<mx:Style source="com/forum/assets/stylesheet.css"/>
 	
-	<!--<mx:TraceTarget/>-->
-	
-	<!--<mx:Script>
+	<mx:Script>
 		<![CDATA[
-			import model.services.UserService;
-			import model.vo.CommentVO;
-			import model.vo.ImageVO;
-			import model.vo.UserVO;
+			import com.forum.event.LoginEvent;
 			
-			import mx.collections.ArrayCollection;
-			import mx.controls.Image;
-			import mx.logging.targets.TraceTarget;
-			import mx.messaging.ChannelSet;
-			import mx.messaging.channels.AMFChannel;
-			import mx.messaging.channels.HTTPChannel;
+			import model.vo.*;
+			
+			import mx.controls.Alert;
+			import mx.core.Container;
 			import mx.messaging.messages.RemotingMessage;
 			import mx.rpc.events.FaultEvent;
 			import mx.rpc.events.ResultEvent;
 			
-			private function windowStuff():void
-			{
-				nativeWindow.x = Screen.mainScreen.bounds.width - width - 50;
-				nativeWindow.y = Screen.mainScreen.bounds.height - height - 150;
-				
-				nativeWindow.alwaysInFront = true;
-				nativeWindow.orderToFront();
-			}
 			
 			private function init():void
-			{		
-				getStuff();
-				//update();
-				//save();
+			{
+				this.addEventListener(LoginEvent.LOGIN_ACTION, loginHandler); 
+				this.addEventListener(LoginEvent.LOGOUT_ACTION, loginHandler); 
 			}
 			
-			private var u:UserService;
-			private function getStuff():void
+			public function loginHandler(e:LoginEvent):void
 			{
-				u = new UserService();
-				u.channelSet.login("danny", "1234");
-				//u.channelSet.login("danny", "1234");
-				
-				u.addEventListener(InvokeEvent.INVOKE, onInvoke);
-				u.addEventListener(ResultEvent.RESULT, onResult);
-				u.addEventListener(FaultEvent.FAULT, onFault);
-				u.getAllUsers();
-			}
-
-			private function onInvoke(event:mx.rpc.events.InvokeEvent):void
-			{
-				var message:RemotingMessage = RemotingMessage(event.token.message);
-				trace("invoked " + message.source + "." + message.operation);
-			}
-
-			private function onResult(event:ResultEvent):void
-			{
-				trace("AUTHENTICATED? " + u.channelSet.authenticated);
-				u.channelSet.logout();
+				if(e.type == LoginEvent.LOGIN_ACTION){
+					if(e.authenticated){
+						this.dashboardView.user = UserVO(e.user);
+						this.loginViewStack.selectedChild = Container(this.loginViewStack.getChildByName("dashboardView"));
+					}else{
+						Alert.show("Login Failed!");
+					}
+				}else if(e.type == LoginEvent.LOGOUT_ACTION){
+					this.loginViewStack.selectedChild = Container(this.loginViewStack.getChildByName("loginView"));
+				}
 			}
 			
-			private function onFault(event:FaultEvent):void
+			
+			protected function faultHandler(event:FaultEvent):void
 			{
-				trace("AUTHENTICATED? " + u.channelSet.authenticated);
+				Alert.show(event.fault.faultString);
 			}
 			
-			private function save():void
-			{
-				var u:UserVO = new UserVO();
-				u.firstName = "Danny";
-				u.lastName = "Kopping";
-				u.email = "danny@ria-coder.com";
-				u.password = "1234";
-				
-				var i:ImageVO = new ImageVO();
-				i.name = "test.png";
-				
-				var c:CommentVO = new CommentVO();
-				c.message = "Hello Bob!";
-				
-				u.images = [i];
-				u.comments = [c];
-				
-				new UserService().saveUser(u);
-			}
-			
-			private function update():void
-			{
-				var u:UserVO = new UserVO();
-				u.id = 1;
-				u.firstName = "Broodley";
-				u.lastName = null;
-				
-				var i:ImageVO = new ImageVO();
-				i.name = "test.png";
-				i.id = 1;
-				
-				u.images = [i];
-				
-				new UserService().updateUser(u);
-			}
 		]]>
-	</mx:Script>-->
+	</mx:Script>
+	
+	
+	<mx:ViewStack id="loginViewStack" left="0" right="0" top="0" bottom="0">
+		<view:Login id="loginView" />
+		<view:Dashboard id="dashboardView" />
+	</mx:ViewStack>
+	
 </mx:Application>

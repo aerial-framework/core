@@ -7,16 +7,20 @@
 		<![CDATA[
 			import model.vo.*;
 			
+			import mx.controls.Alert;
 			import mx.messaging.messages.RemotingMessage;
 			import mx.rpc.events.FaultEvent;
 			import mx.rpc.events.ResultEvent;
-			import mx.controls.Alert;
 			
 			public var user:UserVO;
 			
+			
 			public function init():void
 			{
-				this.userService.getUser(1);
+			//	this.userService.getUser(1);
+				
+				this.testService.findAll();
+			
 			}
 			
 
@@ -55,9 +59,30 @@
 				Alert.show(event.fault.faultString);
 			}
 
+			
+			public function myCallBack(event:ResultEvent):void{
+				trace("test callBack");				
+			}
+			
+
+			protected function result(event:ResultEvent):void
+			{
+				trace("test result");
+			}
+
+
+			protected function fault(event:FaultEvent):void
+			{
+				trace("test fault");
+			}
+
+			
 		]]>
 	</mx:Script>
 	
-	
+	<mx:VideoDisplay id="aVid" />
+	<services:TestService id="testService" result="result(event)" fault="fault(event)" />
 	<services:UserService id="userService" result="resultHandler(event)" fault="faultHandler(event)" />
 </mx:Application>
+
+

@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" minWidth="955" minHeight="600" creationComplete="init()"
-				xmlns:services="model.services.*"
-				xmlns:view="com.forum.view.*">
+<s:WindowedApplication xmlns:fx="http://ns.adobe.com/mxml/2009" 
+					   xmlns:s="library://ns.adobe.com/flex/spark" 
+					   xmlns:mx="library://ns.adobe.com/flex/mx"
+					   xmlns:services="model.services.*"
+					   xmlns:view="com.forum.view.*"  applicationComplete="init()"
+					  >
+					   
+	<fx:Declarations  >
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
 	
-	<mx:Style source="com/forum/assets/stylesheet.css"/>
 	
-	<mx:Script>
+	<fx:Script>
 		<![CDATA[
 			import com.forum.event.LoginEvent;
 			
@@ -20,8 +26,21 @@
 			
 			private function init():void
 			{
+				WindowStuff();
 				this.addEventListener(LoginEvent.LOGIN_ACTION, loginHandler); 
 				this.addEventListener(LoginEvent.LOGOUT_ACTION, loginHandler); 
+			}
+			
+			public function WindowStuff():void
+			{
+				this.width = 1200;
+				this.height = 800;
+				
+				nativeWindow.x = Screen.mainScreen.bounds.width - width - 50;
+				nativeWindow.y = Screen.mainScreen.bounds.height - height - 100;
+				
+				nativeWindow.alwaysInFront = true;
+				nativeWindow.orderToFront();
 			}
 			
 			public function loginHandler(e:LoginEvent):void
@@ -43,9 +62,10 @@
 			{
 				Alert.show(event.fault.faultString);
 			}
-			
 		]]>
-	</mx:Script>
+	</fx:Script>
+	
+	
 	
 	
 	<mx:ViewStack id="loginViewStack" left="0" right="0" top="0" bottom="0">
@@ -53,4 +73,4 @@
 		<view:Dashboard id="dashboardView" />
 	</mx:ViewStack>
 	
-</mx:Application>
+</s:WindowedApplication>

@@ -1,10 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" minWidth="955" minHeight="600" creationComplete="init()"
-				xmlns:services="model.services.*"
-				>
+<s:WindowedApplication xmlns:fx="http://ns.adobe.com/mxml/2009" 
+					   xmlns:s="library://ns.adobe.com/flex/spark" 
+					   xmlns:mx="library://ns.adobe.com/flex/mx"
+					   xmlns:services="model.services.*" applicationComplete="init()"
+					   >
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+		<services:TestService id="testService" result="result(event)" fault="fault(event)" />
+		<services:UserService id="userService" result="resultHandler(event)" fault="faultHandler(event)" />
+	</fx:Declarations>
 	
-	<mx:Script>
+	<fx:Script>
 		<![CDATA[
+			
+			
 			import model.vo.*;
 			
 			import mx.controls.Alert;
@@ -17,13 +26,22 @@
 			
 			public function init():void
 			{
-			//	this.userService.getUser(1);
+				WindowStuff();
 				
+				//	this.userService.getUser(1);
 				this.testService.findAll();
-			
 			}
 			
-
+			public function WindowStuff():void
+			{
+				nativeWindow.x = Screen.mainScreen.bounds.width - width - 50;
+				nativeWindow.y = Screen.mainScreen.bounds.height - height - 150;
+				
+				nativeWindow.alwaysInFront = true;
+				nativeWindow.orderToFront();
+			}
+			
+			
 			protected function resultHandler(event:ResultEvent):void
 			{
 				var message:RemotingMessage = event.token.message as RemotingMessage;
@@ -33,14 +51,14 @@
 				{
 					
 					case "UserService.get":
-
+						
 						break;
 					case "UserService.getAll":
-
+						
 						break;
 					case "UserService.getRelated":
 						if(message.body[0] == "inputLookups"){
-
+							
 						}
 						break;
 					case "UserService.update":
@@ -52,37 +70,34 @@
 					
 				}
 			}
-
-
+			
+			
 			protected function faultHandler(event:FaultEvent):void
 			{
 				Alert.show(event.fault.faultString);
 			}
-
+			
 			
 			public function myCallBack(event:ResultEvent):void{
 				trace("test callBack");				
 			}
 			
-
+			
 			protected function result(event:ResultEvent):void
 			{
 				trace("test result");
 			}
-
-
+			
+			
 			protected function fault(event:FaultEvent):void
 			{
 				trace("test fault");
 			}
-
+			
+			
 			
 		]]>
-	</mx:Script>
+	</fx:Script>
 	
-	<mx:VideoDisplay id="aVid" />
-	<services:TestService id="testService" result="result(event)" fault="fault(event)" />
-	<services:UserService id="userService" result="resultHandler(event)" fault="faultHandler(event)" />
-</mx:Application>
-
-
+	
+</s:WindowedApplication>

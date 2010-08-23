@@ -24,14 +24,6 @@
 					$type = ActionScriptGenerator::getAS3Type($field['type'], $field['unsigned']);
 					array_push($properties, array("field" => $field['name'], "type" => $type));
 				}
-				
-				// add relations
-//				foreach($relations[$class] as $relation)
-//				{
-//					$alias = $relation["alias"];
-//					
-//					array_push($properties, array("field" => $alias, "type" => $relation["type"]));
-//				}
 					
 				$data[$class] = array("class" => $class, "properties" => $properties, "relations" => $relations[$class]);
 			}
@@ -54,13 +46,7 @@
 		{
 			$properties = array();
 			foreach($array as $property)
-			{
-				$defaultValue = " = ".self::getAS3TypeDefault($property["type"]);
-				if($property["field"] == "id")
-					$defaultValue = "";
-				
-				array_push($properties, "\t\tpublic var ".$property["field"].":".$property["type"].$defaultValue.";");
-			}
+				array_push($properties, "\t\tpublic var ".$property["field"].":".$property["type"].";");
 			
 			return implode("\n", $properties);
 		}
@@ -108,42 +94,37 @@
 			self::writeFile("$directory/$class.as", $contents);
 		}
 		
-		public static function generateAS3BaseModel($package, $class, $properties, $rels, $directory)
+		public static function generateAS3BaseModel($package, $class, $properties, $relations, $directory)
 		{
-			$replacementTokens = array("package", "class", "properties", "relations", "imports", "gettersAndSetters");
+			$replacementTokens = array("package", "class", "properties", "gettersAndSetters");
 			$contents = self::readTemplate("AS3.basemodel");
-			
-			$getterStub = GenerationController::getTemplatePart("as3GetterStub");
-			$setterStub = GenerationController::getTemplatePart("as3SetterStub");
-			
-			$gettersAndSetters = "";
-			
 			$properties = self::getASProperties($properties);
 			
-			$relations = "";
-			$imports = "import mx.collections.ArrayCollection;\n\t";
+			$setterStub = self::getTemplatePart("as3SetterStub");
+			$getterStub = self::getTemplatePart("as3GetterStub");
 			
-			foreach($rels as $relation)
+			$getters = "";
+			$setters = "";
+			$gettersAndSetters = "";
+			
+			foreach($relations as $relation)
 			{
 				$alias = $relation["alias"];
-				$type = $relation["table"]."VO";
+				$g_stub = "\n\t\t\t".$getterStub;
+				$s_stub = "\n\t\t\t".$setterStub;
 				
-				$getter = str_replace("{{alias}}", $alias, $getterStub);
-				$getter = str_replace("{{type}}", $relation["type"] == "one" ? $type : "*", $getter);
+				$stub = "";
 				
-				$setter = str_replace("{{alias}}", $alias, $setterStub);
-				$setter = str_replace("{{type}}", "*", $setter);
+				foreach($relation as $key => $value)
+				{
+					$g_stub = str_replace("{{".$key."}}", $value, $g_stub);
+					$s_stub = str_replace("{{".$key."}}", $value, $s_stub);
+					
+					$stub = $g_stub.$s_stub;
+				}
 				
-				if($type == $alias)			// naming conflict
-					continue;
-				
-				$relations .= "\t\tprivate var _".$relation["alias"].":*;\n";				
-				$imports .= "import ".FRONTEND_MODELS_PACKAGE.".".$relation["table"]."VO".";\n\t";
-				$gettersAndSetters .= $getter."\n".$setter."\n";
+				$gettersAndSetters .= $stub;
 			}
-			
-			if($imports != null)
-				$imports .= "\n\t";
 			
 			foreach($replacementTokens as $token)
 				$contents = str_replace("{{".$token."}}", $$token, $contents);
@@ -167,13 +148,14 @@
 			$as3type = "";
 			switch ($type)
 			{
-                /*$as3type = $unsigned ? "uint" : "int";
-                break;*/
                 case 'integer':
+                	$as3type = $unsigned ? "uint" : "int";
+                	break;
                 case 'decimal':
                 case 'float':
                 	$as3type = "Number";
                 	break;
+                case 'enum':
                 case 'set':
                 case 'array':
                 	$as3type = "Array";
@@ -184,7 +166,6 @@
                 case 'object':
                 	$as3type = "Object";
                 	break;
-                case 'enum':
                 case 'gzip':
                 case 'string':
                 case 'blob':
@@ -192,42 +173,12 @@
                 case 'time':
                 case 'timestamp':
                 case 'date':
-                	$as3type = "String";
-                	break;
                 default:
-                	$as3type = $type;
+                	$as3type = "String";
                 	break;
 			}
 			
 			return $as3type;
-		}
-		
-		public static function getAS3TypeDefault($type)
-		{
-			$value = '""';
-			switch ($type)
-			{
-            	case "Number":
-                	$value = "NaN";
-                	break;
-            	case "Array":
-                	$value = "null";
-                	break;
-            	case "Boolean":
-                	$value = "false";
-                	break;
-            	case "Object":
-                	$value = "null";
-                	break;
-            	case "String":
-            		$value = '""';
-            		break;
-                default:
-                	$value = "null";
-                	break;
-			}
-			
-			return $value;
 		}
 	}
 ?>

@@ -205,7 +205,6 @@ function serializationFilter (&$amf) {
 		$serializer = new AMFSerializer(); // Create a serailizer around the output stream
 	}
 	$result = $serializer->serialize($amf); // serialize the data
-	//die("DONE!");
 	$amf->outputStream = $result;
 }
 ?>

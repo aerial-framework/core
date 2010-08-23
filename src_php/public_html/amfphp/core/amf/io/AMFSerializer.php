@@ -26,7 +26,6 @@ class AMFSerializer extends AMFBaseSerializer {
    var $storedDefinitions = 0;
    var $storedStrings = array();
    var $outBuffer;
-   // changed to integer, used to be array but was causing errors
    var $encounteredStrings = 0;
    
    var $native = false;
@@ -118,13 +117,6 @@ class AMFSerializer extends AMFBaseSerializer {
 	 */
 	function writeNull() {
 		$this->writeByte(5); // null is only a  0x05 flag
-	} 
-
-	/**
-	 * writeUndefined writes the undefined code (0x06) to the output stream
-	 */
-	function writeUndefined() {
-		$this->writeByte(6); // undefined is only a  0x06 flag
 	} 
 
 	/**
@@ -549,7 +541,6 @@ class AMFSerializer extends AMFBaseSerializer {
 	 * @param string $type The optional type
 	 */
 	function writeData(& $d) {
-		//echo($d." = ".is_undefined($d))."\n";
 		if (is_int($d) || is_float($d)) 
 		{ // double
 			$this->writeNumber($d);
@@ -570,18 +561,13 @@ class AMFSerializer extends AMFBaseSerializer {
 			$this->writeNull();
 			return;
 		} 
-		elseif (is_undefined($d)) 
-		{ // null
-			$this->writeUndefined();
-			return;
-		} 
 		elseif ($GLOBALS['amfphp']['encoding'] == 'amf3')
 		{
 			$this->writeByte(0x11);
 			$this->writeAmf3Data($d);
 			return;
 		}
-		elseif (is_array($d)) 
+		elseif (is_array($d))
 		{ // array
 			$this->writeArray($d);
 			return;
@@ -619,7 +605,8 @@ class AMFSerializer extends AMFBaseSerializer {
 				$this->writeAnonymousObject($d);
 				return;
 			}
-			elseif(is_a($d, 'ArrayAccess') || is_a($d, 'ArrayObject'))
+			//Fix for PHP5 overriden ArrayAccess and ArrayObjects with an explcit type
+			elseif( (is_a($d, 'ArrayAccess') || is_a($d, 'ArrayObject')) && !isset($d->_explicitType))
 			{
 				$this->writeArray($d);
 				return;
@@ -636,6 +623,9 @@ class AMFSerializer extends AMFBaseSerializer {
 		}
 		
 		switch ($type) {
+			case "mysql link" :
+				$this->writeString($d);
+				break;
 			case "__RECORDSET__" :
 				$classname = $subtype . "Adapter"; // full class name
 				$includeFile = include_once(AMFPHP_BASE . "shared/adapters/" . $classname . ".php"); // try to load the recordset library from the sql folder
@@ -657,8 +647,10 @@ class AMFSerializer extends AMFBaseSerializer {
 	 *                             AMF3 related code
 	 *******************************************************************************/
 	
-	function writeAmf3Data(& $d, $useArrayMapping = true)
+	function writeAmf3Data(& $d)
 	{
+		NetDebug::trace(">>>>".gettype($d));
+		
 		if (is_int($d)) 
 		{ //int
 			$this->writeAmf3Number($d);
@@ -685,18 +677,8 @@ class AMFSerializer extends AMFBaseSerializer {
 		{ // null
 			$this->writeAmf3Null();
 			return;
-		}
-		elseif (is_undefined($d)) 
-		{ // undefined
-			$this->writeAmf3Undefined();
-			return;
-		}  
-		elseif (is_array($d) && !isset($d->_explicitType)) 
-		{ // array
-			$this->writeAmf3Array($d, $useArrayMapping);
-			return;
 		} 
-		elseif (is_array($d)) 
+		elseif (is_array($d) && !isset($d->_explicitType)) 
 		{ // array
 			$this->writeAmf3Array($d);
 			return;
@@ -737,13 +719,11 @@ class AMFSerializer extends AMFBaseSerializer {
 			// Fix for PHP5 overriden ArrayAccess and ArrayObjects with an explcit type
 			elseif( (is_a($d, 'ArrayAccess') || is_a($d, 'ArrayObject')) && !isset($d->_explicitType))
 			{
-				$this->writeAmf3Array($d, $useArrayMapping);
+				$this->writeAmf3Array($d, true);
 				return;
 			}
 			else
 			{
-				$className = get_class($d);
-				
 				$this->writeAmf3Object($d);
 				return;
 			}
@@ -768,8 +748,6 @@ class AMFSerializer extends AMFBaseSerializer {
 			default: 
 				// non of the above so lets assume its a Custom Class thats defined in the client
 				//$this->writeTypedObject($unsanitizedType, $d);
-				//print_r($d);
-				//die();
 				trigger_error("Unsupported Datatype: " . $type);
 				break;
 		} 
@@ -792,11 +770,6 @@ class AMFSerializer extends AMFBaseSerializer {
 		//Write the null code (0x1) to the output stream.
 		$this->outBuffer .= "\1";
 	}
-	
-	function writeAmf3Undefined() {
-		//Write the undefined code (0x0) to the output stream.
-		$this->outBuffer .= "\0";
-	} 
 
 	function writeAmf3Bool($d)
 	{
@@ -929,7 +902,6 @@ class AMFSerializer extends AMFBaseSerializer {
 	
 	function writeAmf3ObjectFromArray($d)
 	{
-		NetDebug::trace("From Arr");
 		//Type this as a dynamic object
 		$this->outBuffer .= "\12\13\1";
 		
@@ -1022,7 +994,26 @@ class AMFSerializer extends AMFBaseSerializer {
 	{
 		$this->writeByte(0x0C);
 		$this->writeAmf3String($d, true);
+		$this->writeAmf3ByteArrayBody($d);
 	}
+	
+	function writeAmf3ByteArrayBody($d)
+	{
+		if( ($key = patched_array_search($d, $this->storedObjects, TRUE)) === FALSE && $key === FALSE )
+		{
+			if(count($this->storedObjects) < MAX_STORED_OBJECTS)
+			{
+				$this->storedObjects[] = & $d;
+			}
+			$this->storedDefinitions++;
+			$obj_length = strlen( $d );
+			$this->writeAmf3Int( $obj_length << 1 | 0x01 );
+			$this->outBuffer .= $d;
+		} else {
+			$handle = $key << 1;
+			$this->writeAmf3Int($handle);
+		}
+	} 
 
 	function writeAmf3Object($d)
 	{
@@ -1057,26 +1048,16 @@ class AMFSerializer extends AMFBaseSerializer {
 			
 			//Type this as a dynamic object
 			$this->outBuffer .= "\13";
-			 
-			$classname = $this->getClassName($d);
-			$package = substr($classname, 0, strrpos($classname, "."));
-						
-			$this->writeAmf3String($classname);
-
-			//echo $classname."\n-------------------------------\n";
-			foreach($realObj as $key => $val)
-			{				
-				$this->writeAmf3String($key);
-				
-				if($key == "body")
-				{
-					$this->writeAmf3Data($val, ($package == FRONTEND_MODELS_PACKAGE) ? AMFPHP_USE_ARRAYCOLLECTION : false);
-				}
-				else
-					$this->writeAmf3Data($val);
-			}
-			//echo "<<-->>\n";
 			
+			$classname = $this->getClassName($d);
+			
+			$this->writeAmf3String($classname);
+			
+			foreach($realObj as $key => $val)
+			{
+				$this->writeAmf3String($key);
+				$this->writeAmf3Data($val);
+			}
 			//Now we close the open object
 			$this->outBuffer .= "\1";
 		}

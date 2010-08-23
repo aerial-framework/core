@@ -10,216 +10,54 @@
 			$this->connection = Doctrine_Manager::connection();
 			$this->table = $this->connection->getTable($this->modelName);
 		}
-		
-		private function mergeDeep($object, $mergeProperties=true, $update=false)
+
+		public function save{{inflectSingle}}(${{object}}, $related=null)
 		{
-			if(is_null($object) || is_undefined($object))
-				return null;
-			
-			$class = get_class($object);
-			$new = new $class();
-			if($mergeProperties)
-				$new->merge($object, false);
-			
-			$relations = $object->getTable()->getRelations();
-			foreach($relations as $key => $val)
-			{
-				if(is_undefined($object->$key) || is_null($object->$key))
-					continue;
-				
-				if($val["type"] == Doctrine_Relation::MANY)
+			if($related)
+				foreach($related as $relation => $descriptor)
 				{
-					foreach($object->$key as $item)
+					if($descriptor["type"] == "many")
 					{
-						$itemClass = get_class($item);
-						$newItem = new $itemClass;
-												
-						$rel =& $new->$key;
-						
-						if(!is_nan($item->id))
+						for($x = 0; $x < count($descriptor["value"]); $x++)
 						{
-							$table = $val["table"];
-							$test = $table->find($item->id);
-							
-							$newItem = $this->mergeDeep($item, false);
-							
-							(is_object($test))
-							?	$newItem->assignIdentifier($item->id)
-							:	trigger_error("Attempt to relate non-existent record in table '".$table->getTableName().
-														"' with primary key of {$item->id}");
+							$arr =& ${{object}}->$relation;
+							$arr[$x] = $descriptor["value"][$x];
 						}
-						else
-							$newItem = $this->mergeDeep($item);
+					}
+					else
+					{
+						// check for existence of related item
+						$testTable = $this->connection->getTable($descriptor["table"]);
+						$foreign_key = $descriptor["foreign_key"];
+						$test = $testTable->find($descriptor["value"]["$foreign_key"]);
 						
-						$rel[] = $newItem;
+						(is_object($test))
+						?	${{object}}->$descriptor["local_key"] = $descriptor["value"]["$foreign_key"]
+						:	${{object}}->$relation = $descriptor["value"];
 					}
 				}
-				else
-					$new->$key = $this->mergeDeep($object->$key);
-			}
-			
-			return $new;
+				
+			return ${{object}}->save();
 		}
 		
-		public function getCompleteGraph($object)
+		public function update{{inflectSingle}}(${{object}}_id, $fields)
 		{
-			$new = new stdClass();
-			$new->_explicitType = $object->_explicitType;
-			foreach($object as $key => $val)
-				$new->$key = $val;
-				
-			$rels = $object->getTable()->getRelations();
-			foreach($rels as $key => $val)
-				$new->$key = $object->$key;
+			$existing = $this->get{{inflectSingle}}(${{object}}_id);
+			if(!$existing)
+				return;
 			
-			return $new;
-		}
-
-		public function save{{inflectSingle}}({{model}} ${{object}})
-		{
-			$new = $this->mergeDeep(${{object}});
-
-			// try save the object
-			$result = $new->trySave();
-			if($result === true)
+			foreach($fields as $key => $val)
 			{
-				return $this->getCompleteGraph($new);
-			}
-			else
-				$new->save();			// this will throw an error if it cannot successfully execute the request
-		}
-		
-		public function update{{inflectSingle}}({{model}} ${{object}})
-		{		
-			$new = new {{model}}();
-			$new->assignIdentifier(${{object}}->id);
-
-			$t = $new->getTable();
-			foreach(${{object}} as $key => $val)				// modify the regular fields
-			{
-				$definition = $t->getColumnDefinition($t->getColumnName($key));
-				//$nullable = !((boolean) $definition["notnull"]);
-				
-				$changed = ($new->$key !== ${{object}}->$key);
-				
-				if($definition["primary"])				// don't screw with the primary key
-					continue;
-				
-				if($changed)
+				if($existing->$key != $val)
 				{
-					$type = gettype(${{object}}->$key);
-					switch($type)
-					{
-						// if datatype is string and the value is an empty string, ignore this since the default value in ActionScript is ""
-						case "string":
-							if($val != null)
-								$new->$key = $val;
-							break;
-							
-						// if datatype is null and the value is null, assume that the developer wants to null the value in the database
-						case "null":
-						case "NULL":
-							$new->$key = null;
-							break;
-							
-						// if datatype is double and the value is NAN, ignore this since the default value in ActionScript is NaN
-						case "double":
-							if(!is_nan($val))
-								$new->$key = $val;
-							break;
-							
-						default:
-							$new->$key = $val;
-							break;
-					}
+					if($val === null && $existing->$key !== null)
+						continue;
+						
+					$existing->$key = $val;
 				}
 			}
-			
-			//then the relations...
-			$relations = $new->getTable()->getRelations();
-			foreach($relations as $key => $val)
-			{
-				// if the related data is undefined, ignore it because the property was unset
-				// if the related data is null, remove the relation
-				// it the related data is an empty Doctrine_Collection or an empty array, set the value
 				
-				if(is_null(${{object}}->$key))
-				{
-					$new->$key = null;
-				}
-				else if(is_undefined(${{object}}->$key))
-				{
-					continue;
-				}
-				else if(gettype(${{object}}->$key) == "array" || get_class(${{object}}->$key) == "Doctrine_Collection")
-				{
-					if((gettype(${{object}}->$key) == "array" && count(${{object}}->$key) == 0) || 
-								(get_class(${{object}}->$key) == "Doctrine_Collection" && ${{object}}->$key->count() == 0))
-					{
-						$coll = new Doctrine_Collection($val["class"]);
-						
-						foreach($new->$key as $item)
-						{
-							$foreign = $val["foreign"];
-							$item->$foreign = null;
-							
-							$coll->add($item);
-						}
-						
-						$new->$key = $coll;
-					}
-					
-					if($val["type"] == Doctrine_Relation::MANY)
-					{
-						$coll = new Doctrine_Collection($val["class"]);
-						
-						foreach($new->$key as $item)
-						{
-							$foreign = $val["foreign"];
-							$item->$foreign = null;
-							
-							$coll->add($item);
-						}
-						
-						foreach(${{object}}->$key as $item)
-						{
-							$c = $val["class"];
-							$typed = new $c;
-							$typed->merge($item, false);
-							if($item["id"] != 0 && !is_nan($item["id"]))
-								$typed->assignIdentifier($item["id"]);
-							else
-							{
-								$foreign = $val["foreign"];
-								$typed->$foreign = $new->id;
-							}
-								
-							$coll->add($typed);
-						}
-						
-						$new->$key = $coll;
-					}
-				}
-				else
-				{
-					$item = ${{object}}->$key;
-					
-					$c = $val["class"];
-					$typed = new $c;
-					$typed->merge($item, false);
-					if($item["id"] != 0 && !is_nan($item["id"]))
-						$typed->assignIdentifier($item["id"]);
-						
-					$new->$key = $typed;
-				}
-			}
-
-			// try save the object
-			$result = $new->trySave();
-			if($result === true)
-				return $new;
-			else
-				$new->save();			// this will throw an error if it cannot successfully execute the request
+			return $existing->save();
 		}
 		
 		public function delete{{inflectSingle}}(${{object}})
@@ -231,23 +69,9 @@
 			return $existing->delete();
 		}
 		
-		public function get{{inflectSingle}}(${{object}}_id, $deep=true)
+		public function get{{inflectSingle}}(${{object}}_id)
 		{
-			${{object}} = $this->table->find(${{object}}_id);
-			if(!$deep)
-				return ${{object}};
-			
-			$toReturn = new stdClass();
-			$toReturn->_explicitType = ${{object}}->_explicitType;
-
-			foreach(${{object}} as $key => $val)
-				$toReturn->$key = $val;
-			
-			$relations = ${{object}}->getTable()->getRelations();
-			foreach($relations as $alias => $val)
-				$toReturn->$alias = ${{object}}->$alias;
-				
-			return $toReturn;
+			return $this->table->find(${{object}}_id);
 		}
 		
 		public function get{{inflectSingle}}ByField($field, $value, $paged=false, $limit=0, $offset=0)
@@ -307,6 +131,46 @@
 				$complex->$relation["alias"] = $this->getRelated($relation["alias"], ${{object}}_id, $paged, $limit, $offset);
 				
 			return $complex;
+		}
+		
+		public function getAll{{inflectSingle}}WithRelated($criteria = null)
+		{
+			$relations = array({{relations}});
+				
+				
+			$q = Doctrine_Query::create()->from('{{model}} y');
+			$selectTables = 'y.*';
+			
+			foreach($relations as $relation)
+			{
+				$i++;
+				if($relation["type"] == "many" )
+				{
+					$selectTables .= ',z' . $i . '.*';
+					$q = $q->leftJoin('y.' . $relation["alias"] . ' z' . $i);
+				}
+			}
+	
+			$q = $q->select($selectTables);
+			
+			if($criteria <> null)
+			{
+				foreach($criteria as $key=>$value)
+				{
+					$q = $q->where("y.$key =?", $value);
+				}
+			}
+	
+			if($paged)
+			{
+				if($limit)
+				$q->limit($limit);
+				if($offset)
+				$q->offset($offset);
+			}
+	
+			return $q->execute();
+			
 		}
 		
 		// get related data for field

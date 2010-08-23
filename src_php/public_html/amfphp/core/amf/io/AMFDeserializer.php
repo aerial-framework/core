@@ -11,7 +11,6 @@
  */
 
 include_once(AMFPHP_BASE . "amf/io/AMFBaseDeserializer.php");
-include_once(AMFPHP_BASE . "amf/app/Undefined.php");
 
 class AMFDeserializer extends AMFBaseDeserializer {
 	/**
@@ -289,7 +288,7 @@ class AMFDeserializer extends AMFBaseDeserializer {
 				$data = null;
 				break;
 			case 6: // undefined
-				$data = new Undefined();
+				$data = null;
 				break;
 			case 7: // Circular references are returned here
 				$data = $this->readReference();
@@ -335,7 +334,7 @@ class AMFDeserializer extends AMFBaseDeserializer {
 		$type = $this->readByte();
 		switch($type)
 		{
-			case 0x00 : return new Undefined(); //undefined
+			case 0x00 : return null; //undefined
 			case 0x01 : return null; //null
 			case 0x02 : return false; //boolean false
 			case 0x03 : return true;  //boolean true
@@ -507,18 +506,12 @@ class AMFDeserializer extends AMFBaseDeserializer {
 			return $this->storedObjects[$handle];
 		}
 	}
-	
-	function mergeAll($data)
-	{
-		return $data;
-	}
 
 	function readAmf3Object()
 	{
 		$handle = $this->readAmf3Int();
-		$inline = (($handle & 1) != 0 );
-		$handle = $handle >> 1;
-				
+		$inline = (($handle & 1) != 0 ); $handle = $handle >> 1;
+		
 		if( $inline )
 		{
 			//an inline object
@@ -548,14 +541,15 @@ class AMFDeserializer extends AMFBaseDeserializer {
 			}
 			else
 			{
-				//echo "Prev ref $typeIdentifier\n";
-				
 				//a reference to a previously passed class-def
 				$classDefinition = $this->storedDefinitions[$handle];
 			}
 		}
 		else
+		{
+			//an object reference
 			return $this->storedObjects[$handle];
+		}		
 		
 		
 		$type = $classDefinition['type'];
@@ -567,39 +561,10 @@ class AMFDeserializer extends AMFBaseDeserializer {
 			$obj = array();
 			$isObject = false;
 		}
-		else
-		{
-			$package = substr($type, 0, strrpos($type, "."));
-			if($package == FRONTEND_MODELS_PACKAGE)
-			{				
-				//$obj = $this->readAmf3Data();
-				$members = $classDefinition['members'];
-				//echo "\n------------------\n";
-				//print_r($members);
-				//echo "-------------------------\n";
-				$vals = array();
-					
-				$memberCount = count($members);
-				for($i = 0; $i < $memberCount; $i++)
-				{
-					$val = $this->readAmf3Data();
-					$key = $members[$i];
-					$vals[$key] = $val;
-				}
-				
-				$c = get_class($obj);
-				$u = new $c();
-				if($vals["id"])
-					$u->assignIdentifier($vals["id"]);
-				$u->hydrate($vals, true);
-				
-				$obj = $u;
-			}
-		}
 
 		//Add to references as circular references may search for this object
-		array_push($this->storedObjects, $this->cloneInstance($obj));
-		
+		$this->storedObjects[] = & $obj;
+
 		if( $classDefinition['externalizable'] )
 		{
 			if($type == 'flex.messaging.io.ArrayCollection')
@@ -611,52 +576,49 @@ class AMFDeserializer extends AMFBaseDeserializer {
 				$obj = $this->readAmf3Data();
 			}
 			else
+			{
 				trigger_error("Unable to read externalizable data type " . $type, E_USER_ERROR);
+			}
 		}
 		else
 		{
 			$members = $classDefinition['members'];
-		
-			$package = substr($type, 0, strrpos($type, "."));
-			if($package != FRONTEND_MODELS_PACKAGE)
+			$memberCount = count($members);
+			for($i = 0; $i < $memberCount; $i++)
 			{
-				$memberCount = count($members);
-				for($i = 0; $i < $memberCount; $i++)
+				$val = $this->readAmf3Data();
+				$key = $members[$i];
+				if($isObject)
 				{
-					$val = $this->readAmf3Data();
-					$key = $members[$i];
+					$obj->$key = $val;
+				}
+				else
+				{
+					$obj[$key] = $val;
+				}
+			}
+
+			if($classDefinition['dynamic']/* && obj is ASObject*/)
+			{
+				$key = $this->readAmf3String();
+				while( $key != "" )
+				{
+					$value = $this->readAmf3Data();
 					if($isObject)
 					{
-						$obj->$key = $val;
+						$obj->$key = $value;
 					}
 					else
 					{
-						$obj[$key] = $val;
+						$obj[$key] = $value;
 					}
-				}
-	
-				if($classDefinition['dynamic']/* && obj is ASObject*/)
-				{
 					$key = $this->readAmf3String();
-					while( $key != "" )
-					{
-						$value = $this->readAmf3Data();
-						if($isObject)
-						{
-							$obj->$key = $value;
-						}
-						else
-						{
-							$obj[$key] = $value;
-						}
-						$key = $this->readAmf3String();
-					}
 				}
-				
-				if($type != '' && !$isObject)
-				{
-					$obj['_explicitType'] = $type;
-				}
+			}
+			
+			if($type != '' && !$isObject)
+			{
+				$obj['_explicitType'] = $type;
 			}
 		}
 		
@@ -664,25 +626,8 @@ class AMFDeserializer extends AMFBaseDeserializer {
 		{
 			$obj->init();
 		}
+		
 		return $obj;
-	}
-	
-	/**
-	 * PHP 5.3 doesn't like pass-by-reference sometimes, so this function either clones or duplicates an object
-	 */
-	function cloneInstance($instance)
-	{
-		if(gettype($instance) == "object")
-		{
-			return clone $instance;
-		}
-		elseif(gettype($instance) == "array")
-		{
-			$cloned = array();
-			foreach($instance as $key => $val)
-				$cloned[$key] = $val;	
-			return $cloned;
-		}
 	}
     
     /**
@@ -690,11 +635,7 @@ class AMFDeserializer extends AMFBaseDeserializer {
      */
     function readBuffer($len)
     {
-    	$data = "";
-    	for($i = 0; $i < $len; $i++)
-    	{
-    		$data .= $this->raw_data{$i + $this->current_byte};
-    	}
+    	$data = substr($this->raw_data,$this->current_byte,$len);
     	$this->current_byte += $len;
     	return $data;
     }

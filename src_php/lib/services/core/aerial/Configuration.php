@@ -36,7 +36,7 @@
 		}
 	
 		public static function generate()
-		{			
+		{
 			Doctrine_Core::dropDatabases();
 			Doctrine_Core::createDatabases();
 			Doctrine_Core::generateModelsFromYaml(AERIAL_BASE_PATH.'/schema.yml', BACKEND_MODELS_PATH);
@@ -141,7 +141,6 @@
 				$class = "Base".$service["class"]."Service";
 				$object = $service["object"];
 				$relations = $service["relations"];
-				
 				$model = $service["class"];
 				$inflectSingle = self::inflect("singular", $model);
 				$inflectPlural = self::inflect("plural", $model);
@@ -172,14 +171,17 @@
 					ActionScriptGenerator::generateASService(FRONTEND_SERVICES_PACKAGE, "{$model}Service", FRONTEND_SERVICES_PATH);
 			}
 		}
-
+			
+		
+		
 		public static function generateModelsAndServicesFromYaml()
 		{
 			$options = array('baseClassesDirectory'  =>  'base');
 			Doctrine_Core::generateModelsFromYaml(AERIAL_BASE_PATH.'/schema.yml', BACKEND_MODELS_PATH, $options);
 			self::generateModelsAndServices();
 		}
-			
+		
+		
 		private static function getModels()
 		{
 			$models = Doctrine_Core::loadModels(BACKEND_MODELS_PATH);

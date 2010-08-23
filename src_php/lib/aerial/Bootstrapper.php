@@ -1,7 +1,6 @@
 <?php
 	require_once(DOCTRINE_PATH.'/Doctrine.php');
 	require_once(AMFPHP_PATH.'/globals.php');
-	require_once(PLUGINS_PATH."/acl-auth/Authentication.php");
 
 	class Bootstrapper
 	{
@@ -33,29 +32,8 @@
 								"@".DB_HOST."/".
 								DB_NAME;
 			self::$_instance->conn = Doctrine_Manager::connection($connectionString, CONNECTION_NAME);
-			
-			if(!file_exists(BACKEND_MODELS_PATH))					// if the folder does not exist, create it to avoid errors!
-				mkdir(BACKEND_MODELS_PATH, AERIAL_DIR_CHMOD);
-			
 			Doctrine_Core::loadModels(BACKEND_MODELS_PATH);
 			
-			Authentication::getInstance();
-		}
-		
-		public static function setCredentials($username, $password)
-		{
-			 $credentials = new stdClass();
-			 $credentials->username = $username;
-			 $credentials->password = $password;
-			 
-			 session_start();
-			 $_SESSION["credentials"] = $credentials;
-		}
-		
-		public static function setNextInvokation($class, $method)
-		{
-			Authentication::$nextClass = $class;
-			Authentication::$nextMethod = $method;
 		}
 
 		public static function getInstance()

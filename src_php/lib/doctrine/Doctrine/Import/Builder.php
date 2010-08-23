@@ -1072,6 +1072,7 @@ class Doctrine_Import_Builder extends Doctrine_Builder
 
         if ( ! file_exists($writePath)) {
             file_put_contents($writePath, $content);
+            if(defined('AERIAL_FILE_CHMOD') && trim(AERIAL_FILE_CHMOD)  <> "") chmod($writePath, AERIAL_FILE_CHMOD);  //Mod for Aerial
         }
     }
 
@@ -1185,9 +1186,11 @@ class Doctrine_Import_Builder extends Doctrine_Builder
         if (isset($definition['generate_once']) && $definition['generate_once'] === true) {
             if ( ! file_exists($writePath)) {
                 $bytes = file_put_contents($writePath, $code);
+                if(defined('AERIAL_FILE_CHMOD') && trim(AERIAL_FILE_CHMOD)  <> "") chmod($writePath, AERIAL_FILE_CHMOD);  //Mod for Aerial
             }
         } else {
             $bytes = file_put_contents($writePath, $code);
+            if(defined('AERIAL_FILE_CHMOD') && trim(AERIAL_FILE_CHMOD)  <> "") chmod($writePath, AERIAL_FILE_CHMOD);  //Mod for Aerial
         }
 
         if (isset($bytes) && $bytes === false) {

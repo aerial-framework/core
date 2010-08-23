@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:WindowedApplication xmlns:mx="http://www.adobe.com/2006/mxml" layout="vertical" width="200" height="50"
-						paddingBottom="0" paddingLeft="0" paddingRight="0" paddingTop="0" applicationComplete="windowStuff()">
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" layout="vertical" width="200" height="50"
+						paddingBottom="0" paddingLeft="0" paddingRight="0" paddingTop="0" applicationComplete="//windowStuff()">
 	
 	<mx:Button label="Run" click="init()" width="100%" height="100%"/>
 	
 	<!--<mx:TraceTarget/>-->
 	
-	<mx:Script>
+	<!--<mx:Script>
 		<![CDATA[
 			import model.services.UserService;
 			import model.vo.CommentVO;
@@ -105,5 +105,5 @@
 				new UserService().updateUser(u);
 			}
 		]]>
-	</mx:Script>
-</mx:WindowedApplication>
+	</mx:Script>-->
+</mx:Application>

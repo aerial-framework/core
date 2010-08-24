@@ -155,7 +155,6 @@
                 case 'float':
                 	$as3type = "Number";
                 	break;
-                case 'enum':
                 case 'set':
                 case 'array':
                 	$as3type = "Array";
@@ -166,6 +165,7 @@
                 case 'object':
                 	$as3type = "Object";
                 	break;
+                case 'enum':
                 case 'gzip':
                 case 'string':
                 case 'blob':

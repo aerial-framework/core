@@ -72,10 +72,13 @@
 			
 			$relations = implode(",\n\t\t\t\t\t\t\t\t", $relations);
 			$replacementTokens = array("modelPackage","package", "class", "object", "availRelations", "relations", "inflectSingle", "inflectSingleUpper",
-											"inflectPlural", "inflectPluralUpper", "model", "modelService", "gatewayURL");
+											"inflectPlural", "inflectPluralUpper", "model", "modelService", "gatewayURL", "gatewayPackage");
 			$contents = self::readTemplate("AS3.baseservice");
 			
-			$gatewayURL = AMFPHP_GATEWAY_URL;
+			
+			$gateway = explode(",", AMFPHP_GATEWAY_URL);
+			$gatewayPackage = $gateway[0];
+			$gatewayURL = $gateway[1];
 			
 			foreach($replacementTokens as $token)
 				$contents = str_replace("{{".$token."}}", $$token, $contents);

@@ -1,10 +1,9 @@
 package model.services.base
 {
-	import com.forum.config.Config;
-	
 	import flash.utils.describeType;
-	
+
 	import model.vo.PostVO;
+	import com.forum.config.Config;
 	
 	import mx.messaging.config.ServerConfig;
 	import mx.rpc.remoting.RemoteObject;
@@ -30,7 +29,7 @@ package model.services.base
 		{
 			super(destination);
 			
-			this.endpoint = com.forum.config.Config.GATEWAY_URL;
+			this.endpoint = Config.GATEWAY_URL;
 			this.source = "PostService";
 		}
 		

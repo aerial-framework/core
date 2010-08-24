@@ -3,6 +3,7 @@ package model.services.base
 	import flash.utils.describeType;
 	
 	import model.vo.TopicVO;
+	import com.forum.config.Config;
 	
 	import mx.controls.Tree;
 	import mx.rpc.AsyncToken;
@@ -16,7 +17,7 @@ package model.services.base
 		public function BaseTestService(destination:String="aerial")
 		{
 			super(destination);
-			this.endpoint = "http://aerial-test/amfphp/gateway.php";
+			this.endpoint = Config.GATEWAY_URL;
 			this.source = "TopicService";
 		}
 		

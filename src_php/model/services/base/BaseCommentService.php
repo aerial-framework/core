@@ -191,7 +191,7 @@
 				$q->offset($offset);
 			}
 	
-			return $q->execute();
+			return $q->execute()->toAmf(true);
 			
 		}
 		

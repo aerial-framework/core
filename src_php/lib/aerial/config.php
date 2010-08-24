@@ -12,8 +12,7 @@
 	define("AERIAL_EXTERNAL", realpath(AERIAL_BASE_PATH."/.."));						// Path outside of aerial core
 	define("DOCTRINE_PATH", realpath(AERIAL_BASE_PATH. "/../doctrine"));				// Path to Doctrine library
 	define("AMFPHP_PATH", realpath(AERIAL_BASE_PATH."/../../public_html/amfphp"));		// Path to AMFPHP library
-	//define("AMFPHP_GATEWAY_URL", "http://aerial-test/amfphp/gateway.php");				// Path to AMFPHP gateway.php file
-	define("AMFPHP_GATEWAY_URL", "com.forum.config.Config.GATEWAY_URL");						// Path to AMFPHP gateway.php file
+	define("AMFPHP_GATEWAY_URL", "com.forum.config.Config,Config.GATEWAY_URL");				// Path to AMFPHP gateway.php file
 	
 	define("BACKEND_PATH", realpath(AERIAL_EXTERNAL."/../model"));						// Path to project development backend
 	

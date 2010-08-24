@@ -3,6 +3,7 @@ package {{package}}.base
 	import flash.utils.describeType;
 
 	import {{modelPackage}}.{{model}};
+	import {{gatewayPackage}};
 	
 	import mx.messaging.config.ServerConfig;
 	import mx.rpc.remoting.RemoteObject;
@@ -28,7 +29,7 @@ package {{package}}.base
 		{
 			super(destination);
 			
-			this.endpoint = "{{gatewayURL}}";
+			this.endpoint = {{gatewayURL}};
 			this.source = "{{modelService}}Service";
 		}
 		

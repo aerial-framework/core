@@ -3,6 +3,7 @@ package model.services.base
 	import flash.utils.describeType;
 
 	import model.vo.TopicVO;
+	import com.forum.config.Config;
 	
 	import mx.messaging.config.ServerConfig;
 	import mx.rpc.remoting.RemoteObject;
@@ -28,7 +29,7 @@ package model.services.base
 		{
 			super(destination);
 			
-			this.endpoint = "http://aerial-test/amfphp/gateway.php";
+			this.endpoint = Config.GATEWAY_URL;
 			this.source = "TopicService";
 		}
 		

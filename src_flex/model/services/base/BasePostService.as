@@ -1,7 +1,9 @@
 package model.services.base
 {
+	import com.forum.config.Config;
+	
 	import flash.utils.describeType;
-
+	
 	import model.vo.PostVO;
 	
 	import mx.messaging.config.ServerConfig;
@@ -28,7 +30,7 @@ package model.services.base
 		{
 			super(destination);
 			
-			this.endpoint = "http://aerial-test/amfphp/gateway.php";
+			this.endpoint = com.forum.config.Config.GATEWAY_URL;
 			this.source = "PostService";
 		}
 		

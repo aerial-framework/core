@@ -706,6 +706,27 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
         
         return $data;
     }
+    
+    
+     /**
+     * Transforms to AMF compatible collection.;
+     *
+     * @param boolean $deep
+     */
+	public function toAmf($deep = false, $prefixKey = false)
+    {
+        $data = new ArrayCollection();
+        foreach ($this as $key => $record) {          
+           	
+        	if($prefixKey) $key = get_class($record) . '_' .$key;
+            
+			$data->source[$key] = $record->toAmf($deep, $prefixKey);
+        }
+        
+        return $data;
+    }
+    
+    
 
     /**
      * Build an array made up of the values from the 2 specified columns

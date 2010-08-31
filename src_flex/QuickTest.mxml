@@ -5,21 +5,22 @@
 					   xmlns:services="model.services.*" applicationComplete="init()"
 					   >
 	<fx:Declarations>
-		<!-- Place non-visual elements (e.g., services, value objects) here -->
-		<services:TestService id="testService" result="result(event)" fault="fault(event)" />
+		<services:Test2Service id="test2Service" result="result(event)" fault="fault(event)" />
 		<services:UserService id="userService" result="resultHandler(event)" fault="faultHandler(event)" />
 	</fx:Declarations>
 	
 	<fx:Script>
 		<![CDATA[
-			
-			
+			import model.services.PostService;
 			import model.vo.*;
 			
+			import mx.collections.ListCollectionView;
 			import mx.controls.Alert;
 			import mx.messaging.messages.RemotingMessage;
 			import mx.rpc.events.FaultEvent;
 			import mx.rpc.events.ResultEvent;
+			
+			import org.aerial.rpc.operation.Operation;
 			
 			public var user:UserVO;
 			
@@ -28,16 +29,56 @@
 			{
 				WindowStuff();
 				
-				//	this.userService.getUser(1);
-				this.testService.findAll();
+				//testInsert();
+			
 			}
+			
+			public function model():void
+			{
+				var m:Model = new Model();
+				trace(m);
+			}
+			
+			public function testInsert():void
+			{
+				var topicVo:TopicVO = new TopicVO();
+				topicVo.userId = 1;
+				topicVo.categoryId = 2;
+				topicVo.name = "test name";
+				topicVo.description = "test description";
+				
+				var postVo:PostVO = new PostVO;
+				postVo.userId = 1;
+				postVo.message = "test message";
+				
+				topicVo.posts = postVo;
+				
+				
+				this.test2Service.insert(topicVo).execute();
+			}
+			
+			public function caps():void
+			{
+				var accessors:XMLList = describeType(Capabilities)..accessor.(@declaredBy == getQualifiedClassName(Capabilities));
+				   for each(var accessor:XML in accessors)
+				    trace(accessor.@name.toString() + " > " + Capabilities[accessor.@name.toString()]);
+				
+			}
+			
+			public function testCallbacks():void
+			{
+				this.test2Service.findAll().callback(myCallBack).execute();
+				this.test2Service.findAll().execute();
+				this.test2Service.findAll().callback(myCallBack).execute();
+			}
+			
 			
 			public function WindowStuff():void
 			{
 				nativeWindow.x = Screen.mainScreen.bounds.width - width - 50;
 				nativeWindow.y = Screen.mainScreen.bounds.height - height - 150;
 				
-				nativeWindow.alwaysInFront = true;
+				nativeWindow.alwaysInFront = false;
 				nativeWindow.orderToFront();
 			}
 			
@@ -78,14 +119,15 @@
 			}
 			
 			
-			public function myCallBack(event:ResultEvent):void{
-				trace("test callBack");				
+			public function myCallBack(event:ResultEvent):void
+			{
+				trace("CALLBACK_1:"  + event.result.toString());	
 			}
 			
 			
 			protected function result(event:ResultEvent):void
 			{
-				trace("test result");
+				trace("RESULT: " + event.result.toString());
 			}
 			
 			
@@ -98,6 +140,7 @@
 			
 		]]>
 	</fx:Script>
+	<s:Button x="153" y="98" label="Button" click="model()"/>
 	
 	
 </s:WindowedApplication>

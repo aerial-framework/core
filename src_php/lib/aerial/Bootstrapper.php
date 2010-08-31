@@ -4,6 +4,7 @@
     require_once(UTILS."/ArrayCollection.php");
 	require_once("config/Authentication.php");
 
+
 	class Bootstrapper
 	{
 		public $conn;
@@ -21,9 +22,13 @@
 		{
 			spl_autoload_register(array('Doctrine', 'autoload'));
 			spl_autoload_register(array('Doctrine_Core', 'modelsAutoload'));
+			require_once(DOCTRINE_PATH.'/custom/hydrator/AmfArrayCollection.php');
+			
+			
 
 			self::$_instance->manager = Doctrine_Manager::getInstance();
 
+			self::$_instance->manager->registerHydrator('amf_collection', 'Hydrator_Amf_Collection');
 			self::$_instance->manager->setAttribute(Doctrine_Core::ATTR_MODEL_LOADING, Doctrine_Core::MODEL_LOADING_CONSERVATIVE);
 			self::$_instance->manager->setAttribute(Doctrine_Core::ATTR_AUTO_ACCESSOR_OVERRIDE, true);
 			self::$_instance->manager->setAttribute(Doctrine_Core::ATTR_AUTOLOAD_TABLE_CLASSES, true);

@@ -1,6 +1,7 @@
 <?php
 	require_once(DOCTRINE_PATH.'/Doctrine.php');
 	require_once(AMFPHP_PATH.'/globals.php');
+	require_once(UTILS."/ArrayCollection.php");
 
 	class Bootstrapper
 	{
@@ -33,7 +34,6 @@
 								DB_NAME;
 			self::$_instance->conn = Doctrine_Manager::connection($connectionString, CONNECTION_NAME);
 			Doctrine_Core::loadModels(BACKEND_MODELS_PATH);
-			
 		}
 
 		public static function getInstance()

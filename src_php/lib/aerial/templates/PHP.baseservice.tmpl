@@ -11,7 +11,7 @@
 			$this->table = $this->connection->getTable($this->modelName);
 		}
 
-		public function save{{inflectSingle}}(${{object}}, $related=null)
+		public function save(${{object}}, $related=null)
 		{
 			if($related)
 				foreach($related as $relation => $descriptor)
@@ -40,9 +40,9 @@
 			return ${{object}}->save();
 		}
 		
-		public function update{{inflectSingle}}(${{object}}_id, $fields)
+		public function update(${{object}}_id, $fields)
 		{
-			$existing = $this->get{{inflectSingle}}(${{object}}_id);
+			$existing = $this->find(${{object}}_id);
 			if(!$existing)
 				return;
 			
@@ -60,21 +60,21 @@
 			return $existing->save();
 		}
 		
-		public function delete{{inflectSingle}}(${{object}})
+		public function drop(${{object}})
 		{
-			$existing = $this->get{{inflectSingle}}(${{object}}->id);
+			$existing = $this->find(${{object}}->id);
 			if(!$existing)
 				return;
 				
 			return $existing->delete();
 		}
 		
-		public function get{{inflectSingle}}(${{object}}_id)
+		public function find(${{object}}_id)
 		{
 			return $this->table->find(${{object}}_id);
 		}
 		
-		public function get{{inflectSingle}}ByField($field, $value, $paged=false, $limit=0, $offset=0)
+		public function findByField($field, $value, $paged=false, $limit=0, $offset=0)
 		{
 			$q = Doctrine_Query::create()
 					->select("x.*")
@@ -92,7 +92,7 @@
 			return $q->execute();
 		}
 		
-		public function get{{inflectSingle}}ByFields($fields, $values, $paged=false, $limit=0, $offset=0)
+		public function findByFields($fields, $values, $paged=false, $limit=0, $offset=0)
 		{
 			$q = Doctrine_Query::create()
 					->select("x.*");
@@ -118,7 +118,7 @@
 		}
 		
 		// get all relations and find related data
-		public function get{{inflectSingle}}WithRelated(${{object}}_id)
+		public function findWithRelated(${{object}}_id)
 		{
 			$relations = array({{relations}});
 			$complex = new stdClass();
@@ -133,7 +133,7 @@
 			return $complex;
 		}
 		
-		public function getAll{{inflectSingle}}WithRelated($criteria = null)
+		public function findWithRelated($criteria = null)
 		{
 			$relations = array({{relations}});
 				
@@ -234,7 +234,7 @@
 					:	$result;
 		}
 		
-		public function getAll{{inflectPlural}}($paged=false, $limit=0, $offset=0)
+		public function findAll($paged=false, $limit=0, $offset=0)
 		{
 			$q = Doctrine_Query::create()->select("*")->from("{{model}}");
 					
@@ -249,7 +249,7 @@
 			return $q->execute();
 		}
 		
-		public function count{{inflectPlural}}()
+		public function count()
 		{
 			return $this->table->count();
 		}

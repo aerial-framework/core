@@ -15,8 +15,10 @@
 	define("AMFPHP_GATEWAY_URL", "com.forum.config.Config,Config.GATEWAY_URL");				// Path to AMFPHP gateway.php file
 	
 	define("BACKEND_PATH", realpath(AERIAL_EXTERNAL."/../model"));						// Path to project development backend
-	
+
 	define("FRONTEND_PATH", realpath(AERIAL_EXTERNAL."/../../src_flex"));				// Path to project development fronend
+
+	define("UTILS", realpath(AERIAL_INTERNAL."/utils"));				                // Path to utils
 	
 	// models & services
 	
@@ -27,6 +29,8 @@
 	define("FRONTEND_MODELS_PATH", realpath(FRONTEND_PATH."/model/vo"));				// Path to generated frontend vo
 	define("FRONTEND_SERVICES_PACKAGE", "model.services");								// ActionScript package for generated services
 	define("FRONTEND_SERVICES_PATH", realpath(FRONTEND_PATH."/model/services"));		// Path to generated frontend services
+
+	define("VO_SUFFIX", "VO");
 	
 	// connection constants
 	// PRODUCTION_SERVER defined in gateway.php

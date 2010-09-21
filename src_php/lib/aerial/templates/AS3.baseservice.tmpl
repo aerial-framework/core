@@ -11,17 +11,17 @@ package {{package}}.base
 	public class {{class}} extends RemoteObject
 	{
 	
-		public const GET_{{inflectSingleUpper}}:String = "{{modelService}}Service.get{{inflectSingle}}";
-		public const GET_{{inflectSingleUpper}}_BY_FIELD:String = "{{modelService}}Service.get{{inflectSingle}}ByField";
-		public const GET_{{inflectSingleUpper}}_BY_FIELDS:String = "{{modelService}}Service.get{{inflectSingle}}ByFields";
-		public const GET_{{inflectSingleUpper}}_WITH_RELATED:String = "{{modelService}}Service.get{{inflectSingle}}WithRelated";
-		public const GET_ALL_{{inflectSingleUpper}}_WITH_RELATED:String = "{{modelService}}Service.getAll{{inflectSingle}}WithRelated";
+		public const FIND:String = "{{modelService}}Service.find";
+		public const FIND_BY_FIELD:String = "{{modelService}}Service.findByField";
+		public const FIND_BY_FIELDS:String = "{{modelService}}Service.findByFields";
+		public const FIND_WITH_RELATED:String = "{{modelService}}Service.findWithRelated";
+		public const GET_ALL_{{inflectSingleUpper}}_WITH_RELATED:String = "{{modelService}}Service.findAllWithRelated";
 		public const GET_RELATED:String = "{{modelService}}Service.getRelated";
-		public const GET_ALL_{{inflectPluralUpper}}:String = "{{modelService}}Service.getAll{{inflectPlural}}";
-		public const SAVE_{{inflectSingleUpper}}:String = "{{modelService}}Service.save{{inflectSingle}}";
-		public const UPDATE_{{inflectSingleUpper}}:String = "{{modelService}}Service.update{{inflectSingle}}";
-		public const DELETE_{{inflectSingleUpper}}:String = "{{modelService}}Service.delete{{inflectSingle}}";
-		public const COUNT_{{inflectPluralUpper}}:String = "{{modelService}}Service.count{{inflectPlural}}";
+		public const GET_ALL_{{inflectPluralUpper}}:String = "{{modelService}}Service.findAll";
+		public const SAVE_{{inflectSingleUpper}}:String = "{{modelService}}Service.save";
+		public const UPDATE_{{inflectSingleUpper}}:String = "{{modelService}}Service.update";
+		public const DELETE_{{inflectSingleUpper}}:String = "{{modelService}}Service.drop";
+		public const COUNT_{{inflectPluralUpper}}:String = "{{modelService}}Service.count";
 		public const COUNT_RELATED:String = "{{modelService}}Service.countRelated";
 		
 
@@ -33,29 +33,29 @@ package {{package}}.base
 			this.source = "{{modelService}}Service";
 		}
 		
-		public function get{{inflectSingle}}({{object}}_id:uint):void
+		public function find({{object}}_id:uint):void
 		{
-			this.getOperation("get{{inflectSingle}}").send({{object}}_id);
+			this.getOperation("find").send({{object}}_id);
 		}
 		
-		public function get{{inflectSingle}}ByField(field:String, value:*, paged:Boolean=false, limit:int=0, offset:int=0):void
+		public function findByField(field:String, value:*, paged:Boolean=false, limit:int=0, offset:int=0):void
 		{
-			this.getOperation("get{{inflectSingle}}ByField").send(field, value, paged, limit, offset);
+			this.getOperation("findByField").send(field, value, paged, limit, offset);
 		}
 		
-		public function get{{inflectSingle}}ByFields(fields:Array, values:Array, paged:Boolean=false, limit:int=0, offset:int=0):void
+		public function findByFields(fields:Array, values:Array, paged:Boolean=false, limit:int=0, offset:int=0):void
 		{
-			this.getOperation("get{{inflectSingle}}ByFields").send(fields, values, paged, limit, offset);
+			this.getOperation("findByFields").send(fields, values, paged, limit, offset);
 		}
 		
-		public function get{{inflectSingle}}WithRelated({{object}}_id:uint):void
+		public function findWithRelated({{object}}_id:uint):void
 		{
-			this.getOperation("get{{inflectSingle}}WithRelated").send({{object}}_id);
+			this.getOperation("findWithRelated").send({{object}}_id);
 		}
 		
-		public function getAll{{inflectSingle}}WithRelated(criteria:Object=null):void
+		public function findAllWithRelated(criteria:Object=null):void
 		{
-			this.getOperation("getAll{{inflectSingle}}WithRelated").send(criteria);
+			this.getOperation("findAllWithRelated").send(criteria);
 		}
 		
 		public function getRelated(field:String, id:uint, paged:Boolean=false, limit:int=0, offset:int=0):void
@@ -65,17 +65,17 @@ package {{package}}.base
 			this.getOperation("getRelated").send(field, id, paged, limit, offset);
 		}
 		
-		public function getAll{{inflectPlural}}(paged:Boolean=false, limit:int=0, offset:int=0):void
+		public function findAll(paged:Boolean=false, limit:int=0, offset:int=0):void
 		{
-			this.getOperation("getAll{{inflectPlural}}").send(paged, limit, offset);
+			this.getOperation("findAll").send(paged, limit, offset);
 		}
 								   
-		public function save{{inflectSingle}}({{object}}:{{model}}):void
+		public function save({{object}}:{{model}}):void
 		{
-			this.getOperation("save{{inflectSingle}}").send({{object}}, {{object}}.getRelatedData());
+			this.getOperation("save").send({{object}}, {{object}}.getRelatedData());
 		}
 		
-		public function update{{inflectSingle}}({{object}}:{{model}}):void
+		public function update({{object}}:{{model}}):void
 		{
 			
 			var reflection:XML = describeType({{object}});
@@ -85,17 +85,17 @@ package {{package}}.base
 			for each(var property:XML in props)
 				fields[property.@name] = {{object}}[property.@name];
 			
-			this.getOperation("update{{inflectSingle}}").send({{object}}.id, fields);
+			this.getOperation("update").send({{object}}.id, fields);
 		}
 		
-		public function delete{{inflectSingle}}({{object}}:{{model}}):void
+		public function drop({{object}}:{{model}}):void
 		{
-			this.getOperation("delete{{inflectSingle}}").send({{object}});
+			this.getOperation("drop").send({{object}});
 		}
 		
-		public function count{{inflectPlural}}():void
+		public function count():void
 		{
-			this.getOperation("count{{inflectPlural}}").send();
+			this.getOperation("count").send();
 		}
 		
 		public function countRelated(field:String, {{object}}_id:uint):void

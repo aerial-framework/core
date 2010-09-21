@@ -118,7 +118,7 @@
 			
 			foreach($modelData as $model)
 			{
-				$class = $model["class"]."VO";
+				$class = $model["class"].VO_SUFFIX;
 				$remoteClass = $model["class"];
 				$properties = $model["properties"];
 				$relations = $model["relations"];
@@ -166,7 +166,7 @@
 				$inflectPlural = self::inflect("plural", $model);
 				
 				ActionScriptGenerator::generateASBaseService(FRONTEND_MODELS_PACKAGE, FRONTEND_SERVICES_PACKAGE, $class, $object, $relations,
-												$inflectSingle, $inflectPlural, $model."VO", $model, FRONTEND_SERVICES_PATH."/base");
+												$inflectSingle, $inflectPlural, $model.VO_SUFFIX, $model, FRONTEND_SERVICES_PATH."/base");
 				if($numExisting != count($asServicesData))
 					ActionScriptGenerator::generateASService(FRONTEND_SERVICES_PACKAGE, "{$model}Service", FRONTEND_SERVICES_PATH);
 			}

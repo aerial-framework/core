@@ -46,7 +46,6 @@ abstract class BaseUser extends Doctrine_Record
         $this->hasColumn('modDate', 'timestamp', null, array(
              'type' => 'timestamp',
              'notnull' => true,
-             'default' => 'CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP',
              ));
 
         $this->option('collate', 'utf8_general_ci');

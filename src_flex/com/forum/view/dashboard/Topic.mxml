@@ -44,7 +44,7 @@
 					//Need to figure out how to retrieve orphaned topics.
 					this.topics = new ArrayCollection();
 				}else if(cat != null){
-					this.topicService.getAllTopicWithRelated({"categoryId":this.currentCategory.id});
+					this.topicService.findAllWithRelated({"categoryId":this.currentCategory.id});
 				}
 			}
 			
@@ -57,19 +57,19 @@
 				switch(operation)
 				{
 					
-					case topicService.GET_ALL_TOPICS:
+					case topicService.FIND_ALL:
 						this.topics = event.result as ArrayCollection;
 						break;
-					case topicService.SAVE_TOPIC:
-						this.topicService.getAllTopicWithRelated({"categoryId":this.currentCategory.id});
+					case topicService.SAVE:
+						this.topicService.findAllWithRelated({"categoryId":this.currentCategory.id});
 						break;
-					case topicService.UPDATE_TOPIC:
-						this.topicService.getAllTopicWithRelated({"categoryId":this.currentCategory.id});
+					case topicService.UPDATE:
+						this.topicService.findAllWithRelated({"categoryId":this.currentCategory.id});
 						break;
-					case topicService.DELETE_TOPIC:
-						this.topicService.getAllTopicWithRelated({"categoryId":this.currentCategory.id});
+					case topicService.DROP:
+						this.topicService.findAllWithRelated({"categoryId":this.currentCategory.id});
 						break;
-					case topicService.GET_ALL_TOPIC_WITH_RELATED:
+					case topicService.FIND_ALL_WITH_RELATED:
 						this.topics = (event.result as ArrayCollection);
 						break;
 				}
@@ -87,7 +87,7 @@
 				topic.userId = this.user.id;
 				topic.name = name;
 				topic.description = description;
-				this.topicService.saveTopic(topic);
+				this.topicService.save(topic);
 			}
 
 			
@@ -102,13 +102,13 @@
 				if(this.currentCategory) topic.categoryId = (this.topicList.selectedItem as TopicVO).categoryId;
 				topic.userId = (this.topicList.selectedItem as TopicVO).userId;
 				
-				this.topicService.updateTopic(topic);
+				this.topicService.update(topic);
 			}
 			
 			public function deleteTopic():void
 			{
 				var topic:TopicVO = this.topicList.selectedItem as TopicVO;
-				this.topicService.deleteTopic(topic);
+				this.topicService.drop(topic);
 			}
 			
 			public function clickTopicItem(event:ListEvent):void

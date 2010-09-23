@@ -17,7 +17,7 @@
 			//Big security issue maintaining authentication just on the client. -Rob
 			private function login(username:String, password:String):void
 			{
-				this.userService.getUserByFields(["username", "password"],[username, password]);
+				this.userService.findByFields(["username", "password"],[username, password]);
 			}
 			
 			private function result(event:ResultEvent):void
@@ -27,7 +27,7 @@
 				
 				switch(operation){
 					
-					case userService.GET_USER_BY_FIELDS:
+					case userService.FIND_BY_FIELDS:
 						
 						var le:LoginEvent = new LoginEvent(LoginEvent.LOGIN_ACTION);
 						
@@ -50,7 +50,7 @@
 				
 				switch(operation)
 				{
-					case userService.GET_USER_BY_FIELDS:
+					case userService.FIND_BY_FIELDS:
 						Alert.show("An error occured while attempting to login this user!");
 						break;
 				}	

@@ -11,7 +11,7 @@
 			$this->table = $this->connection->getTable($this->modelName);
 		}
 
-		public function saveComment($comment, $related=null)
+		public function save($comment, $related=null)
 		{
 			if($related)
 				foreach($related as $relation => $descriptor)
@@ -40,9 +40,9 @@
 			return $comment->save();
 		}
 		
-		public function updateComment($comment_id, $fields)
+		public function update($comment_id, $fields)
 		{
-			$existing = $this->getComment($comment_id);
+			$existing = $this->find($comment_id);
 			if(!$existing)
 				return;
 			
@@ -60,21 +60,21 @@
 			return $existing->save();
 		}
 		
-		public function deleteComment($comment)
+		public function drop($comment)
 		{
-			$existing = $this->getComment($comment->id);
+			$existing = $this->find($comment->id);
 			if(!$existing)
 				return;
 				
 			return $existing->delete();
 		}
 		
-		public function getComment($comment_id)
+		public function find($comment_id)
 		{
 			return $this->table->find($comment_id);
 		}
 		
-		public function getCommentByField($field, $value, $paged=false, $limit=0, $offset=0)
+		public function findByField($field, $value, $paged=false, $limit=0, $offset=0)
 		{
 			$q = Doctrine_Query::create()
 					->select("x.*")
@@ -92,7 +92,7 @@
 			return $q->execute();
 		}
 		
-		public function getCommentByFields($fields, $values, $paged=false, $limit=0, $offset=0)
+		public function findByFields($fields, $values, $paged=false, $limit=0, $offset=0)
 		{
 			$q = Doctrine_Query::create()
 					->select("x.*");
@@ -118,7 +118,7 @@
 		}
 		
 		// get all relations and find related data
-		public function getCommentWithRelated($comment_id)
+		public function findWithRelated($comment_id)
 		{
 			$relations = array("User" => array("type" => "one",
 													"alias" => "User",
@@ -144,7 +144,7 @@
 			return $complex;
 		}
 		
-		public function getAllCommentWithRelated($criteria = null)
+		public function findAllWithRelated($criteria = null)
 		{
 			$relations = array("User" => array("type" => "one",
 													"alias" => "User",
@@ -196,7 +196,7 @@
 		}
 		
 		// get related data for field
-		public function getRelated($field, $comment_id, $paged=false, $limit=0, $offset=0)
+		public function findRelated($field, $comment_id, $paged=false, $limit=0, $offset=0)
 		{
 			//	available relations:
 			//		Alias: User, Type: one
@@ -258,7 +258,7 @@
 					:	$result;
 		}
 		
-		public function getAllComments($paged=false, $limit=0, $offset=0)
+		public function findAll($paged=false, $limit=0, $offset=0)
 		{
 			$q = Doctrine_Query::create()->select("*")->from("Comment");
 					
@@ -273,7 +273,7 @@
 			return $q->execute();
 		}
 		
-		public function countComments()
+		public function count()
 		{
 			return $this->table->count();
 		}

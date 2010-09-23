@@ -23,12 +23,11 @@
 			import mx.rpc.events.FaultEvent;
 			import mx.rpc.events.ResultEvent;
 			
-			
 			private function init():void
 			{
 				WindowStuff();
-				this.addEventListener(LoginEvent.LOGIN_ACTION, loginHandler); 
-				this.addEventListener(LoginEvent.LOGOUT_ACTION, loginHandler); 
+				this.addEventListener(LoginEvent.LOGIN_ACTION, loginHandler);
+				this.addEventListener(LoginEvent.LOGOUT_ACTION, loginHandler);
 			}
 			
 			public function WindowStuff():void
@@ -36,8 +35,9 @@
 				this.width = 1200;
 				this.height = 800;
 				
-				nativeWindow.x = Screen.mainScreen.bounds.width - width - 50;
+				nativeWindow.x = Screen.screens[1].bounds.x + 1;
 				nativeWindow.y = Screen.mainScreen.bounds.height - height - 100;
+				nativeWindow.maximize();
 				
 				nativeWindow.alwaysInFront = true;
 				nativeWindow.orderToFront();

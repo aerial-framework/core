@@ -11,7 +11,7 @@
 			$this->table = $this->connection->getTable($this->modelName);
 		}
 
-		public function savePost($post, $related=null)
+		public function save($post, $related=null)
 		{
 			if($related)
 				foreach($related as $relation => $descriptor)
@@ -40,9 +40,9 @@
 			return $post->save();
 		}
 		
-		public function updatePost($post_id, $fields)
+		public function update($post_id, $fields)
 		{
-			$existing = $this->getPost($post_id);
+			$existing = $this->find($post_id);
 			if(!$existing)
 				return;
 			
@@ -60,21 +60,21 @@
 			return $existing->save();
 		}
 		
-		public function deletePost($post)
+		public function drop($post)
 		{
-			$existing = $this->getPost($post->id);
+			$existing = $this->find($post->id);
 			if(!$existing)
 				return;
 				
 			return $existing->delete();
 		}
 		
-		public function getPost($post_id)
+		public function find($post_id)
 		{
 			return $this->table->find($post_id);
 		}
 		
-		public function getPostByField($field, $value, $paged=false, $limit=0, $offset=0)
+		public function findByField($field, $value, $paged=false, $limit=0, $offset=0)
 		{
 			$q = Doctrine_Query::create()
 					->select("x.*")
@@ -92,7 +92,7 @@
 			return $q->execute();
 		}
 		
-		public function getPostByFields($fields, $values, $paged=false, $limit=0, $offset=0)
+		public function findByFields($fields, $values, $paged=false, $limit=0, $offset=0)
 		{
 			$q = Doctrine_Query::create()
 					->select("x.*");
@@ -118,7 +118,7 @@
 		}
 		
 		// get all relations and find related data
-		public function getPostWithRelated($post_id)
+		public function findWithRelated($post_id)
 		{
 			$relations = array("User" => array("type" => "one",
 													"alias" => "User",
@@ -150,7 +150,7 @@
 			return $complex;
 		}
 		
-		public function getAllPostWithRelated($criteria = null)
+		public function findAllWithRelated($criteria = null)
 		{
 			$relations = array("User" => array("type" => "one",
 													"alias" => "User",
@@ -208,7 +208,7 @@
 		}
 		
 		// get related data for field
-		public function getRelated($field, $post_id, $paged=false, $limit=0, $offset=0)
+		public function findRelated($field, $post_id, $paged=false, $limit=0, $offset=0)
 		{
 			//	available relations:
 			//		Alias: User, Type: one
@@ -271,7 +271,7 @@
 					:	$result;
 		}
 		
-		public function getAllPosts($paged=false, $limit=0, $offset=0)
+		public function findAll($paged=false, $limit=0, $offset=0)
 		{
 			$q = Doctrine_Query::create()->select("*")->from("Post");
 					
@@ -286,7 +286,7 @@
 			return $q->execute();
 		}
 		
-		public function countPosts()
+		public function count()
 		{
 			return $this->table->count();
 		}

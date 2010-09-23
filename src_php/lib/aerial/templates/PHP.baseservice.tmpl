@@ -133,7 +133,7 @@
 			return $complex;
 		}
 		
-		public function findWithRelated($criteria = null)
+		public function findAllWithRelated($criteria = null)
 		{
 			$relations = array({{relations}});
 				
@@ -174,7 +174,7 @@
 		}
 		
 		// get related data for field
-		public function getRelated($field, ${{object}}_id, $paged=false, $limit=0, $offset=0)
+		public function findRelated($field, ${{object}}_id, $paged=false, $limit=0, $offset=0)
 		{
 			//	available relations:
 {{availRelations}}

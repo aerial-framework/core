@@ -11,7 +11,7 @@
 			$this->table = $this->connection->getTable($this->modelName);
 		}
 
-		public function saveCategory($category, $related=null)
+		public function save($category, $related=null)
 		{
 			if($related)
 				foreach($related as $relation => $descriptor)
@@ -40,9 +40,9 @@
 			return $category->save();
 		}
 		
-		public function updateCategory($category_id, $fields)
+		public function update($category_id, $fields)
 		{
-			$existing = $this->getCategory($category_id);
+			$existing = $this->find($category_id);
 			if(!$existing)
 				return;
 			
@@ -60,21 +60,21 @@
 			return $existing->save();
 		}
 		
-		public function deleteCategory($category)
+		public function drop($category)
 		{
-			$existing = $this->getCategory($category->id);
+			$existing = $this->find($category->id);
 			if(!$existing)
 				return;
 				
 			return $existing->delete();
 		}
 		
-		public function getCategory($category_id)
+		public function find($category_id)
 		{
 			return $this->table->find($category_id);
 		}
 		
-		public function getCategoryByField($field, $value, $paged=false, $limit=0, $offset=0)
+		public function findByField($field, $value, $paged=false, $limit=0, $offset=0)
 		{
 			$q = Doctrine_Query::create()
 					->select("x.*")
@@ -92,7 +92,7 @@
 			return $q->execute();
 		}
 		
-		public function getCategoryByFields($fields, $values, $paged=false, $limit=0, $offset=0)
+		public function findByFields($fields, $values, $paged=false, $limit=0, $offset=0)
 		{
 			$q = Doctrine_Query::create()
 					->select("x.*");
@@ -118,7 +118,7 @@
 		}
 		
 		// get all relations and find related data
-		public function getCategoryWithRelated($category_id)
+		public function findWithRelated($category_id)
 		{
 			$relations = array("User" => array("type" => "one",
 													"alias" => "User",
@@ -144,7 +144,7 @@
 			return $complex;
 		}
 		
-		public function getAllCategoryWithRelated($criteria = null)
+		public function findAllWithRelated($criteria = null)
 		{
 			$relations = array("User" => array("type" => "one",
 													"alias" => "User",
@@ -196,7 +196,7 @@
 		}
 		
 		// get related data for field
-		public function getRelated($field, $category_id, $paged=false, $limit=0, $offset=0)
+		public function findRelated($field, $category_id, $paged=false, $limit=0, $offset=0)
 		{
 			//	available relations:
 			//		Alias: User, Type: one
@@ -258,7 +258,7 @@
 					:	$result;
 		}
 		
-		public function getAllCategories($paged=false, $limit=0, $offset=0)
+		public function findAll($paged=false, $limit=0, $offset=0)
 		{
 			$q = Doctrine_Query::create()->select("*")->from("Category");
 					
@@ -273,7 +273,7 @@
 			return $q->execute();
 		}
 		
-		public function countCategories()
+		public function count()
 		{
 			return $this->table->count();
 		}

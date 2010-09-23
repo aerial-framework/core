@@ -11,7 +11,7 @@
 			$this->table = $this->connection->getTable($this->modelName);
 		}
 
-		public function saveTopic($topic, $related=null)
+		public function save($topic, $related=null)
 		{
 			if($related)
 				foreach($related as $relation => $descriptor)
@@ -40,9 +40,9 @@
 			return $topic->save();
 		}
 		
-		public function updateTopic($topic_id, $fields)
+		public function update($topic_id, $fields)
 		{
-			$existing = $this->getTopic($topic_id);
+			$existing = $this->find($topic_id);
 			if(!$existing)
 				return;
 			
@@ -60,21 +60,21 @@
 			return $existing->save();
 		}
 		
-		public function deleteTopic($topic)
+		public function drop($topic)
 		{
-			$existing = $this->getTopic($topic->id);
+			$existing = $this->find($topic->id);
 			if(!$existing)
 				return;
 				
 			return $existing->delete();
 		}
 		
-		public function getTopic($topic_id)
+		public function find($topic_id)
 		{
 			return $this->table->find($topic_id);
 		}
 		
-		public function getTopicByField($field, $value, $paged=false, $limit=0, $offset=0)
+		public function findByField($field, $value, $paged=false, $limit=0, $offset=0)
 		{
 			$q = Doctrine_Query::create()
 					->select("x.*")
@@ -92,7 +92,7 @@
 			return $q->execute();
 		}
 		
-		public function getTopicByFields($fields, $values, $paged=false, $limit=0, $offset=0)
+		public function findByFields($fields, $values, $paged=false, $limit=0, $offset=0)
 		{
 			$q = Doctrine_Query::create()
 					->select("x.*");
@@ -118,7 +118,7 @@
 		}
 		
 		// get all relations and find related data
-		public function getTopicWithRelated($topic_id)
+		public function findWithRelated($topic_id)
 		{
 			$relations = array("Category" => array("type" => "one",
 													"alias" => "Category",
@@ -150,7 +150,7 @@
 			return $complex;
 		}
 		
-		public function getAllTopicWithRelated($criteria = null)
+		public function findAllWithRelated($criteria = null)
 		{
 			$relations = array("Category" => array("type" => "one",
 													"alias" => "Category",
@@ -208,7 +208,7 @@
 		}
 		
 		// get related data for field
-		public function getRelated($field, $topic_id, $paged=false, $limit=0, $offset=0)
+		public function findRelated($field, $topic_id, $paged=false, $limit=0, $offset=0)
 		{
 			//	available relations:
 			//		Alias: Category, Type: one
@@ -271,7 +271,7 @@
 					:	$result;
 		}
 		
-		public function getAllTopics($paged=false, $limit=0, $offset=0)
+		public function findAll($paged=false, $limit=0, $offset=0)
 		{
 			$q = Doctrine_Query::create()->select("*")->from("Topic");
 					
@@ -286,7 +286,7 @@
 			return $q->execute();
 		}
 		
-		public function countTopics()
+		public function count()
 		{
 			return $this->table->count();
 		}

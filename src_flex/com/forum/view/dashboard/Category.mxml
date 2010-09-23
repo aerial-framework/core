@@ -25,7 +25,7 @@
 			
 			public function init():void
 			{
-				this.categoryService.getAllCategories();
+				this.categoryService.findAll();
 			}
 			
 			public function get categories():ArrayCollection
@@ -52,7 +52,7 @@
 					var cat:CategoryVO = new CategoryVO();
 					cat.name = name;
 					cat.userId = this.user.id;
-					this.categoryService.saveCategory(cat);			
+					this.categoryService.save(cat);			
 				}
 			}
 			
@@ -66,13 +66,13 @@
 				//I shouldn't have to add the following on an UPDATE.
 				cat.userId = (this.categoryList.selectedItem as CategoryVO).userId
 				
-				this.categoryService.updateCategory(cat);			
+				this.categoryService.update(cat);			
 			}
 			
 			public function deleteCategory():void
 			{
 				var cat:CategoryVO = this.categoryList.selectedItem as CategoryVO;
-				this.categoryService.deleteCategory(cat);
+				this.categoryService.drop(cat);
 			}
 			
 			
@@ -90,17 +90,17 @@
 				switch(operation)
 				{
 					
-					case categoryService.GET_ALL_CATEGORIES:
+					case categoryService.FIND_ALL:
 						this.categories = event.result as ArrayCollection;
 						break;
-					case categoryService.SAVE_CATEGORY:
-						this.categoryService.getAllCategories();
+					case categoryService.SAVE:
+						this.categoryService.findAll();
 						break;
-					case categoryService.UPDATE_CATEGORY:
-						this.categoryService.getAllCategories();
+					case categoryService.UPDATE:
+						this.categoryService.findAll();
 						break;
-					case categoryService.DELETE_CATEGORY:
-						this.categoryService.getAllCategories();
+					case categoryService.DROP:
+						this.categoryService.findAll();
 						break;
 				}
 			}

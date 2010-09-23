@@ -11,17 +11,17 @@ package model.services.base
 	public class BaseCategoryService extends RemoteObject
 	{
 	
-		public const GET_CATEGORY:String = "CategoryService.getCategory";
-		public const GET_CATEGORY_BY_FIELD:String = "CategoryService.getCategoryByField";
-		public const GET_CATEGORY_BY_FIELDS:String = "CategoryService.getCategoryByFields";
-		public const GET_CATEGORY_WITH_RELATED:String = "CategoryService.getCategoryWithRelated";
-		public const GET_ALL_CATEGORY_WITH_RELATED:String = "CategoryService.getAllCategoryWithRelated";
-		public const GET_RELATED:String = "CategoryService.getRelated";
-		public const GET_ALL_CATEGORIES:String = "CategoryService.getAllCategories";
-		public const SAVE_CATEGORY:String = "CategoryService.saveCategory";
-		public const UPDATE_CATEGORY:String = "CategoryService.updateCategory";
-		public const DELETE_CATEGORY:String = "CategoryService.deleteCategory";
-		public const COUNT_CATEGORIES:String = "CategoryService.countCategories";
+		public const FIND:String = "CategoryService.find";
+		public const FIND_BY_FIELD:String = "CategoryService.findByField";
+		public const FIND_BY_FIELDS:String = "CategoryService.findByFields";
+		public const FIND_WITH_RELATED:String = "CategoryService.findWithRelated";
+		public const FIND_ALL_WITH_RELATED:String = "CategoryService.findAllWithRelated";
+		public const FIND_RELATED:String = "CategoryService.findRelated";
+		public const FIND_ALL:String = "CategoryService.findAll";
+		public const SAVE:String = "CategoryService.save";
+		public const UPDATE:String = "CategoryService.update";
+		public const DROP:String = "CategoryService.drop";
+		public const COUNT:String = "CategoryService.count";
 		public const COUNT_RELATED:String = "CategoryService.countRelated";
 		
 
@@ -33,32 +33,32 @@ package model.services.base
 			this.source = "CategoryService";
 		}
 		
-		public function getCategory(category_id:uint):void
+		public function find(category_id:uint):void
 		{
-			this.getOperation("getCategory").send(category_id);
+			this.getOperation("find").send(category_id);
 		}
 		
-		public function getCategoryByField(field:String, value:*, paged:Boolean=false, limit:int=0, offset:int=0):void
+		public function findByField(field:String, value:*, paged:Boolean=false, limit:int=0, offset:int=0):void
 		{
-			this.getOperation("getCategoryByField").send(field, value, paged, limit, offset);
+			this.getOperation("findByField").send(field, value, paged, limit, offset);
 		}
 		
-		public function getCategoryByFields(fields:Array, values:Array, paged:Boolean=false, limit:int=0, offset:int=0):void
+		public function findByFields(fields:Array, values:Array, paged:Boolean=false, limit:int=0, offset:int=0):void
 		{
-			this.getOperation("getCategoryByFields").send(fields, values, paged, limit, offset);
+			this.getOperation("findByFields").send(fields, values, paged, limit, offset);
 		}
 		
-		public function getCategoryWithRelated(category_id:uint):void
+		public function findWithRelated(category_id:uint):void
 		{
-			this.getOperation("getCategoryWithRelated").send(category_id);
+			this.getOperation("findWithRelated").send(category_id);
 		}
 		
-		public function getAllCategoryWithRelated(criteria:Object=null):void
+		public function findAllWithRelated(criteria:Object=null):void
 		{
-			this.getOperation("getAllCategoryWithRelated").send(criteria);
+			this.getOperation("findAllWithRelated").send(criteria);
 		}
 		
-		public function getRelated(field:String, id:uint, paged:Boolean=false, limit:int=0, offset:int=0):void
+		public function findRelated(field:String, id:uint, paged:Boolean=false, limit:int=0, offset:int=0):void
 		{
 			//	available relations:
 			//		Alias: User, Type: one
@@ -67,17 +67,17 @@ package model.services.base
 			this.getOperation("getRelated").send(field, id, paged, limit, offset);
 		}
 		
-		public function getAllCategories(paged:Boolean=false, limit:int=0, offset:int=0):void
+		public function findAll(paged:Boolean=false, limit:int=0, offset:int=0):void
 		{
-			this.getOperation("getAllCategories").send(paged, limit, offset);
+			this.getOperation("findAll").send(paged, limit, offset);
 		}
 								   
-		public function saveCategory(category:CategoryVO):void
+		public function save(category:CategoryVO):void
 		{
-			this.getOperation("saveCategory").send(category, category.getRelatedData());
+			this.getOperation("save").send(category, category.getRelatedData());
 		}
 		
-		public function updateCategory(category:CategoryVO):void
+		public function update(category:CategoryVO):void
 		{
 			
 			var reflection:XML = describeType(category);
@@ -87,17 +87,17 @@ package model.services.base
 			for each(var property:XML in props)
 				fields[property.@name] = category[property.@name];
 			
-			this.getOperation("updateCategory").send(category.id, fields);
+			this.getOperation("update").send(category.id, fields);
 		}
 		
-		public function deleteCategory(category:CategoryVO):void
+		public function drop(category:CategoryVO):void
 		{
-			this.getOperation("deleteCategory").send(category);
+			this.getOperation("drop").send(category);
 		}
 		
-		public function countCategories():void
+		public function count():void
 		{
-			this.getOperation("countCategories").send();
+			this.getOperation("count").send();
 		}
 		
 		public function countRelated(field:String, category_id:uint):void

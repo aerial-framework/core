@@ -11,17 +11,17 @@ package model.services.base
 	public class BaseTopicService extends RemoteObject
 	{
 	
-		public const GET_TOPIC:String = "TopicService.getTopic";
-		public const GET_TOPIC_BY_FIELD:String = "TopicService.getTopicByField";
-		public const GET_TOPIC_BY_FIELDS:String = "TopicService.getTopicByFields";
-		public const GET_TOPIC_WITH_RELATED:String = "TopicService.getTopicWithRelated";
-		public const GET_ALL_TOPIC_WITH_RELATED:String = "TopicService.getAllTopicWithRelated";
-		public const GET_RELATED:String = "TopicService.getRelated";
-		public const GET_ALL_TOPICS:String = "TopicService.getAllTopics";
-		public const SAVE_TOPIC:String = "TopicService.saveTopic";
-		public const UPDATE_TOPIC:String = "TopicService.updateTopic";
-		public const DELETE_TOPIC:String = "TopicService.deleteTopic";
-		public const COUNT_TOPICS:String = "TopicService.countTopics";
+		public const FIND:String = "TopicService.find";
+		public const FIND_BY_FIELD:String = "TopicService.findByField";
+		public const FIND_BY_FIELDS:String = "TopicService.findByFields";
+		public const FIND_WITH_RELATED:String = "TopicService.findWithRelated";
+		public const FIND_ALL_WITH_RELATED:String = "TopicService.findAllWithRelated";
+		public const FIND_RELATED:String = "TopicService.findRelated";
+		public const FIND_ALL:String = "TopicService.findAll";
+		public const SAVE:String = "TopicService.save";
+		public const UPDATE:String = "TopicService.update";
+		public const DROP:String = "TopicService.drop";
+		public const COUNT:String = "TopicService.count";
 		public const COUNT_RELATED:String = "TopicService.countRelated";
 		
 
@@ -33,32 +33,32 @@ package model.services.base
 			this.source = "TopicService";
 		}
 		
-		public function getTopic(topic_id:uint):void
+		public function find(topic_id:uint):void
 		{
-			this.getOperation("getTopic").send(topic_id);
+			this.getOperation("find").send(topic_id);
 		}
 		
-		public function getTopicByField(field:String, value:*, paged:Boolean=false, limit:int=0, offset:int=0):void
+		public function findByField(field:String, value:*, paged:Boolean=false, limit:int=0, offset:int=0):void
 		{
-			this.getOperation("getTopicByField").send(field, value, paged, limit, offset);
+			this.getOperation("findByField").send(field, value, paged, limit, offset);
 		}
 		
-		public function getTopicByFields(fields:Array, values:Array, paged:Boolean=false, limit:int=0, offset:int=0):void
+		public function findByFields(fields:Array, values:Array, paged:Boolean=false, limit:int=0, offset:int=0):void
 		{
-			this.getOperation("getTopicByFields").send(fields, values, paged, limit, offset);
+			this.getOperation("findByFields").send(fields, values, paged, limit, offset);
 		}
 		
-		public function getTopicWithRelated(topic_id:uint):void
+		public function findWithRelated(topic_id:uint):void
 		{
-			this.getOperation("getTopicWithRelated").send(topic_id);
+			this.getOperation("findWithRelated").send(topic_id);
 		}
 		
-		public function getAllTopicWithRelated(criteria:Object=null):void
+		public function findAllWithRelated(criteria:Object=null):void
 		{
-			this.getOperation("getAllTopicWithRelated").send(criteria);
+			this.getOperation("findAllWithRelated").send(criteria);
 		}
 		
-		public function getRelated(field:String, id:uint, paged:Boolean=false, limit:int=0, offset:int=0):void
+		public function findRelated(field:String, id:uint, paged:Boolean=false, limit:int=0, offset:int=0):void
 		{
 			//	available relations:
 			//		Alias: Category, Type: one
@@ -68,17 +68,17 @@ package model.services.base
 			this.getOperation("getRelated").send(field, id, paged, limit, offset);
 		}
 		
-		public function getAllTopics(paged:Boolean=false, limit:int=0, offset:int=0):void
+		public function findAll(paged:Boolean=false, limit:int=0, offset:int=0):void
 		{
-			this.getOperation("getAllTopics").send(paged, limit, offset);
+			this.getOperation("findAll").send(paged, limit, offset);
 		}
 								   
-		public function saveTopic(topic:TopicVO):void
+		public function save(topic:TopicVO):void
 		{
-			this.getOperation("saveTopic").send(topic, topic.getRelatedData());
+			this.getOperation("save").send(topic, topic.getRelatedData());
 		}
 		
-		public function updateTopic(topic:TopicVO):void
+		public function update(topic:TopicVO):void
 		{
 			
 			var reflection:XML = describeType(topic);
@@ -88,17 +88,17 @@ package model.services.base
 			for each(var property:XML in props)
 				fields[property.@name] = topic[property.@name];
 			
-			this.getOperation("updateTopic").send(topic.id, fields);
+			this.getOperation("update").send(topic.id, fields);
 		}
 		
-		public function deleteTopic(topic:TopicVO):void
+		public function drop(topic:TopicVO):void
 		{
-			this.getOperation("deleteTopic").send(topic);
+			this.getOperation("drop").send(topic);
 		}
 		
-		public function countTopics():void
+		public function count():void
 		{
-			this.getOperation("countTopics").send();
+			this.getOperation("count").send();
 		}
 		
 		public function countRelated(field:String, topic_id:uint):void

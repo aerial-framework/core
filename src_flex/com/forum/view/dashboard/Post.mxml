@@ -35,7 +35,7 @@
 			{
 				_currentTopic = topic;
 				if(topic != null){
-					this.postService.getAllPostWithRelated({"topicId": this.currentTopic.id});
+					this.postService.findAllWithRelated({"topicId": this.currentTopic.id});
 				}else{
 					posts = new ArrayCollection();  //We need to clear out the Posts if no Topic is selected.
 				}
@@ -50,19 +50,19 @@
 				switch(operation)
 				{
 					
-					case postService.GET_ALL_POSTS:
+					case postService.FIND_ALL:
 						this.posts = event.result as ArrayCollection;
 						break;
-					case postService.SAVE_POST:
-						this.postService.getAllPostWithRelated({"topicId":this.currentTopic.id});
+					case postService.SAVE:
+						this.postService.findAllWithRelated({"topicId":this.currentTopic.id});
 						break;
-					case postService.UPDATE_POST:
-						this.postService.getAllPostWithRelated({"topicId":this.currentTopic.id});
+					case postService.UPDATE:
+						this.postService.findAllWithRelated({"topicId":this.currentTopic.id});
 						break;
-					case postService.DELETE_POST:
-						this.postService.getAllPostWithRelated({"topicId":this.currentTopic.id});
+					case postService.DROP:
+						this.postService.findAllWithRelated({"topicId":this.currentTopic.id});
 						break;
-					case postService.GET_ALL_POST_WITH_RELATED:
+					case postService.FIND_ALL_WITH_RELATED:
 						this.posts = (event.result as ArrayCollection);
 						break;
 				}
@@ -82,13 +82,13 @@
 				post.topicId = this.currentTopic.id;
 				post.title = title;
 				post.message = message;
-				this.postService.savePost(post);
+				this.postService.save(post);
 			}
 			
 			public function deleteTopic():void
 			{
 				var post:PostVO = this.postList.selectedItem as PostVO;
-				this.postService.deletePost(post);
+				this.postService.drop(post);
 			}
 			
 			

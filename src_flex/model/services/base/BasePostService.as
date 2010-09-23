@@ -11,17 +11,17 @@ package model.services.base
 	public class BasePostService extends RemoteObject
 	{
 	
-		public const GET_POST:String = "PostService.getPost";
-		public const GET_POST_BY_FIELD:String = "PostService.getPostByField";
-		public const GET_POST_BY_FIELDS:String = "PostService.getPostByFields";
-		public const GET_POST_WITH_RELATED:String = "PostService.getPostWithRelated";
-		public const GET_ALL_POST_WITH_RELATED:String = "PostService.getAllPostWithRelated";
-		public const GET_RELATED:String = "PostService.getRelated";
-		public const GET_ALL_POSTS:String = "PostService.getAllPosts";
-		public const SAVE_POST:String = "PostService.savePost";
-		public const UPDATE_POST:String = "PostService.updatePost";
-		public const DELETE_POST:String = "PostService.deletePost";
-		public const COUNT_POSTS:String = "PostService.countPosts";
+		public const FIND:String = "PostService.find";
+		public const FIND_BY_FIELD:String = "PostService.findByField";
+		public const FIND_BY_FIELDS:String = "PostService.findByFields";
+		public const FIND_WITH_RELATED:String = "PostService.findWithRelated";
+		public const FIND_ALL_WITH_RELATED:String = "PostService.findAllWithRelated";
+		public const FIND_RELATED:String = "PostService.findRelated";
+		public const FIND_ALL:String = "PostService.findAll";
+		public const SAVE:String = "PostService.save";
+		public const UPDATE:String = "PostService.update";
+		public const DROP:String = "PostService.drop";
+		public const COUNT:String = "PostService.count";
 		public const COUNT_RELATED:String = "PostService.countRelated";
 		
 
@@ -33,32 +33,32 @@ package model.services.base
 			this.source = "PostService";
 		}
 		
-		public function getPost(post_id:uint):void
+		public function find(post_id:uint):void
 		{
-			this.getOperation("getPost").send(post_id);
+			this.getOperation("find").send(post_id);
 		}
 		
-		public function getPostByField(field:String, value:*, paged:Boolean=false, limit:int=0, offset:int=0):void
+		public function findByField(field:String, value:*, paged:Boolean=false, limit:int=0, offset:int=0):void
 		{
-			this.getOperation("getPostByField").send(field, value, paged, limit, offset);
+			this.getOperation("findByField").send(field, value, paged, limit, offset);
 		}
 		
-		public function getPostByFields(fields:Array, values:Array, paged:Boolean=false, limit:int=0, offset:int=0):void
+		public function findByFields(fields:Array, values:Array, paged:Boolean=false, limit:int=0, offset:int=0):void
 		{
-			this.getOperation("getPostByFields").send(fields, values, paged, limit, offset);
+			this.getOperation("findByFields").send(fields, values, paged, limit, offset);
 		}
 		
-		public function getPostWithRelated(post_id:uint):void
+		public function findWithRelated(post_id:uint):void
 		{
-			this.getOperation("getPostWithRelated").send(post_id);
+			this.getOperation("findWithRelated").send(post_id);
 		}
 		
-		public function getAllPostWithRelated(criteria:Object=null):void
+		public function findAllWithRelated(criteria:Object=null):void
 		{
-			this.getOperation("getAllPostWithRelated").send(criteria);
+			this.getOperation("findAllWithRelated").send(criteria);
 		}
 		
-		public function getRelated(field:String, id:uint, paged:Boolean=false, limit:int=0, offset:int=0):void
+		public function findRelated(field:String, id:uint, paged:Boolean=false, limit:int=0, offset:int=0):void
 		{
 			//	available relations:
 			//		Alias: User, Type: one
@@ -68,17 +68,17 @@ package model.services.base
 			this.getOperation("getRelated").send(field, id, paged, limit, offset);
 		}
 		
-		public function getAllPosts(paged:Boolean=false, limit:int=0, offset:int=0):void
+		public function findAll(paged:Boolean=false, limit:int=0, offset:int=0):void
 		{
-			this.getOperation("getAllPosts").send(paged, limit, offset);
+			this.getOperation("findAll").send(paged, limit, offset);
 		}
 								   
-		public function savePost(post:PostVO):void
+		public function save(post:PostVO):void
 		{
-			this.getOperation("savePost").send(post, post.getRelatedData());
+			this.getOperation("save").send(post, post.getRelatedData());
 		}
 		
-		public function updatePost(post:PostVO):void
+		public function update(post:PostVO):void
 		{
 			
 			var reflection:XML = describeType(post);
@@ -88,17 +88,17 @@ package model.services.base
 			for each(var property:XML in props)
 				fields[property.@name] = post[property.@name];
 			
-			this.getOperation("updatePost").send(post.id, fields);
+			this.getOperation("update").send(post.id, fields);
 		}
 		
-		public function deletePost(post:PostVO):void
+		public function drop(post:PostVO):void
 		{
-			this.getOperation("deletePost").send(post);
+			this.getOperation("drop").send(post);
 		}
 		
-		public function countPosts():void
+		public function count():void
 		{
-			this.getOperation("countPosts").send();
+			this.getOperation("count").send();
 		}
 		
 		public function countRelated(field:String, post_id:uint):void

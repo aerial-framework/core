@@ -17,6 +17,7 @@
 			//Big security issue maintaining authentication just on the client. -Rob
 			private function login(username:String, password:String):void
 			{
+                this.userService.setCredentials("danny", "1234");
 				this.userService.findByFields(["username", "password"],[username, password]);
 			}
 			

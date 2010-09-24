@@ -24,7 +24,6 @@ User:
     modDate:
       type: timestamp
       notnull: true
-      default: CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP
 
 Post:
   mapClass: model.vo.Post
@@ -51,7 +50,6 @@ Post:
     modDate:
       type: timestamp
       notnull: true
-      default: CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP
   relations:
     User:
       class: User
@@ -93,7 +91,6 @@ Comment:
     modDate:
       type: timestamp
       notnull: true
-      default: CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP
   relations:
     User:
       class: User
@@ -135,7 +132,6 @@ Category:
     modDate:
       type: timestamp
       notnull: true
-      default: CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP
   relations:
     User:
       class: User
@@ -171,7 +167,6 @@ Topic:
     modDate:
       type: timestamp
       notnull: true
-      default: CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP
   relations:
     Category:
       class: Category

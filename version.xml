@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<aerial>
+    <version>0.8r1</version>
+    <changes>
+        <change title="File system changes"><![CDATA[]]></change>
+        <change title="Callbacks"><![CDATA[]]></change>
+        <change title="Implemented execute()"><![CDATA[]]></change>
+        <change title="Binding fixed"><![CDATA[]]></change>
+    </changes>
+</aerial>

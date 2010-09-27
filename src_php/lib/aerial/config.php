@@ -19,6 +19,7 @@
 	define("FRONTEND_PATH", realpath(AERIAL_EXTERNAL."/../../src_flex"));				// Path to project development fronend
 
 	define("UTILS", realpath(AERIAL_INTERNAL."/utils"));				                // Path to utils
+	define("USE_AUTH", true);															// Use authentication
 	
 	// models & services
 	
@@ -49,7 +50,9 @@
 		define("DB_NAME", "aerial_forum");												// Database name
 		define("DB_HOST", "localhost");													// Database host
 		define("DB_USER", "root");														// Database user
-		define("DB_PASSWORD", "secret");														// Database password
+		define("DB_PASSWORD", "secret");
+
+        // Database password
 		define("CONNECTION_NAME", "doctrine");
 	}
 	

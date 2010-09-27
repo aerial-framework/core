@@ -36,8 +36,11 @@
 						:	${{object}}->$relation = $descriptor["value"];
 					}
 				}
-				
-			return ${{object}}->save();
+			
+			$result = ${{object}}->trySave();
+			return ($result === true)
+			?   ${{object}}->id
+			:   ${{object}}->save();
 		}
 		
 		public function update(${{object}}_id, $fields)
@@ -56,8 +59,11 @@
 					$existing->$key = $val;
 				}
 			}
-				
-			return $existing->save();
+
+			$result = $existing->trySave();
+			return ($result === true)
+			?   $existing
+			:   $existing->save();
 		}
 		
 		public function drop(${{object}})
@@ -65,8 +71,10 @@
 			$existing = $this->find(${{object}}->id);
 			if(!$existing)
 				return;
-				
-			return $existing->delete();
+
+			$oldID = $existing->id;
+			if($existing->delete())
+			    return $oldID;
 		}
 		
 		public function find(${{object}}_id)

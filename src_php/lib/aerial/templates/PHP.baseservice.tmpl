@@ -36,26 +36,26 @@
 						:	${{object}}->$relation = $descriptor["value"];
 					}
 				}
-			
+
 			$result = ${{object}}->trySave();
 			return ($result === true)
 			?   ${{object}}->id
 			:   ${{object}}->save();
 		}
-		
+
 		public function update(${{object}}_id, $fields)
 		{
 			$existing = $this->find(${{object}}_id);
 			if(!$existing)
 				return;
-			
+
 			foreach($fields as $key => $val)
 			{
 				if($existing->$key != $val)
 				{
-					if($val === null && $existing->$key !== null)
+					if($val != $existing->$key && $val == null)
 						continue;
-						
+
 					$existing->$key = $val;
 				}
 			}
@@ -65,7 +65,7 @@
 			?   $existing
 			:   $existing->save();
 		}
-		
+
 		public function drop(${{object}})
 		{
 			$existing = $this->find(${{object}}->id);

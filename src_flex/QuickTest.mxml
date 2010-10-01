@@ -5,8 +5,6 @@
 					   xmlns:services="model.services.*" applicationComplete="init()"
 					   >
 	<fx:Declarations>
-		<!-- Place non-visual elements (e.g., services, value objects) here -->
-		<services:TestService id="testService" result="result(event)" fault="fault(event)" />
 		<services:UserService id="userService" result="resultHandler(event)" fault="faultHandler(event)" />
 	</fx:Declarations>
 	
@@ -29,7 +27,7 @@
 				WindowStuff();
 				
 				//	this.userService.getUser(1);
-				this.testService.findAll();
+			
 			}
 			
 			public function WindowStuff():void

@@ -141,7 +141,7 @@
 
 	function is_undefined($obj)
 	{
-		if(gettype($obj) == "object"){
+		if(is_object($obj)){
 			return get_class($obj) == "undefined";
 		}else{
 			return false;

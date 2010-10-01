@@ -141,7 +141,12 @@
 
 	function is_undefined($obj)
 	{
-		return get_class($obj) == "undefined";
+		if(gettype($obj) == "object"){
+			return get_class($obj) == "undefined";
+		}else{
+			return false;
+		}
+		
 	}
 	
 	//If you are running into low-level issues with corrupt messages and 

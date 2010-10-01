@@ -560,7 +560,12 @@ class AMFSerializer extends AMFBaseSerializer {
 		{ // null
 			$this->writeNull();
 			return;
-		} 
+		}
+		elseif (is_undefined($d))
+		{ // null
+			$this->writeUndefined();
+			return;
+		}
 		elseif ($GLOBALS['amfphp']['encoding'] == 'amf3')
 		{
 			$this->writeByte(0x11);
@@ -649,8 +654,6 @@ class AMFSerializer extends AMFBaseSerializer {
 	
 	function writeAmf3Data(& $d)
 	{
-		NetDebug::trace(">>>>".gettype($d));
-		
 		if (is_int($d)) 
 		{ //int
 			$this->writeAmf3Number($d);
@@ -677,7 +680,12 @@ class AMFSerializer extends AMFBaseSerializer {
 		{ // null
 			$this->writeAmf3Null();
 			return;
-		} 
+		}
+		elseif (is_undefined($d))
+		{ // undefined
+			$this->writeAmf3Undefined();
+			return;
+		}
 		elseif (is_array($d) && !isset($d->_explicitType)) 
 		{ // array
 			$this->writeAmf3Array($d);
@@ -765,12 +773,17 @@ class AMFSerializer extends AMFBaseSerializer {
 		$this->storedObjects[] = "";
 	}
 
+	function writeAmf3Undefined()
+	{
+		//Write the undefined code (0x0) to the output stream.
+		$this->outBuffer .= "\0";
+	}
+	
 	function writeAmf3Null()
 	{
 		//Write the null code (0x1) to the output stream.
 		$this->outBuffer .= "\1";
 	}
-
 	function writeAmf3Bool($d)
 	{
 		$this->outBuffer .= $d ? "\3" : "\2";

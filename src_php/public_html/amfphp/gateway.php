@@ -111,6 +111,7 @@
 
 	//Include framework
 	include "core/amf/app/Gateway.php";
+	require_once(AMFPHP_BASE."amf/app/Undefined.php");
 
 	$gateway = new Gateway();
 	
@@ -136,6 +137,11 @@
 		$gateway->disableDebug();
 		// Keep the Flash/Flex IDE player from connecting to the gateway. Used for security to stop remote connections. 
 		$gateway->disableStandalonePlayer();
+	}
+
+	function is_undefined($obj)
+	{
+		return get_class($obj) == "undefined";
 	}
 	
 	//If you are running into low-level issues with corrupt messages and 

@@ -11,6 +11,7 @@
  */
 
 include_once(AMFPHP_BASE . "amf/io/AMFBaseDeserializer.php");
+include_once(AMFPHP_BASE . "amf/app/Undefined.php");
 
 class AMFDeserializer extends AMFBaseDeserializer {
 	/**
@@ -288,7 +289,7 @@ class AMFDeserializer extends AMFBaseDeserializer {
 				$data = null;
 				break;
 			case 6: // undefined
-				$data = null;
+				$data = new Undefined();
 				break;
 			case 7: // Circular references are returned here
 				$data = $this->readReference();
@@ -334,7 +335,7 @@ class AMFDeserializer extends AMFBaseDeserializer {
 		$type = $this->readByte();
 		switch($type)
 		{
-			case 0x00 : return null; //undefined
+			case 0x00 : return new Undefined(); //undefined
 			case 0x01 : return null; //null
 			case 0x02 : return false; //boolean false
 			case 0x03 : return true;  //boolean true

@@ -348,6 +348,7 @@ class AMFDeserializer extends AMFBaseDeserializer {
 			case 0x0A : return $this->readAmf3Object();
 			case 0x0B : return $this->readAmf3XmlString();
 			case 0x0C : return $this->readAmf3ByteArray();
+			case 0x10 : trigger_error("Gumbo Amf3 vector (maybe) encountered, no support for this yet", E_USER_ERROR); break;
 			default: trigger_error("undefined Amf3 type encountered: " . $type, E_USER_ERROR);
 		}
 	}

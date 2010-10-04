@@ -27,7 +27,7 @@
 				WindowStuff();
 				
 				//	this.userService.getUser(1);
-			
+				//this.testService.findAll();
 			}
 			
 			public function WindowStuff():void

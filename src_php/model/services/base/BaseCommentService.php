@@ -36,37 +36,45 @@
 						:	$comment->$relation = $descriptor["value"];
 					}
 				}
-				
-			return $comment->save();
+
+			$result = $comment->trySave();
+			return ($result === true)
+			?   $comment->id
+			:   $comment->save();
 		}
-		
+
 		public function update($comment_id, $fields)
 		{
 			$existing = $this->find($comment_id);
 			if(!$existing)
 				return;
-			
+
 			foreach($fields as $key => $val)
 			{
 				if($existing->$key != $val)
 				{
-					if($val === null && $existing->$key !== null)
+					if($val != $existing->$key && $val == null)
 						continue;
-						
+
 					$existing->$key = $val;
 				}
 			}
-				
-			return $existing->save();
+
+			$result = $existing->trySave();
+			return ($result === true)
+			?   $existing
+			:   $existing->save();
 		}
-		
+
 		public function drop($comment)
 		{
 			$existing = $this->find($comment->id);
 			if(!$existing)
 				return;
-				
-			return $existing->delete();
+
+			$oldID = $existing->id;
+			if($existing->delete())
+			    return $oldID;
 		}
 		
 		public function find($comment_id)

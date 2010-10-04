@@ -58,6 +58,30 @@ package model.vo.base
 			related["topics"] = {table:"Topic", value:value, type:"many",
 									local_key:"id", foreign_key:"userId", refTable:""};
 		}
+			
+		[Transient]
+		public function get specialties():*
+		{
+			return related["specialties"];
+		}
+			
+		public function set specialties(value:*):void
+		{
+			related["specialties"] = {table:"Specialty", value:value, type:"many",
+									local_key:"user_id", foreign_key:"specialty_id", refTable:"UserSpecialty"};
+		}
+			
+		[Transient]
+		public function get UserSpecialty():*
+		{
+			return related["UserSpecialty"];
+		}
+			
+		public function set UserSpecialty(value:*):void
+		{
+			related["UserSpecialty"] = {table:"UserSpecialty", value:value, type:"many",
+									local_key:"id", foreign_key:"user_id", refTable:""};
+		}
 		
 		public function getRelatedData():Object
 		{

@@ -36,37 +36,45 @@
 						:	$category->$relation = $descriptor["value"];
 					}
 				}
-				
-			return $category->save();
+
+			$result = $category->trySave();
+			return ($result === true)
+			?   $category->id
+			:   $category->save();
 		}
-		
+
 		public function update($category_id, $fields)
 		{
 			$existing = $this->find($category_id);
 			if(!$existing)
 				return;
-			
+
 			foreach($fields as $key => $val)
 			{
 				if($existing->$key != $val)
 				{
-					if($val === null && $existing->$key !== null)
+					if($val != $existing->$key && $val == null)
 						continue;
-						
+
 					$existing->$key = $val;
 				}
 			}
-				
-			return $existing->save();
+
+			$result = $existing->trySave();
+			return ($result === true)
+			?   $existing
+			:   $existing->save();
 		}
-		
+
 		public function drop($category)
 		{
 			$existing = $this->find($category->id);
 			if(!$existing)
 				return;
-				
-			return $existing->delete();
+
+			$oldID = $existing->id;
+			if($existing->delete())
+			    return $oldID;
 		}
 		
 		public function find($category_id)

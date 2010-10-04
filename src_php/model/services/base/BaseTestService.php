@@ -11,8 +11,10 @@ class BaseTestService
 		$this->table = $this->connection->getTable($this->modelName);
 	}
 
-	public function findAll($relatons=null, $pagination=null)
+	public function findAll($relations=null, $pagination=null, $black = null)
 	{
+		//print_r($relations);
+		return $relations;
 		$q = Doctrine_Query::create()->select("*")->from("Topic");
 			
 		if($pagination->page > 0)
@@ -23,7 +25,8 @@ class BaseTestService
 			}
 		}
 		$q->setHydrationMode("amf_collection");
-		return $q->execute();
+		//return $q->execute();
+		
 	}
 	
 	public function insert($args)
@@ -201,7 +204,7 @@ class BaseTestService
 		foreach($relations as $relation)
 		{
 			$i++;
-			if($relation["type"] == "many" )
+			if($relation["type"] == "many" || ($relation["type"] == "one")  )
 			{
 				$selectTables .= ',z' . $i . '.*';
 				$q = $q->leftJoin('y.' . $relation["alias"] . ' z' . $i);
@@ -226,7 +229,7 @@ class BaseTestService
 			$q->offset($offset);
 		}
 
-		return $q->execute()->toAmf(true);
+		return $q->execute(); //->toAmf(true);
 			
 	}
 

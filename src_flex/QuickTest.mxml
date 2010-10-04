@@ -14,6 +14,7 @@
 			import model.services.PostService;
 			import model.vo.*;
 			
+			import mx.collections.ArrayCollection;
 			import mx.collections.ListCollectionView;
 			import mx.controls.Alert;
 			import mx.messaging.messages.RemotingMessage;
@@ -29,7 +30,7 @@
 			{
 				WindowStuff();
 				
-				//testInsert();
+				testInsert();
 			
 			}
 			
@@ -44,32 +45,22 @@
 				var topicVo:TopicVO = new TopicVO();
 				topicVo.userId = 1;
 				topicVo.categoryId = 2;
-				topicVo.name = "test name";
+				topicVo.name = "Robert";
 				topicVo.description = "test description";
 				
-				var postVo:PostVO = new PostVO;
-				postVo.userId = 1;
-				postVo.message = "test message";
+				topicVo.posts = new Array();
+			
 				
-				topicVo.posts = postVo;
-				
-				
-				this.test2Service.insert(topicVo).execute();
+				//this.test2Service.insert(topicVo).execute();
+				this.test2Service.findAll(topicVo).execute();
 			}
 			
-			public function caps():void
-			{
-				var accessors:XMLList = describeType(Capabilities)..accessor.(@declaredBy == getQualifiedClassName(Capabilities));
-				   for each(var accessor:XML in accessors)
-				    trace(accessor.@name.toString() + " > " + Capabilities[accessor.@name.toString()]);
-				
-			}
 			
 			public function testCallbacks():void
 			{
-				this.test2Service.findAll().callback(myCallBack).execute();
+			/* 	this.test2Service.findAll().callback(myCallBack).execute();
 				this.test2Service.findAll().execute();
-				this.test2Service.findAll().callback(myCallBack).execute();
+				this.test2Service.findAll().callback(myCallBack).execute(); */
 			}
 			
 			
@@ -140,7 +131,7 @@
 			
 		]]>
 	</fx:Script>
-	<s:Button x="153" y="98" label="Button" click="model()"/>
+	<s:Button x="153" y="98" label="Button" click="testInsert()"/>
 	
 	
 </s:WindowedApplication>

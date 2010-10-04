@@ -1,5 +1,8 @@
 package model.vo.base
 {
+	import model.vo.PostVO;
+	import model.vo.UserVO;
+
 	[Bindable]
 	public class BaseCommentVO
 	{
@@ -10,35 +13,8 @@ package model.vo.base
 		public var createDate:String;
 		public var modDate:String;
 		
-		private var related:Object = {};
-			
-		[Transient]
-		public function get User():*
-		{
-			return related["User"];
-		}
-			
-		public function set User(value:*):void
-		{
-			related["User"] = {table:"User", value:value, type:"one",
-									local_key:"userid", foreign_key:"id", refTable:""};
-		}
-			
-		[Transient]
-		public function get Post():*
-		{
-			return related["Post"];
-		}
-			
-		public function set Post(value:*):void
-		{
-			related["Post"] = {table:"Post", value:value, type:"one",
-									local_key:"postid", foreign_key:"id", refTable:""};
-		}
+		public var User:UserVO;
+		public var Post:PostVO;	
 		
-		public function getRelatedData():Object
-		{
-			return related;
-		}
 	}
 }

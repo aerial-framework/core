@@ -35,7 +35,7 @@
 				this.width = 1200;
 				this.height = 800;
 				
-				nativeWindow.x = Screen.screens[1].bounds.x + 1;
+				nativeWindow.x = Screen.mainScreen.bounds.x + 1;
 				nativeWindow.y = Screen.mainScreen.bounds.height - height - 100;
 				nativeWindow.maximize();
 				

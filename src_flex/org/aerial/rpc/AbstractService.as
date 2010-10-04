@@ -20,9 +20,9 @@ package org.aerial.rpc
 			_voClass = voClass;
 		}
 		
-		public function findAll():Operation
+		public function findAll(arg:*):Operation
 		{
-			var op:Operation = new Operation(this, "findAll"); 
+			var op:Operation = new Operation(this, "findAll",arg); 
 			return op;
 		}
 		

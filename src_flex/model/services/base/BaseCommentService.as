@@ -74,7 +74,7 @@ package model.services.base
 								   
 		public function save(comment:CommentVO):void
 		{
-			this.getOperation("save").send(comment, comment.getRelatedData());
+			this.getOperation("save").send(comment);
 		}
 		
 		public function update(comment:CommentVO):void

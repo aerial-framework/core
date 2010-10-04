@@ -1,5 +1,7 @@
 package model.vo.base
 {
+	import mx.collections.ArrayCollection;
+
 	[Bindable]
 	public class BaseUserVO
 	{
@@ -9,59 +11,10 @@ package model.vo.base
 		public var createDate:String;
 		public var modDate:String;
 		
-		private var related:Object = {};
-			
-		[Transient]
-		public function get posts():*
-		{
-			return related["posts"];
-		}
-			
-		public function set posts(value:*):void
-		{
-			related["posts"] = {table:"Post", value:value, type:"many",
-									local_key:"id", foreign_key:"userId", refTable:""};
-		}
-			
-		[Transient]
-		public function get comments():*
-		{
-			return related["comments"];
-		}
-			
-		public function set comments(value:*):void
-		{
-			related["comments"] = {table:"Comment", value:value, type:"many",
-									local_key:"id", foreign_key:"userId", refTable:""};
-		}
-			
-		[Transient]
-		public function get categories():*
-		{
-			return related["categories"];
-		}
-			
-		public function set categories(value:*):void
-		{
-			related["categories"] = {table:"Category", value:value, type:"many",
-									local_key:"id", foreign_key:"userId", refTable:""};
-		}
-			
-		[Transient]
-		public function get topics():*
-		{
-			return related["topics"];
-		}
-			
-		public function set topics(value:*):void
-		{
-			related["topics"] = {table:"Topic", value:value, type:"many",
-									local_key:"id", foreign_key:"userId", refTable:""};
-		}
+		public var posts:ArrayCollection;
+		public var comments:ArrayCollection;
+		public var categories:ArrayCollection;
+		public var topics:ArrayCollection;
 		
-		public function getRelatedData():Object
-		{
-			return related;
-		}
 	}
 }

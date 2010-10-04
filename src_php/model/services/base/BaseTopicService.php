@@ -178,7 +178,7 @@
 			foreach($relations as $relation)
 			{
 				$i++;
-				if($relation["type"] == "many" )
+				if($relation["type"] == "many" || ($relation["type"] == "one"))
 				{
 					$selectTables .= ',z' . $i . '.*';
 					$q = $q->leftJoin('y.' . $relation["alias"] . ' z' . $i);

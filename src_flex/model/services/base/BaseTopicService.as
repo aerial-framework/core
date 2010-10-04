@@ -75,7 +75,7 @@ package model.services.base
 								   
 		public function save(topic:TopicVO):void
 		{
-			this.getOperation("save").send(topic, topic.getRelatedData());
+			this.getOperation("save").send(topic);
 		}
 		
 		public function update(topic:TopicVO):void

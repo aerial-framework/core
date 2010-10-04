@@ -3,7 +3,7 @@ package org.aerial.rpc{
 
 	public interface IService{
 		
-		function findAll():Operation;
+		function findAll(arg:*):Operation;
 		
 		function insert(vo:Object):Operation;
 		

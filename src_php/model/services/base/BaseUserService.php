@@ -36,37 +36,45 @@
 						:	$user->$relation = $descriptor["value"];
 					}
 				}
-				
-			return $user->save();
+
+			$result = $user->trySave();
+			return ($result === true)
+			?   $user->id
+			:   $user->save();
 		}
-		
+
 		public function update($user_id, $fields)
 		{
 			$existing = $this->find($user_id);
 			if(!$existing)
 				return;
-			
+
 			foreach($fields as $key => $val)
 			{
 				if($existing->$key != $val)
 				{
-					if($val === null && $existing->$key !== null)
+					if($val != $existing->$key && $val == null)
 						continue;
-						
+
 					$existing->$key = $val;
 				}
 			}
-				
-			return $existing->save();
+
+			$result = $existing->trySave();
+			return ($result === true)
+			?   $existing
+			:   $existing->save();
 		}
-		
+
 		public function drop($user)
 		{
 			$existing = $this->find($user->id);
 			if(!$existing)
 				return;
-				
-			return $existing->delete();
+
+			$oldID = $existing->id;
+			if($existing->delete())
+			    return $oldID;
 		}
 		
 		public function find($user_id)
@@ -143,6 +151,18 @@
 													"table" => "Topic",
 													"local_key" => "id",
 													"foreign_key" => "userId",
+													"refTable" => ""),
+								"specialties" => array("type" => "many",
+													"alias" => "specialties",
+													"table" => "Specialty",
+													"local_key" => "user_id",
+													"foreign_key" => "specialty_id",
+													"refTable" => "UserSpecialty"),
+								"UserSpecialty" => array("type" => "many",
+													"alias" => "UserSpecialty",
+													"table" => "UserSpecialty",
+													"local_key" => "id",
+													"foreign_key" => "user_id",
 													"refTable" => ""));
 			$complex = new stdClass();
 			
@@ -181,6 +201,18 @@
 													"table" => "Topic",
 													"local_key" => "id",
 													"foreign_key" => "userId",
+													"refTable" => ""),
+								"specialties" => array("type" => "many",
+													"alias" => "specialties",
+													"table" => "Specialty",
+													"local_key" => "user_id",
+													"foreign_key" => "specialty_id",
+													"refTable" => "UserSpecialty"),
+								"UserSpecialty" => array("type" => "many",
+													"alias" => "UserSpecialty",
+													"table" => "UserSpecialty",
+													"local_key" => "id",
+													"foreign_key" => "user_id",
 													"refTable" => ""));
 				
 				
@@ -227,6 +259,8 @@
 			//		Alias: comments, Type: many
 			//		Alias: categories, Type: many
 			//		Alias: topics, Type: many
+			//		Alias: specialties, Type: many
+			//		Alias: UserSpecialty, Type: many
 			
 			$rel = $this->table->getRelation($field);
 			

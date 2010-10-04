@@ -184,3 +184,34 @@ Topic:
     fk_Topic_User1:
       fields: [userId]
 
+Specialty:
+  mapClass: model.vo.Specialty
+  tableName: Specialty
+  columns:
+    name:
+      type: string(255)
+      notnull: true
+    description: string
+  relations:
+    users:
+      foreignAlias: specialties
+      class: User
+      refClass: UserSpecialty
+
+UserSpecialty:
+  mapClass: model.vo.UserSpecialty
+  tableName: UserSpecialties
+  columns:
+    user_id:
+      type: integer(20)
+      primary: true
+    specialty_id:
+      type: integer(20)
+      primary: true
+  relations:
+    user:
+      alias: user
+      foreignAlias: UserSpecialties
+    specialty:
+      alias: specialty
+      foreignAlias: UserSpecialties

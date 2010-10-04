@@ -65,6 +65,8 @@ package model.services.base
 			//		Alias: comments, Type: many
 			//		Alias: categories, Type: many
 			//		Alias: topics, Type: many
+			//		Alias: specialties, Type: many
+			//		Alias: UserSpecialty, Type: many
 			
 			this.getOperation("getRelated").send(field, id, paged, limit, offset);
 		}

@@ -27,7 +27,11 @@
 				WindowStuff();
 				
 				//	this.userService.getUser(1);
+<<<<<<< Updated upstream
 			
+=======
+				//this.testService.findAll();
+>>>>>>> Stashed changes
 			}
 			
 			public function WindowStuff():void

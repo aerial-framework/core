@@ -36,37 +36,45 @@
 						:	$topic->$relation = $descriptor["value"];
 					}
 				}
-				
-			return $topic->save();
+
+			$result = $topic->trySave();
+			return ($result === true)
+			?   $topic->id
+			:   $topic->save();
 		}
-		
+
 		public function update($topic_id, $fields)
 		{
 			$existing = $this->find($topic_id);
 			if(!$existing)
 				return;
-			
+
 			foreach($fields as $key => $val)
 			{
 				if($existing->$key != $val)
 				{
-					if($val === null && $existing->$key !== null)
+					if($val != $existing->$key && $val == null)
 						continue;
-						
+
 					$existing->$key = $val;
 				}
 			}
-				
-			return $existing->save();
+
+			$result = $existing->trySave();
+			return ($result === true)
+			?   $existing
+			:   $existing->save();
 		}
-		
+
 		public function drop($topic)
 		{
 			$existing = $this->find($topic->id);
 			if(!$existing)
 				return;
-				
-			return $existing->delete();
+
+			$oldID = $existing->id;
+			if($existing->delete())
+			    return $oldID;
 		}
 		
 		public function find($topic_id)
@@ -178,7 +186,7 @@
 			foreach($relations as $relation)
 			{
 				$i++;
-				if($relation["type"] == "many" || ($relation["type"] == "one"))
+				if($relation["type"] == "many" )
 				{
 					$selectTables .= ',z' . $i . '.*';
 					$q = $q->leftJoin('y.' . $relation["alias"] . ' z' . $i);

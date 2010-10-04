@@ -1,8 +1,10 @@
 <?php
 class GenerationController
 {
-	public function getNumFiles($path)
+	public static function getNumFiles($path)
 	{
+		$num = 0;
+
 		$r = new RecursiveDirectoryIterator($path);
 		foreach (new RecursiveIteratorIterator($r) as $file)
 		{
@@ -47,7 +49,7 @@ class GenerationController
 	 * @param		bool	whether to delete any directories found in the path
 	 * @return		bool
 	 */
-	public function removeFolder($path, $del_dir = FALSE, $level = 0)
+	public static function removeFolder($path, $del_dir = FALSE, $level = 0)
 	{
 		// Trim the trailing slash
 		$path = rtrim($path, DIRECTORY_SEPARATOR);
@@ -100,7 +102,7 @@ class GenerationController
 		return str_replace("\r\n", "\n", $contents);
 	}
 
-	public function writeFile($path, $contents)
+	public static function writeFile($path, $contents)
 	{
 		file_put_contents($path, $contents);
 		if(defined('AERIAL_FILE_CHMOD') && trim(AERIAL_FILE_CHMOD)  <> "") chmod($path, AERIAL_FILE_CHMOD);

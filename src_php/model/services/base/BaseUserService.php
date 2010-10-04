@@ -36,37 +36,45 @@
 						:	$user->$relation = $descriptor["value"];
 					}
 				}
-				
-			return $user->save();
+
+			$result = $user->trySave();
+			return ($result === true)
+			?   $user->id
+			:   $user->save();
 		}
-		
+
 		public function update($user_id, $fields)
 		{
 			$existing = $this->find($user_id);
 			if(!$existing)
 				return;
-			
+
 			foreach($fields as $key => $val)
 			{
 				if($existing->$key != $val)
 				{
-					if($val === null && $existing->$key !== null)
+					if($val != $existing->$key && $val == null)
 						continue;
-						
+
 					$existing->$key = $val;
 				}
 			}
-				
-			return $existing->save();
+
+			$result = $existing->trySave();
+			return ($result === true)
+			?   $existing
+			:   $existing->save();
 		}
-		
+
 		public function drop($user)
 		{
 			$existing = $this->find($user->id);
 			if(!$existing)
 				return;
-				
-			return $existing->delete();
+
+			$oldID = $existing->id;
+			if($existing->delete())
+			    return $oldID;
 		}
 		
 		public function find($user_id)

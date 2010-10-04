@@ -39,7 +39,12 @@
 		{
 			Doctrine_Core::dropDatabases();
 			Doctrine_Core::createDatabases();
-			Doctrine_Core::generateModelsFromYaml(AERIAL_BASE_PATH.'/schema.yml', BACKEND_MODELS_PATH);
+
+			$options = array(
+				"baseClassName" => "Aerial_Record"
+			);
+
+			Doctrine_Core::generateModelsFromYaml(AERIAL_BASE_PATH.'/schema.yml', BACKEND_MODELS_PATH, $options);
 			Doctrine_Core::createTablesFromModels();
 			self::generateModelsAndServices();
 		}
@@ -92,7 +97,7 @@
 					$type = $rel->getType() == Doctrine_Relation::ONE ? "one" : "many";
 					
 					$refTable = null;
-					if(get_class($rel) == Doctrine_Relation_Association)
+					if(get_class($rel) == "Doctrine_Relation_Association")
 						$refTable = $rel->getAssociationTable()->getClassnameToReturn();
 					
 					if($rel->getAlias() != $refTable)

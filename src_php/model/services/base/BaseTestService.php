@@ -31,7 +31,7 @@ class BaseTestService
 	
 	public function insert($args)
 	{
-		return "saved !!";
+		return $args;
 	}
 
 	// -----------------------------------------------------------------------------

@@ -36,37 +36,45 @@
 						:	$post->$relation = $descriptor["value"];
 					}
 				}
-				
-			return $post->save();
+
+			$result = $post->trySave();
+			return ($result === true)
+			?   $post->id
+			:   $post->save();
 		}
-		
+
 		public function update($post_id, $fields)
 		{
 			$existing = $this->find($post_id);
 			if(!$existing)
 				return;
-			
+
 			foreach($fields as $key => $val)
 			{
 				if($existing->$key != $val)
 				{
-					if($val === null && $existing->$key !== null)
+					if($val != $existing->$key && $val == null)
 						continue;
-						
+
 					$existing->$key = $val;
 				}
 			}
-				
-			return $existing->save();
+
+			$result = $existing->trySave();
+			return ($result === true)
+			?   $existing
+			:   $existing->save();
 		}
-		
+
 		public function drop($post)
 		{
 			$existing = $this->find($post->id);
 			if(!$existing)
 				return;
-				
-			return $existing->delete();
+
+			$oldID = $existing->id;
+			if($existing->delete())
+			    return $oldID;
 		}
 		
 		public function find($post_id)

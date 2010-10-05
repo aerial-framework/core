@@ -1,43 +1,90 @@
 package model.vo.base
 {
+    import model.vo.*;
+
 	[Bindable]
 	public class BaseCategoryVO
 	{
-		public var id:int;
-		public var userId:int;
-		public var name:String;
-		public var createDate:String;
-		public var modDate:String;
-		
-		private var related:Object = {};
+		private var _id:*;
+		private var _userId:*;
+		private var _name:*;
+		private var _createDate:*;
+		private var _modDate:*;
+
+		// Relations:
+		private var _User:*;
+		private var _topics:*;
 			
-		[Transient]
-		public function get User():*
+		public function get id():int
 		{
-			return related["User"];
+			return _id;
 		}
 			
-		public function set User(value:*):void
+		public function set id(value:int):void
 		{
-			related["User"] = {table:"User", value:value, type:"one",
-									local_key:"userid", foreign_key:"id", refTable:""};
+			_id = value;
 		}
 			
-		[Transient]
-		public function get topics():*
+		public function get userId():int
 		{
-			return related["topics"];
+			return _userId;
 		}
 			
-		public function set topics(value:*):void
+		public function set userId(value:int):void
 		{
-			related["topics"] = {table:"Topic", value:value, type:"many",
-									local_key:"id", foreign_key:"categoryId", refTable:""};
+			_userId = value;
 		}
-		
-		public function getRelatedData():Object
+			
+		public function get name():String
 		{
-			return related;
+			return _name;
+		}
+			
+		public function set name(value:String):void
+		{
+			_name = value;
+		}
+			
+		public function get createDate():String
+		{
+			return _createDate;
+		}
+			
+		public function set createDate(value:String):void
+		{
+			_createDate = value;
+		}
+			
+		public function get modDate():String
+		{
+			return _modDate;
+		}
+			
+		public function set modDate(value:String):void
+		{
+			_modDate = value;
+		}
+
+		// Relations:
+			
+		public function get User():UserVO
+		{
+			return _User;
+		}
+			
+		public function set User(value:UserVO):void
+		{
+			_User = value;
+		}
+			
+		public function get topics():Array
+		{
+			return _topics;
+		}
+			
+		public function set topics(value:Array):void
+		{
+			_topics = value;
 		}
 	}
 }

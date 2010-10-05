@@ -72,7 +72,7 @@ package {{package}}.base
 								   
 		public function save({{object}}:{{model}}):void
 		{
-			this.getOperation("save").send({{object}}, {{object}}.getRelatedData());
+			this.getOperation("save").send({{object}});
 		}
 		
 		public function update({{object}}:{{model}}):void

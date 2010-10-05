@@ -175,10 +175,10 @@
 				if($numExisting != count($asServicesData))
 					ActionScriptGenerator::generateASService(FRONTEND_SERVICES_PACKAGE, "{$model}Service", FRONTEND_SERVICES_PATH);
 			}
+
+			return "Success";
 		}
-			
-		
-		
+
 		public static function generateModelsAndServicesFromYaml()
 		{
 			$options = array('baseClassesDirectory'  =>  'base');

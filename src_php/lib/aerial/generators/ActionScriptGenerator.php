@@ -42,11 +42,20 @@
 			return $data;
 		}
 		
-		public static function getASProperties($array)
+		public static function getASProperties($array, $usePrivate=false, $anonymousType=false)
 		{
 			$properties = array();
 			foreach($array as $property)
-				array_push($properties, "\t\tpublic var ".$property["field"].":".$property["type"].";");
+			{
+				if(!$property)
+				{
+					array_push($properties, "\n\t\t// Relations:");
+					continue;
+				}
+
+				array_push($properties, "\t\t".($usePrivate?"private":"public")." var ".
+							($usePrivate?"_":"").$property["field"].":".($anonymousType?"*":$property["type"]).";");
+			}
 			
 			return implode("\n", $properties);
 		}
@@ -99,39 +108,60 @@
 		
 		public static function generateAS3BaseModel($package, $class, $properties, $relations, $directory)
 		{
-			$replacementTokens = array("package", "class", "properties", "gettersAndSetters");
+			$replacementTokens = array("package", "class", "properties", "gettersAndSetters", "modelsPackage");
 			$contents = self::readTemplate("AS3.basemodel");
-			$properties = self::getASProperties($properties);
 			
 			$setterStub = self::getTemplatePart("as3SetterStub");
 			$getterStub = self::getTemplatePart("as3GetterStub");
+
+			$modelsPackage = FRONTEND_MODELS_PACKAGE;
 			
 			$getters = "";
 			$setters = "";
 			$gettersAndSetters = "";
-			
+
+			$properties[] = null;
+
+			// add relations
 			foreach($relations as $relation)
 			{
-				$alias = $relation["alias"];
+				$field = $relation["alias"];
+				$type = $relation["type"] == "one" ? $relation["table"].VO_SUFFIX : "Array";
+
+				$properties[] = array("field" => $field, "type" => $type);
+			}
+
+			foreach($properties as $property)
+			{
+				if(!$property)          // empty element signifies start of relations
+				{
+					$gettersAndSetters .= "\n\n\t\t// Relations:";
+					continue;
+				}
+
+				$field = $property["field"];
+				$type = $property["type"];
+
 				$g_stub = "\n\t\t\t".$getterStub;
 				$s_stub = "\n\t\t\t".$setterStub;
-				
+
 				$stub = "";
-				
-				foreach($relation as $key => $value)
+				foreach($property as $token => $value)     // tokens are named "field" and "type"
 				{
-					$g_stub = str_replace("{{".$key."}}", $value, $g_stub);
-					$s_stub = str_replace("{{".$key."}}", $value, $s_stub);
-					
+					$g_stub = str_replace("{{".$token."}}", $value, $g_stub);
+					$s_stub = str_replace("{{".$token."}}", $value, $s_stub);
+
 					$stub = $g_stub.$s_stub;
 				}
-				
+
 				$gettersAndSetters .= $stub;
 			}
+
+			$properties = self::getASProperties($properties, true, true);
 			
 			foreach($replacementTokens as $token)
 				$contents = str_replace("{{".$token."}}", $$token, $contents);
-		
+
 			self::writeFile("$directory/$class.as", $contents);
 		}
 		
@@ -165,13 +195,15 @@
                 case 'boolean':
                 	$as3type = "Boolean";
                 	break;
+                case 'blob':
+	                $as3type = "ByteArray";
+			        break;
                 case 'object':
                 	$as3type = "Object";
                 	break;
                 case 'enum':
                 case 'gzip':
                 case 'string':
-                case 'blob':
                 case 'clob':
                 case 'time':
                 case 'timestamp':

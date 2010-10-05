@@ -1,67 +1,122 @@
 package model.vo.base
 {
+    import model.vo.*;
+
 	[Bindable]
-	public class BaseUserVO
+	public class BaseUserVO implements IPropertyMap
 	{
-		public var id:int;
-		public var username:String;
-		public var password:String;
-		public var createDate:String;
-		public var modDate:String;
+		private var _id:*;
+		private var _username:*;
+		private var _password:*;
+		private var _createDate:*;
+		private var _modDate:*;
+
+		// Relations:
+		private var _posts:*;
+		private var _comments:*;
+		private var _categories:*;
+		private var _topics:*;
+			
+		public function get id():int
+		{
+			return _id;
+		}
+			
+		public function set id(value:int):void
+		{
+			_id = value;
+		}
+			
+		public function get username():String
+		{
+			return _username;
+		}
+			
+		public function set username(value:String):void
+		{
+			_username = value;
+		}
+			
+		public function get password():String
+		{
+			return _password;
+		}
+			
+		public function set password(value:String):void
+		{
+			_password = value;
+		}
+			
+		public function get createDate():String
+		{
+			return _createDate;
+		}
+			
+		public function set createDate(value:String):void
+		{
+			_createDate = value;
+		}
+			
+		public function get modDate():String
+		{
+			return _modDate;
+		}
+			
+		public function set modDate(value:String):void
+		{
+			_modDate = value;
+		}
+
+		// Relations:
+			
+		public function get posts():Array
+		{
+			return _posts;
+		}
+			
+		public function set posts(value:Array):void
+		{
+			_posts = value;
+		}
+			
+		public function get comments():Array
+		{
+			return _comments;
+		}
+			
+		public function set comments(value:Array):void
+		{
+			_comments = value;
+		}
+			
+		public function get categories():Array
+		{
+			return _categories;
+		}
+			
+		public function set categories(value:Array):void
+		{
+			_categories = value;
+		}
+			
+		public function get topics():Array
+		{
+			return _topics;
+		}
+			
+		public function set topics(value:Array):void
+		{
+			_topics = value;
+		}
 		
-		private var related:Object = {};
-			
-		[Transient]
-		public function get posts():*
+		public function setupMap():void
 		{
-			return related["posts"];
-		}
-			
-		public function set posts(value:*):void
-		{
-			related["posts"] = {table:"Post", value:value, type:"many",
-									local_key:"id", foreign_key:"userId", refTable:""};
-		}
-			
-		[Transient]
-		public function get comments():*
-		{
-			return related["comments"];
-		}
-			
-		public function set comments(value:*):void
-		{
-			related["comments"] = {table:"Comment", value:value, type:"many",
-									local_key:"id", foreign_key:"userId", refTable:""};
-		}
-			
-		[Transient]
-		public function get categories():*
-		{
-			return related["categories"];
-		}
-			
-		public function set categories(value:*):void
-		{
-			related["categories"] = {table:"Category", value:value, type:"many",
-									local_key:"id", foreign_key:"userId", refTable:""};
-		}
-			
-		[Transient]
-		public function get topics():*
-		{
-			return related["topics"];
-		}
-			
-		public function set topics(value:*):void
-		{
-			related["topics"] = {table:"Topic", value:value, type:"many",
-									local_key:"id", foreign_key:"userId", refTable:""};
+			trace("Setup User");
 		}
 		
-		public function getRelatedData():Object
+		public function getPropertyMap():Object
 		{
-			return related;
+			return {name:"Mugabe"};
 		}
 	}
 }

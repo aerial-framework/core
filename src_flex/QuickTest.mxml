@@ -36,8 +36,8 @@
 			
 			public function model():void
 			{
-				var m:Model = new Model();
-				trace(m);
+				/* var m:Model = new Model();
+				trace(m); */
 			}
 			
 			public function testInsert():void
@@ -48,11 +48,19 @@
 				topicVo.name = "Robert";
 				topicVo.description = "test description";
 				
-				topicVo.posts = new Array();
-			
+				var p1:PostVO = new PostVO();
+				p1.message = "HI!";
+				p1.title = "Hello";
 				
-				//this.test2Service.insert(topicVo).execute();
-				this.test2Service.findAll(topicVo).execute();
+				var p2:PostVO = new PostVO();
+				p2.message = "Bye!";
+				p2.title = "Cheers";
+				topicVo.posts = [p1, p2];
+				topicVo.User = new UserVO();
+				topicVo.User.username = "danny";
+				
+				this.test2Service.insert(topicVo).execute();
+				//this.test2Service.findAll(topicVo).execute();
 			}
 			
 			

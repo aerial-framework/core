@@ -5,8 +5,13 @@
 	{
 		protected function _set($fieldName, $value, $load = true)
 		{
-			if(is_array($value))
+			if($this->isRelation($fieldName))
+			{
+				/*echo "$fieldName is a relation on ".$this->getTable()->getTableName()." > ";
+				echo (gettype($value) == "object") ? get_class($value) : gettype($value)."\n";*/
+
 				$value = $this->arrayToCollection($fieldName, $value);
+			}
 
 			return parent::_set($fieldName, $value, $load);
 		}
@@ -18,25 +23,36 @@
 		 *
 		 * Returns a Doctrine_Collection instance if the field key is a relation alias, otherwise return the array
 		 */
-		private function arrayToCollection($fieldName, $array)
+		protected function arrayToCollection($fieldName, $array)
 		{
 			$relationKey = $fieldName;
 			$table = $this->getTable();
+			
+			$relation = $table->getRelation($relationKey);
 
-			try
+			if($relation->isOneToOne())
 			{
-				$relation = $table->getRelation($relationKey);
-			}
-			catch(Doctrine_Table_Exception $e)
-			{
+				if(!$array || is_undefined($array))
+					return Doctrine_Record::initNullObject(new Doctrine_Null());
+
 				return $array;
 			}
+			else
+			{
+				$coll = new Doctrine_Collection($relation->getTable());
+				if(!$array || is_undefined($array))
+					return $coll;
 
-			$coll = new Doctrine_Collection($relation->getTable());
-			foreach($array as $post)
-				$coll->add($post);
+				foreach($array as $post)
+					$coll->add($post);
 
-			return $coll;
+				return $coll;
+			}
+		}
+
+		protected function isRelation($alias)
+		{
+			return $this->getTable()->hasRelation($alias);
 		}
 	}
 ?>

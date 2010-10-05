@@ -31,7 +31,11 @@ class BaseTestService
 	
 	public function insert($args)
 	{
-		return $args;
+		$obj = new stdClass();
+		$obj->_explicitType = "model.vo.Topic";
+		$obj->bleh = "name";
+
+		return array($obj, $args);
 	}
 
 	// -----------------------------------------------------------------------------

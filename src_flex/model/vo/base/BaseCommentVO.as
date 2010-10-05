@@ -1,44 +1,101 @@
 package model.vo.base
 {
+    import model.vo.*;
+
 	[Bindable]
 	public class BaseCommentVO
 	{
-		public var id:int;
-		public var userId:int;
-		public var postId:int;
-		public var message:String;
-		public var createDate:String;
-		public var modDate:String;
-		
-		private var related:Object = {};
+		private var _id:*;
+		private var _userId:*;
+		private var _postId:*;
+		private var _message:*;
+		private var _createDate:*;
+		private var _modDate:*;
+
+		// Relations:
+		private var _User:*;
+		private var _Post:*;
 			
-		[Transient]
-		public function get User():*
+		public function get id():int
 		{
-			return related["User"];
+			return _id;
 		}
 			
-		public function set User(value:*):void
+		public function set id(value:int):void
 		{
-			related["User"] = {table:"User", value:value, type:"one",
-									local_key:"userid", foreign_key:"id", refTable:""};
+			_id = value;
 		}
 			
-		[Transient]
-		public function get Post():*
+		public function get userId():int
 		{
-			return related["Post"];
+			return _userId;
 		}
 			
-		public function set Post(value:*):void
+		public function set userId(value:int):void
 		{
-			related["Post"] = {table:"Post", value:value, type:"one",
-									local_key:"postid", foreign_key:"id", refTable:""};
+			_userId = value;
 		}
-		
-		public function getRelatedData():Object
+			
+		public function get postId():int
 		{
-			return related;
+			return _postId;
+		}
+			
+		public function set postId(value:int):void
+		{
+			_postId = value;
+		}
+			
+		public function get message():String
+		{
+			return _message;
+		}
+			
+		public function set message(value:String):void
+		{
+			_message = value;
+		}
+			
+		public function get createDate():String
+		{
+			return _createDate;
+		}
+			
+		public function set createDate(value:String):void
+		{
+			_createDate = value;
+		}
+			
+		public function get modDate():String
+		{
+			return _modDate;
+		}
+			
+		public function set modDate(value:String):void
+		{
+			_modDate = value;
+		}
+
+		// Relations:
+			
+		public function get User():UserVO
+		{
+			return _User;
+		}
+			
+		public function set User(value:UserVO):void
+		{
+			_User = value;
+		}
+			
+		public function get Post():PostVO
+		{
+			return _Post;
+		}
+			
+		public function set Post(value:PostVO):void
+		{
+			_Post = value;
 		}
 	}
 }

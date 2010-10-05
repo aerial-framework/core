@@ -3,7 +3,6 @@
 	require_once(AMFPHP_PATH.'/globals.php');
     require_once(UTILS."/ArrayCollection.php");
 	require_once("config/Authentication.php");
-	require_once(dirname(__FILE__)."/../services/core/aerial/Configuration.php");
 
 	class Bootstrapper
 	{
@@ -45,6 +44,8 @@
 			Doctrine_Core::loadModels(BACKEND_MODELS_PATH);
 			
 			Authentication::getInstance();
+
+			require_once(dirname(__FILE__)."/../services/core/aerial/Configuration.php");
 		}
 		
 		public static function setCredentials($username, $password)

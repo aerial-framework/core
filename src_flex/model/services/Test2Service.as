@@ -14,8 +14,5 @@ package model.services
 			super("TestService", conf.AMFGatewayURL, TopicVO);
 		}
 		
-	
-		
-		
 	}
 }

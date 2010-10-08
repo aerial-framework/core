@@ -35,6 +35,7 @@ class BaseTestService
 		$obj->_explicitType = "model.vo.Topic";
 		$obj->bleh = "name";
 
+		$args = (object)$args;
 		return array($obj, $args);
 	}
 

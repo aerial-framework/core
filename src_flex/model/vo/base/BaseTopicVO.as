@@ -3,7 +3,7 @@ package model.vo.base
     import model.vo.*;
 
 	[Bindable]
-	public class BaseTopicVO implements IPropertyMap
+	public class BaseTopicVO 
 	{
 		private var _id:*;
 		private var _userId:*;
@@ -18,8 +18,6 @@ package model.vo.base
 		private var _User:*;
 		private var _posts:*;
 		
-		private var _propertyMap:Object = {};
-		
 		public function BaseTopicVO()
 		{
 			this.setupMap();
@@ -32,7 +30,6 @@ package model.vo.base
 			
 		public function set id(value:int):void
 		{
-			_propertyMap["id"] = value;
 			_id = value;
 		}
 			
@@ -63,7 +60,6 @@ package model.vo.base
 			
 		public function set name(value:String):void
 		{
-			_propertyMap["name"] = value;
 			_name = value;
 		}
 			
@@ -99,7 +95,7 @@ package model.vo.base
 
 		// Relations:
 			
-		public function get Category():*
+		public function get Category():CategoryVO
 		{
 			return _Category;
 		}
@@ -116,7 +112,6 @@ package model.vo.base
 			
 		public function set User(value:UserVO):void
 		{
-			//_propertyMap["User"] = value.getPropertyMap();
 			_User = value;
 		}
 			
@@ -132,13 +127,8 @@ package model.vo.base
 		
 		public function setupMap():void
 		{
-			_propertyMap["_explicitType"] = "model.vo.Topic";
-			//_propertyMap["Category"] = undefined;
+			//_propertyMap["_explicitType"] = "model.vo.Topic";
 		}
 
-		public function getPropertyMap():Object
-		{
-			return _propertyMap;
-		}
 	}
 }

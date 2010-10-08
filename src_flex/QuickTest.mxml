@@ -48,7 +48,7 @@
 				topicVo.name = "Robert";
 				topicVo.description = "test description";
 				
-				var p1:PostVO = new PostVO();
+				/* var p1:PostVO = new PostVO();
 				p1.message = "HI!";
 				p1.title = "Hello";
 				
@@ -58,8 +58,9 @@
 				topicVo.posts = [p1, p2];
 				topicVo.User = new UserVO();
 				topicVo.User.username = "danny";
+				*/
 				
-				this.test2Service.insert(topicVo).execute();
+				this.test2Service.insert(topicVo).execute(); 
 				//this.test2Service.findAll(topicVo).execute();
 			}
 			

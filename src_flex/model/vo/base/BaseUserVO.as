@@ -3,7 +3,7 @@ package model.vo.base
     import model.vo.*;
 
 	[Bindable]
-	public class BaseUserVO implements IPropertyMap
+	public class BaseUserVO 
 	{
 		private var _id:*;
 		private var _username:*;

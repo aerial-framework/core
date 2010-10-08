@@ -2,7 +2,6 @@ package org.aerial.rpc.operation
 {
 	import flash.events.Event;
 	
-	import model.vo.IPropertyMap;
 	
 	import mx.rpc.AbstractOperation;
 	import mx.rpc.AsyncToken;
@@ -57,7 +56,8 @@ package org.aerial.rpc.operation
 		
 		public function execute(offset:uint=0, limit:uint=0):AsyncToken
 		{
-			token = _op.send(IPropertyMap(_args).getPropertyMap(), offset, limit);
+			
+			token = _op.send(_args, offset, limit);
 			if(_callback !== null) token.addResponder(new Responder(notifyCaller,null));
 			
 			return token;

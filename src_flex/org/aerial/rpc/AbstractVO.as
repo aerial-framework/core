@@ -8,7 +8,7 @@ package org.aerial.rpc
 	import mx.events.PropertyChangeEvent;
 	
 	
-	public class AbstractVO
+	public class AbstractVO implements IAbstractVO
 	{
 		private var vo:Object;
 		

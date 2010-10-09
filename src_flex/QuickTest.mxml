@@ -30,15 +30,18 @@
 			{
 				WindowStuff();
 				
-				testInsert();
-			
+				//testInsert();
+				test();
 			}
+
 			
-			public function model():void
+			public function test():void
 			{
-				/* var m:Model = new Model();
-				trace(m); */
+				Number.prototype.undefined = "no defino";
+				var n:* = new Number();
+				trace(n.undefined);
 			}
+			
 			
 			public function testInsert():void
 			{
@@ -48,19 +51,29 @@
 				topicVo.name = "Robert";
 				topicVo.description = "test description";
 				
-				/* var p1:PostVO = new PostVO();
-				p1.message = "HI!";
-				p1.title = "Hello";
+				topicVo.name = undefined;
+			
 				
-				var p2:PostVO = new PostVO();
-				p2.message = "Bye!";
-				p2.title = "Cheers";
-				topicVo.posts = [p1, p2];
-				topicVo.User = new UserVO();
-				topicVo.User.username = "danny";
-				*/
+				relations:{
+					break relations;
+					
+					var p1:PostVO = new PostVO();
+					p1.message = "HI!";
+					p1.title = "Hello";
+					
+					var p2:PostVO = new PostVO();
+					p2.message = "Bye!";
+					p2.title = "Cheers";
+					
+					topicVo.posts = [p1, p2];
+					topicVo.User = new UserVO();
+					topicVo.User.username = "danny";
+				}
 				
-				this.test2Service.insert(topicVo).execute(); 
+				
+				
+				
+				//this.test2Service.insert(topicVo).execute(); 
 				//this.test2Service.findAll(topicVo).execute();
 			}
 			

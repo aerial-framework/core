@@ -31,7 +31,7 @@ package org.aerial.rpc
 			if(!(vo is _voClass))
 				throw new ArgumentError(this.source + ".insert(vo:Object) argument must be of type " + getQualifiedClassName(_voClass) + " (You used " + getQualifiedClassName(vo) + ")");
 			
-			var op:Operation = new Operation(this, "insert", (vo["getObject"] as Function).call());
+			var op:Operation = new Operation(this, "insert", IAbstractVO(vo).getObject() );
 			
 			return op;
 		}

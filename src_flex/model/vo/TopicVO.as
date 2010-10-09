@@ -1,8 +1,9 @@
 package model.vo
 {
 	import org.aerial.rpc.AbstractVO;
+	import model.vo.*;
 	
-	[Bindable]
+	[Bindable]	
 	public class TopicVO extends AbstractVO
 	{		
 		public function TopicVO()
@@ -10,20 +11,20 @@ package model.vo
 			super("model.vo.Topic");
 		}
 		
-		private var _id:*;
-		private var _userId:*;
-		private var _categoryId:*;
-		private var _name:*;
-		private var _description:*;
-		private var _createDate:*;
-		private var _modDate:*;
-		
-		// Relations:
-		private var _Category:*;
-		private var _User:*;
-		private var _posts:*;
-		
-		
+		private var _id:*
+		private var _userId:*
+		private var _categoryId:*
+		private var _name:*
+		private var _description:*
+		private var _createDate:*
+		private var _modDate:*
+
+		//Relations
+		private var _Category:*
+		private var _User:*
+		private var _posts:*
+
+			
 		public function get id():int
 		{
 			return _id;
@@ -33,7 +34,7 @@ package model.vo
 		{
 			_id = value;
 		}
-		
+			
 		public function get userId():int
 		{
 			return _userId;
@@ -43,7 +44,7 @@ package model.vo
 		{
 			_userId = value;
 		}
-		
+			
 		public function get categoryId():int
 		{
 			return _categoryId;
@@ -53,7 +54,7 @@ package model.vo
 		{
 			_categoryId = value;
 		}
-		
+			
 		public function get name():String
 		{
 			return _name;
@@ -63,7 +64,7 @@ package model.vo
 		{
 			_name = value;
 		}
-		
+			
 		public function get description():String
 		{
 			return _description;
@@ -73,7 +74,7 @@ package model.vo
 		{
 			_description = value;
 		}
-		
+			
 		public function get createDate():String
 		{
 			return _createDate;
@@ -83,7 +84,7 @@ package model.vo
 		{
 			_createDate = value;
 		}
-		
+			
 		public function get modDate():String
 		{
 			return _modDate;
@@ -93,9 +94,9 @@ package model.vo
 		{
 			_modDate = value;
 		}
-		
-		// Relations:
-		
+
+		//Relations
+			
 		public function get Category():CategoryVO
 		{
 			return _Category;
@@ -105,7 +106,7 @@ package model.vo
 		{
 			_Category = value;
 		}
-		
+			
 		public function get User():UserVO
 		{
 			return _User;
@@ -115,7 +116,7 @@ package model.vo
 		{
 			_User = value;
 		}
-		
+			
 		public function get posts():Array
 		{
 			return _posts;

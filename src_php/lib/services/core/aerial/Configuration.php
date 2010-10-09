@@ -187,6 +187,106 @@
 		}
 		
 		
+		public static function generate_AS3_VO($vo=null)
+		{
+			$template = ActionScriptGenerator::readTemplate("AS3.VO");
+			$accessorStub = ActionScriptGenerator::getTemplatePart("as3AccessorStub");
+
+			$replacementTokens = array("package", "class","remoteClass", "privateVars", "accessors");
+
+			$package = FRONTEND_MODELS_PACKAGE;
+
+			$models = ActionScriptGenerator::getModelData();
+
+			foreach($models as $model)
+			{
+				$contents = $template;
+				$class = $model["class"].VO_SUFFIX;
+				$remoteClass = $model["class"];
+				$properties = $model["properties"];
+				$relations = $model["relations"];
+
+				$privateVars = "";
+				$accessors = "";
+					
+				//Main Properties
+				foreach($properties as $property){
+					$field = $property["field"];
+					$type = $property["type"];
+
+					//Create Private Vars
+					$privateVars .= "\t\t" . "private var _$field:*\n";
+
+					//Create Accessors
+					$a_stub = "\n\t\t\t" . $accessorStub;
+					$a_stub = str_replace("{{field}}", $field, $a_stub);
+					$a_stub = str_replace("{{type}}", $type, $a_stub);
+
+					$accessors .= $a_stub;
+				}
+					
+				//Relation Properties
+				$privateVars .= "\n\t\t//Relations\n";
+				$accessors .= "\n\n\t\t//Relations";
+					
+				foreach($relations as $relation)
+				{
+					$field = $relation["alias"];
+					$type = $relation["type"] == "one" ? $relation["table"].VO_SUFFIX : "Array";
+
+					//Create Private Vars
+					$privateVars .= "\t\t" . "private var _$field:*\n";
+
+					//Create Accessors
+					$a_stub = "\n\t\t\t" . $accessorStub;
+					$a_stub = str_replace("{{field}}", $field, $a_stub);
+					$a_stub = str_replace("{{type}}", $type, $a_stub);
+
+					$accessors .= $a_stub;
+				}
+					
+				//Create the VO file
+				foreach($replacementTokens as $token)
+				$contents = str_replace("{{".$token."}}", $$token, $contents);
+					
+				ActionScriptGenerator::writeFile(FRONTEND_MODELS_PATH . "/$class.as", $contents);
+			}
+		}
+	
+		
+		public static function generate_AS3_Service($service=null)
+		{
+			$template = ActionScriptGenerator::readTemplate("AS3.SO");
+
+			$replacementTokens = array("package", "modelPackage", "vo", "configPackage", "class", "configClass");
+
+			$package = FRONTEND_SERVICES_PACKAGE;
+			$modelPackage = FRONTEND_MODELS_PACKAGE;
+			$configPackage = FRONTEND_CONFIG_CLASS;
+			$configClass = array_pop(explode(".", $configPackage));
+
+			$services = ActionScriptGenerator::getASServiceData();
+
+			foreach($services as $service)
+			{
+				$contents = $template;
+					
+				$class = $service["class"]."Service";
+				$vo = $service["class"] . VO_SUFFIX;
+					
+				foreach($replacementTokens as $token)
+				$contents = str_replace("{{".$token."}}", $$token, $contents);
+					
+				ActionScriptGenerator::writeFile(FRONTEND_SERVICES_PATH . "/$class.as", $contents);
+			}
+		}
+
+		public static function generate_PHP_Services($vo=null)
+		{
+				
+		}
+	
+		
 		private static function getModels()
 		{
 			$models = Doctrine_Core::loadModels(BACKEND_MODELS_PATH);

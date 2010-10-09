@@ -51,9 +51,6 @@
 				topicVo.name = "Robert";
 				topicVo.description = "test description";
 				
-				topicVo.name = undefined;
-			
-				
 				relations:{
 					break relations;
 					
@@ -71,7 +68,7 @@
 				}
 				
 				
-				
+				this.test2Service.insert(new PostVO());
 				
 				//this.test2Service.insert(topicVo).execute(); 
 				//this.test2Service.findAll(topicVo).execute();

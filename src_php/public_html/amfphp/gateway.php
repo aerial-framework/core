@@ -111,7 +111,6 @@
 
 	//Include framework
 	include "core/amf/app/Gateway.php";
-	require_once(AMFPHP_BASE."amf/app/Undefined.php");
 
 	$gateway = new Gateway();
 	
@@ -141,12 +140,7 @@
 
 	function is_undefined($obj)
 	{
-		if(is_object($obj)){
-			return get_class($obj) == "undefined";
-		}else{
-			return false;
-		}
-		
+		return is_object($obj) ? get_class($obj) == "undefined" : false;
 	}
 	
 	//If you are running into low-level issues with corrupt messages and 

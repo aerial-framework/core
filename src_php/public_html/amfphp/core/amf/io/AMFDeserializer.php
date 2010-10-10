@@ -11,7 +11,6 @@
  */
 
 include_once(AMFPHP_BASE . "amf/io/AMFBaseDeserializer.php");
-include_once(AMFPHP_BASE . "amf/app/Undefined.php");
 
 class AMFDeserializer extends AMFBaseDeserializer {
 	/**
@@ -551,8 +550,8 @@ class AMFDeserializer extends AMFBaseDeserializer {
 		{
 			//an object reference
 			return $this->storedObjects[$handle];
-		}		
-		
+		}
+
 		
 		$type = $classDefinition['type'];
 		$obj = $this->mapClass($type);

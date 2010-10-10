@@ -54,5 +54,60 @@
 		{
 			return $this->getTable()->hasRelation($alias);
 		}
+
+		public function fromArray(array $array, $deep = true)
+		{
+			$refresh = false;
+			foreach ($array as $key => $value) {
+				if(is_undefined($value))
+					continue;
+
+				if ($key == '_identifier') {
+					$refresh = true;
+					$this->assignIdentifier($value);
+					continue;
+				}
+
+				if ($deep && $this->getTable()->hasRelation($key)) {
+					if ( ! $this->$key) {
+						$this->refreshRelated($key);
+					}
+
+					if($value instanceof Aerial_Record)
+					{
+						$this->$key = $value;
+						if(!is_undefined($value->id))
+						{
+							$refresh = true;
+							$value->assignIdentifier($value->id);
+						}
+					}
+					else if (is_array($value)) {
+						if($value[0] instanceof Aerial_Record)
+							$this->$key = $value;
+						else if (isset($value[0]) && ! is_array($value[0])) {
+							$this->unlink($key, array(), false);
+							$this->link($key, $value, false);
+						} else {
+							$this->$key = $this->fromArray($value, $deep);
+						}
+					}
+				} else if ($this->getTable()->hasField($key) || array_key_exists($key, $this->_values)) {
+					$this->set($key, $value);
+				} else {
+					$method = 'set' . Doctrine_Inflector::classify($key);
+
+					try {
+						if (is_callable(array($this, $method))) {
+							$this->$method($value);
+						}
+					} catch (Doctrine_Record_Exception $e) {}
+				}
+			}
+
+			if ($refresh) {
+				$this->refresh();
+			}
+		}
 	}
 ?>

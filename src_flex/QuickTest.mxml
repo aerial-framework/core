@@ -5,8 +5,8 @@
 					   xmlns:services="model.services.*" applicationComplete="init()"
 					   >
 	<fx:Declarations>
-		<services:Test2Service id="test2Service" result="result(event)" fault="fault(event)" />
 		<services:UserService id="userService" result="resultHandler(event)" fault="faultHandler(event)" />
+		<services:TopicService id="topicService" result="result(event)" fault="fault(event)" />
 	</fx:Declarations>
 	
 	<fx:Script>
@@ -30,17 +30,11 @@
 			{
 				WindowStuff();
 				
-				testInsert();
-			
+				testMethod();
 			}
+
 			
-			public function model():void
-			{
-				/* var m:Model = new Model();
-				trace(m); */
-			}
-			
-			public function testInsert():void
+			public function testMethod():void
 			{
 				var topicVo:TopicVO = new TopicVO();
 				topicVo.userId = 1;
@@ -48,20 +42,26 @@
 				topicVo.name = "Robert";
 				topicVo.description = "test description";
 				
-				/* var p1:PostVO = new PostVO();
-				p1.message = "HI!";
-				p1.title = "Hello";
+				relations:{
+					break relations;
+					
+					var p1:PostVO = new PostVO();
+					p1.message = "HI!";
+					p1.title = "Hello";
+					
+					var p2:PostVO = new PostVO();
+					p2.message = "Bye!";
+					p2.title = "Cheers";
+					
+					topicVo.posts = [p1, p2];
+					topicVo.User = new UserVO();
+					topicVo.User.username = "danny";
+				}
 				
-				var p2:PostVO = new PostVO();
-				p2.message = "Bye!";
-				p2.title = "Cheers";
-				topicVo.posts = [p1, p2];
-				topicVo.User = new UserVO();
-				topicVo.User.username = "danny";
-				*/
 				
-				this.test2Service.insert(topicVo).execute(); 
-				//this.test2Service.findAll(topicVo).execute();
+				//this.topicService.insert(topicVo).execute();
+				this.topicService.findAll({userId:9, categoryId:3}).execute();
+				
 			}
 			
 			
@@ -140,7 +140,7 @@
 			
 		]]>
 	</fx:Script>
-	<s:Button x="153" y="98" label="Button" click="testInsert()"/>
+	<s:Button x="153" y="98" label="Button" click="testMethod()"/>
 	
 	
 </s:WindowedApplication>

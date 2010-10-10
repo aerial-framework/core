@@ -5,13 +5,13 @@ package model.services
 	import model.vo.TopicVO;
 	
 	import org.aerial.rpc.AbstractService;
+	import org.aerial.system.IConfig;
 	
 	public class Test2Service extends AbstractService
 	{
 		public function Test2Service()
 		{
-			var conf:Config = new Config();
-			super("TestService", conf.AMFGatewayURL, TopicVO);
+			super("TestService", IConfig(new Config()).AMF_GATEWAY, TopicVO);
 		}
 		
 	}

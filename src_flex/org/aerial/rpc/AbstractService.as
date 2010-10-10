@@ -20,34 +20,74 @@ package org.aerial.rpc
 			_voClass = voClass;
 		}
 		
-		public function findAll(arg:*):Operation
-		{
-			var op:Operation = new Operation(this, "findAll",arg); 
-			return op;
-		}
+		//Modifiy Methods
 		
 		public function insert(vo:Object):Operation
 		{
-			if(!(vo is _voClass))
-				throw new ArgumentError(this.source + ".insert(vo:Object) argument must be of type " + getQualifiedClassName(_voClass) + " (You used " + getQualifiedClassName(vo) + ")");
-			
-			var op:Operation = new Operation(this, "insert", (vo["getObject"] as Function).call());
+			validateVO(vo);
+			var op:Operation = new Operation(this, "insert", IAbstractVO(vo).getObject() );
 			
 			return op;
 		}
 		
-		/*public function findFirst():void
+		public function update(vo:Object):Operation
 		{
+			validateVO(vo);
+			var op:Operation = new Operation(this, "update", IAbstractVO(vo).getObject() );
+			
+			return op;
 		}
 		
-		public function findLast():void
+		public function save(vo:Object):Operation
 		{
+			validateVO(vo);
+			var op:Operation = new Operation(this, "save", IAbstractVO(vo).getObject() );
+			
+			return op;
 		}
 		
-		public function findById(id:int, page:int=0):void
+		public function drop(vo:Object):Operation
 		{
+			validateVO(vo);
+			var op:Operation = new Operation(this, "drop", IAbstractVO(vo).getObject() );
+			
+			return op;
 		}
 		
+		//Find Methods
+		
+		public function findAll(criteria:* = null):Operation
+		{
+			var op:Operation = new Operation(this, "findAll", criteria); 
+			return op;
+		}
+		
+		public function findFirst(criteria:* = null):Operation
+		{
+			var op:Operation = new Operation(this, "findFirst", criteria); 
+			return op;
+		}
+		
+		public function findLast(criteria:* = null):Operation
+		{
+			var op:Operation = new Operation(this, "findLast", criteria); 
+			return op;
+		}
+		
+		public function findById(id:int):Operation
+		{
+			var op:Operation = new Operation(this, "findLast", id); 
+			return op;
+		}
+		
+		
+		//Helpers
+		private function validateVO(vo:Object):void{
+			if(!(vo is _voClass))
+				throw new ArgumentError(this.source + ".insert(vo:Object) argument must be of type " + getQualifiedClassName(_voClass) + " (You used " + getQualifiedClassName(vo) + ")");
+		}
+		
+		/*
 		public function findByField(field:Object, page:int):void
 		{
 		}
@@ -57,22 +97,6 @@ package org.aerial.rpc
 		}
 		
 		public function findByExample(example:Object, page:int=0):void
-		{
-		}
-		
-		public function insert(topic:TopicVO):void
-		{
-		}
-		
-		public function update(topic:TopicVO):void
-		{
-		}
-		
-		public function drop(topic:TopicVO):void
-		{
-		}
-		
-		public function save(topic:TopicVO):void
 		{
 		}
 		

@@ -1,0 +1,16 @@
+package {{package}}
+{
+	import org.aerial.rpc.AbstractService;
+	import org.aerial.system.IConfig;
+	
+	import {{modelPackage}}.{{vo}}
+	import {{configPackage}};
+
+	public class {{class}} extends AbstractService
+	{
+		public function {{class}}()
+		{
+			super("{{class}}", IConfig(new {{configClass}}()).AMF_GATEWAY, {{vo}});
+		}
+	}
+}

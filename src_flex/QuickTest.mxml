@@ -5,8 +5,8 @@
 					   xmlns:services="model.services.*" applicationComplete="init()"
 					   >
 	<fx:Declarations>
-		<services:Test2Service id="test2Service" result="result(event)" fault="fault(event)" />
 		<services:UserService id="userService" result="resultHandler(event)" fault="faultHandler(event)" />
+		<services:TopicService id="topicService" result="result(event)" fault="fault(event)" />
 	</fx:Declarations>
 	
 	<fx:Script>
@@ -30,20 +30,11 @@
 			{
 				WindowStuff();
 				
-				//testInsert();
-				test();
+				testMethod();
 			}
 
 			
-			public function test():void
-			{
-				Number.prototype.undefined = "no defino";
-				var n:* = new Number();
-				trace(n.undefined);
-			}
-			
-			
-			public function testInsert():void
+			public function testMethod():void
 			{
 				var topicVo:TopicVO = new TopicVO();
 				topicVo.userId = 1;
@@ -68,10 +59,9 @@
 				}
 				
 				
-				this.test2Service.insert(new PostVO());
+				//this.topicService.insert(topicVo).execute();
+				this.topicService.findAll({userId:9, categoryId:3}).execute();
 				
-				//this.test2Service.insert(topicVo).execute(); 
-				//this.test2Service.findAll(topicVo).execute();
 			}
 			
 			
@@ -150,7 +140,7 @@
 			
 		]]>
 	</fx:Script>
-	<s:Button x="153" y="98" label="Button" click="testInsert()"/>
+	<s:Button x="153" y="98" label="Button" click="testMethod()"/>
 	
 	
 </s:WindowedApplication>

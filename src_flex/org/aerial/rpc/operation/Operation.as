@@ -2,7 +2,6 @@ package org.aerial.rpc.operation
 {
 	import flash.events.Event;
 	
-	
 	import mx.rpc.AbstractOperation;
 	import mx.rpc.AsyncToken;
 	import mx.rpc.Responder;
@@ -20,6 +19,8 @@ package org.aerial.rpc.operation
 		private var token:AsyncToken;
 		private var _op:AbstractOperation;
 		private var _args:*;
+		private var _sort:Object;
+		private var _relations:Object;
 		 
 		public function Operation(service:AbstractService, method:String, args:*=null)
 		{
@@ -27,6 +28,7 @@ package org.aerial.rpc.operation
 			_method = method;
 			_op = service.getOperation(_method);
 			_args = args;
+			_sort = new Array();
 		}
 		
 		
@@ -43,8 +45,17 @@ package org.aerial.rpc.operation
 		
 		public function sortBy(field:String, order:String = "ASC"):Operation
 		{
-			
+			_sort[field] = order;
 			return this;
+		}
+		
+		public function sortClear(field:String = null):void
+		{
+			if(field){
+				if(_sort.hasOwnProperty(field)) delete _sort[field];	
+			}else{
+				_sort = null;
+			}
 		}
 		
 		public function notifyCaller(event:ResultEvent):void

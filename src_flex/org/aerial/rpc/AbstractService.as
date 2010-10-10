@@ -56,21 +56,21 @@ package org.aerial.rpc
 		
 		//Find Methods
 		
-		public function findAll(arg:* = null):Operation
+		public function findAll(criteria:* = null):Operation
 		{
-			var op:Operation = new Operation(this, "findAll", arg); 
+			var op:Operation = new Operation(this, "findAll", criteria); 
 			return op;
 		}
 		
-		public function findFirst(arg:* = null):Operation
+		public function findFirst(criteria:* = null):Operation
 		{
-			var op:Operation = new Operation(this, "findFirst", arg); 
+			var op:Operation = new Operation(this, "findFirst", criteria); 
 			return op;
 		}
 		
-		public function findLast(arg:* = null):Operation
+		public function findLast(criteria:* = null):Operation
 		{
-			var op:Operation = new Operation(this, "findLast", arg); 
+			var op:Operation = new Operation(this, "findLast", criteria); 
 			return op;
 		}
 		

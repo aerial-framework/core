@@ -23,6 +23,8 @@
 			
 			import org.aerial.rpc.operation.Operation;
 			
+			SomethingMessage;
+			
 			public var user:UserVO;
 			
 			
@@ -36,32 +38,14 @@
 			
 			public function testMethod():void
 			{
-				var topicVo:TopicVO = new TopicVO();
-				topicVo.userId = 1;
-				topicVo.categoryId = 2;
-				topicVo.name = "Robert";
-				topicVo.description = "test description";
-				
-				relations:{
-					break relations;
-					
-					var p1:PostVO = new PostVO();
-					p1.message = "HI!";
-					p1.title = "Hello";
-					
-					var p2:PostVO = new PostVO();
-					p2.message = "Bye!";
-					p2.title = "Cheers";
-					
-					topicVo.posts = [p1, p2];
-					topicVo.User = new UserVO();
-					topicVo.User.username = "danny";
-				}
-				
-				
-				//this.topicService.insert(topicVo).execute();
-				this.topicService.findAll({userId:9, categoryId:3}).execute();
-				
+				var user:UserVO = new UserVO();
+
+                var sp1:SpecialtyVO = new SpecialtyVO();
+                sp1.id = 1;
+                sp1.name = "Test";
+
+				//user.specialties = [sp1];
+                userService.save(user).execute();
 			}
 			
 			
@@ -71,8 +55,7 @@
 				this.test2Service.findAll().execute();
 				this.test2Service.findAll().callback(myCallBack).execute(); */
 			}
-			
-			
+						
 			public function WindowStuff():void
 			{
 				nativeWindow.x = Screen.mainScreen.bounds.width - width - 50;

@@ -65,6 +65,7 @@ class MessageException {
 			$results->faultCode = $exception->code;
 			$results->faultDetail = $exception->details . ' on line ' . $exception->line;
 			$results->faultString = $exception->description;
+			$results->something = "Something!";
 		}
 		elseif($GLOBALS['amfphp']['encoding'] == 'amf0')
 		{

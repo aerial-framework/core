@@ -1911,63 +1911,6 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
         return $a;
     }
     
-/**
-     * Transforms the Record to an AMF compatible object.
-     *
-     * @link http://www.doctrine-project.org/documentation/manual/1_1/en/working-with-models
-     * @param boolean $deep         whether to include relations
-     * @param boolean $prefixKey    not used
-     * @return array
-     */
-    public function toAmf($deep = true, $prefixKey = false)
-    {
-        if ($this->_state == self::STATE_LOCKED || $this->_state == self::STATE_TLOCKED) {
-            return false;
-        }
-        
-        $stateBeforeLock = $this->_state;
-        $this->_state = $this->exists() ? self::STATE_LOCKED : self::STATE_TLOCKED;
-        
-        $a = array();
-
-        foreach ($this as $column => $value) {
-            if ($value === self::$_null || is_object($value)) {
-                $value = null;
-            }
-
-            $columnValue = $this->get($column);
-
-            if ($columnValue instanceof Doctrine_Record) {
-                $a[$column] = $columnValue->getIncremented();
-            } else {
-                $a[$column] = $columnValue;
-            }
-        }
-
-        if ($this->_table->getIdentifierType() ==  Doctrine::IDENTIFIER_AUTOINC) {
-            $i      = $this->_table->getIdentifier();
-            $a[$i]  = $this->getIncremented();
-        }
-
-        if ($deep) {
-            foreach ($this->_references as $key => $relation) {
-                if ( ! $relation instanceof Doctrine_Null) {
-                    $a[$key] = $relation->toAmf($deep, $prefixKey);
-                }
-            }
-        }
-
-        // [FIX] Prevent mapped Doctrine_Records from being displayed fully
-        foreach ($this->_values as $key => $value) {
-            $a[$key] = ($value instanceof Doctrine_Record)
-                ? $value->toAmf($deep, $prefixKey) : $value;
-        }
-
-        $this->_state = $stateBeforeLock;
-
-        return (object)$a;
-    }
-
     /**
      * merges this record with an array of values
      * or with another existing instance of this object

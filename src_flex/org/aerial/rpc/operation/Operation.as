@@ -5,6 +5,7 @@ package org.aerial.rpc.operation
 	import mx.rpc.AbstractOperation;
 	import mx.rpc.AsyncToken;
 	import mx.rpc.Responder;
+	import mx.rpc.events.FaultEvent;
 	import mx.rpc.events.ResultEvent;
 	import mx.rpc.http.Operation;
 	
@@ -15,7 +16,8 @@ package org.aerial.rpc.operation
 		
 		private var _service:AbstractService;
 		private var _method:String;
-		private var _callback:Function;
+		private var _resultHandler:Function;
+		private var _faultHandler:Function;
 		private var token:AsyncToken;
 		private var _op:AbstractOperation;
 		private var _args:*; 
@@ -38,9 +40,10 @@ package org.aerial.rpc.operation
 		}
 		
 		
-		public function callback(value:Function):Operation
+		public function callback(resultHandler:Function, faultHandler:Function = null):Operation
 		{
-			_callback = value;
+			_faultHandler = faultHandler;
+			_resultHandler = resultHandler;
 			return this;
 		}
 		
@@ -66,10 +69,18 @@ package org.aerial.rpc.operation
 			}
 		}
 		
-		public function notifyCaller(event:ResultEvent):void
+		private function notifyResultHandler(event:ResultEvent):void
 		{
-			event.preventDefault(); //Prevent the service result handler from firing.
-			_callback(event);
+			event.preventDefault(); 
+			_resultHandler(event);
+		}
+		
+		private function notifyFaultHandler(event:FaultEvent):void
+		{
+			if(_faultHandler != null){
+				event.preventDefault();
+				_faultHandler(event);
+			}
 		}
 		
 		public function nextPage():AsyncToken
@@ -101,7 +112,7 @@ package org.aerial.rpc.operation
 		{
 			token = _op.send(_args, _limit, _offset, _sort, _relations);
 			
-			if(_callback !== null) token.addResponder(new Responder(notifyCaller,null));
+			if(_resultHandler !== null) token.addResponder(new Responder(notifyResultHandler, notifyFaultHandler));
 		
 			return token;
 		}

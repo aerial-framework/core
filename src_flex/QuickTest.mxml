@@ -14,7 +14,6 @@
 			import flash.net.registerClassAlias;
 			
 			import model.services.PostService;
-			
 			import model.vo.*;
 			
 			import mx.collections.ArrayCollection;
@@ -29,7 +28,6 @@
 			import org.aerial.rpc.operation.Operation;
 			
 			public var user:UserVO;
-			
 			public var find:Operation;
 			
 			
@@ -37,7 +35,12 @@
 			{
 				WindowStuff();
 				
-				testMethod();
+				//Registering remote aliases to bypass errors for testing purposes.
+				registerClassAlias("model.vo.User",UserVO);
+				registerClassAlias("model.vo.Category",CategoryVO);
+				registerClassAlias("model.vo.Topic",TopicVO);
+				registerClassAlias("model.vo.Post",PostVO);
+				registerClassAlias("model.vo.Coment",CommentVO);
 			}
 
 			
@@ -72,17 +75,31 @@
 			
 			public function findAll():void
 			{
-//				var g:CategoryVO = new CategoryVO();
-//				var p:PostVO= new PostVO();
-//				
-				registerClassAlias("model.vo.Category",CategoryVO);
-				registerClassAlias("model.vo.Post",PostVO);
-				
-				find = this.topicService.findAll({userId:9, categoryId:3});
+				find = this.topicService.findAll({userId:9, categoryId:3}).callback(findResult,findFault);
 				find.sortBy("id", "ASC");
 				find.relations({Category:"*", posts:"*"});
 				find.execute();
 				
+			}
+			
+			public function findResult(event:ResultEvent):void
+			{
+				if((event.result is IList || event.result is ICollectionView) ){
+					if(event.result.length > 0){
+						for each (var result:Object in event.result){
+							trace(result.id);
+						}
+					}else{
+						trace("no records");
+					}
+				}else{
+					trace(event.result);
+				}
+			}
+			
+			public function findFault(event:FaultEvent):void
+			{
+				trace("custom fault event");
 			}
 			
 			public function findNext():void
@@ -158,18 +175,7 @@
 			
 			protected function result(event:ResultEvent):void
 			{
-				if((event.result is IList || event.result is ICollectionView) ){
-					if(event.result.length > 0){
-						for each (var result:Object in event.result){
-							trace(result.id);
-						}
-					}else{
-						trace("no records");
-					}
-				}else{
-					trace(event.result);
-				}
-				//trace("RESULT: " + event.result.toString());
+				trace("DEFAULT RESULT: " + event.result.toString());
 			}
 			
 			

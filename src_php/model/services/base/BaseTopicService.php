@@ -48,10 +48,10 @@ class BaseTopicService
 		if($limit) $q->limit($limit);
 		if($offset) $q->offset($offset);
 			
-		//$q->setHydrationMode(Aerial_Core::HYDRATE_AMF_COLLECTION);
-		$q->setHydrationMode(Aerial_Core::HYDRATE_AMF_ARRAY);
+		$q->setHydrationMode(Aerial_Core::HYDRATE_AMF_COLLECTION);
+		//$q->setHydrationMode(Aerial_Core::HYDRATE_AMF_ARRAY);
 		
-		$results = $q->execute();//->toAmf(true);
+		$results = $q->execute();
 		
 		return $results;
 

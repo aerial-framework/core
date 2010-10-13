@@ -288,7 +288,7 @@ class AMFDeserializer extends AMFBaseDeserializer {
 				$data = null;
 				break;
 			case 6: // undefined
-				$data = null;
+				$data = new Undefined();
 				break;
 			case 7: // Circular references are returned here
 				$data = $this->readReference();
@@ -334,7 +334,7 @@ class AMFDeserializer extends AMFBaseDeserializer {
 		$type = $this->readByte();
 		switch($type)
 		{
-			case 0x00 : return null; //undefined
+			case 0x00 : return new Undefined(); //undefined
 			case 0x01 : return null; //null
 			case 0x02 : return false; //boolean false
 			case 0x03 : return true;  //boolean true
@@ -347,6 +347,7 @@ class AMFDeserializer extends AMFBaseDeserializer {
 			case 0x0A : return $this->readAmf3Object();
 			case 0x0B : return $this->readAmf3XmlString();
 			case 0x0C : return $this->readAmf3ByteArray();
+			case 0x10 : trigger_error("Gumbo Amf3 vector (maybe) encountered, no support for this yet", E_USER_ERROR); break;
 			default: trigger_error("undefined Amf3 type encountered: " . $type, E_USER_ERROR);
 		}
 	}
@@ -549,8 +550,8 @@ class AMFDeserializer extends AMFBaseDeserializer {
 		{
 			//an object reference
 			return $this->storedObjects[$handle];
-		}		
-		
+		}
+
 		
 		$type = $classDefinition['type'];
 		$obj = $this->mapClass($type);

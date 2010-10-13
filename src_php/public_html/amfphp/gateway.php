@@ -137,6 +137,11 @@
 		// Keep the Flash/Flex IDE player from connecting to the gateway. Used for security to stop remote connections. 
 		$gateway->disableStandalonePlayer();
 	}
+
+	function is_undefined($obj)
+	{
+		return is_object($obj) ? get_class($obj) == "undefined" : false;
+	}
 	
 	//If you are running into low-level issues with corrupt messages and 
 	//the like, you can add $gateway->logIncomingMessages('path/to/incoming/messages/');

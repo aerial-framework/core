@@ -45,13 +45,13 @@
 		
 		public static function setCredentials($username, $password)
 		{
-			 $credentials = new stdClass();
-			 $credentials->username = $username;
-			 $credentials->password = $password;
+			$credentials = new stdClass();
+			$credentials->username = $username;
+			$credentials->password = $password;
 			 
-			 session_start();
-			 $_SESSION["credentials"] = $credentials;
-		}
+			session_start();
+            $_SESSION["credentials"] = $credentials;
+    	}
 
 		public static function getInstance()
 		{

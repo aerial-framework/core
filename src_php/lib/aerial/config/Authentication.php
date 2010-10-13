@@ -3,6 +3,9 @@
 	{
 		private static $_instance;
 
+        const CHECK_SERVICE = "service";
+        const CHECK_FUNCTION = "function";
+
 		private $config;
 
 		public function __construct()
@@ -94,6 +97,10 @@
 			
 			// rule #2 - user's overridden role must be valid
 			foreach($parsed["groups"] as $group)
+            {
+                if(!@$group["users"])
+                    continue;
+                
 				foreach($group["users"] as $user)
 				{
 					if(!array_key_exists("override", $user))
@@ -105,6 +112,7 @@
 						$this->errorHandler($message, "user", $group["raw"]);
 					}
 				}
+            }
 			
 			// need to validate rules
 			return true;
@@ -139,22 +147,79 @@
 			
 			$validatedUser = null;
 			foreach($validated["groups"] as $group)
+            {
+                if(!@$group["users"])
+                    continue;
+
 				foreach($group["users"] as $user)
 				{
 					if($user["username"] == $credentials->username &&
 						$user["password"] == $credentials->password)
 					{
+                        /*$validatedUser = new stdClass();*/
 						$validatedUser = new stdClass();
 						$validatedUser->username = $credentials->username;
 						$validatedUser->password = $credentials->password;
-						$validatedUser->group = new stdClass();
 						$validatedUser->group->name = $group["name"];
-						$validatedUser->group->role = $validated["roles"][$group["role"]];
+						$validatedUser->role = $validated["roles"][$group["role"]];
 					}
 				}
+            }
+
+            if($validatedUser)
+                $_SESSION["authenticated"] = true;
 				
 			return $validatedUser ? $validatedUser : false;
 		}
+
+        /**
+         * @param  $user            The authenticated user object
+         * @param  $callSignature   The signature of the service/function; e.g. Service: "MyService", Function: "MyService.myFunc"
+         * @return void
+         */
+        public function canAccess($user, $callSignature)
+        {
+            $role = $user->role;
+            $defaultRule = $role["default-rule"];
+            $listRule = $role["list-rule"];
+
+            $services = $role["services"];
+            $functions = $role["functions"];
+
+            $allow = $defaultRule != "deny";                // $allow should be equal to the default role
+                                                            // since if a matching definition is not found
+
+            $parts = explode(".", $callSignature);
+            $service = $parts[0];
+            $function = $callSignature;
+
+            if($services)
+                foreach($services as $entity)
+                {
+                    if($entity["name"] == $service)
+                    {
+                        if($entity["override"])
+                            $allow = $entity["override"] != "deny";
+                        else
+                            $allow = $listRule == "allow";
+                    }
+                }
+
+            if($functions)
+                foreach($functions as $entity)
+                {
+                    if($entity["name"] == $function)
+                    {
+                        if($entity["override"])
+                            $allow = $entity["override"] != "deny";
+/*                        else
+                            $allow = $listRule == "allow";*/
+                    }
+                }
+
+            if(!$allow)
+                throw new Exception("You cannot access $callSignature. Permission denied.");
+        }
 
 		public static function getInstance()
 		{

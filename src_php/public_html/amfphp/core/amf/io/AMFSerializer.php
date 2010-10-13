@@ -560,7 +560,12 @@ class AMFSerializer extends AMFBaseSerializer {
 		{ // null
 			$this->writeNull();
 			return;
-		} 
+		}
+		elseif (is_undefined($d))
+		{ // null
+			$this->writeUndefined();
+			return;
+		}
 		elseif ($GLOBALS['amfphp']['encoding'] == 'amf3')
 		{
 			$this->writeByte(0x11);
@@ -577,7 +582,7 @@ class AMFSerializer extends AMFBaseSerializer {
 			$type = get_resource_type($d);
 			list($type, $subtype) = $this->sanitizeType($type);
 		} 
-		elseif (is_object($d))
+		elseif (is_object($d) || gettype($d) == "object")
 		{
 			$className = strtolower(get_class($d));
 			if(array_key_exists($className, $this->resourceObjects))
@@ -649,8 +654,6 @@ class AMFSerializer extends AMFBaseSerializer {
 	
 	function writeAmf3Data(& $d)
 	{
-		NetDebug::trace(">>>>".gettype($d));
-		
 		if (is_int($d)) 
 		{ //int
 			$this->writeAmf3Number($d);
@@ -677,7 +680,12 @@ class AMFSerializer extends AMFBaseSerializer {
 		{ // null
 			$this->writeAmf3Null();
 			return;
-		} 
+		}
+		elseif (is_undefined($d))
+		{ // undefined
+			$this->writeAmf3Undefined();
+			return;
+		}
 		elseif (is_array($d) && !isset($d->_explicitType)) 
 		{ // array
 			$this->writeAmf3Array($d);
@@ -765,12 +773,17 @@ class AMFSerializer extends AMFBaseSerializer {
 		$this->storedObjects[] = "";
 	}
 
+	function writeAmf3Undefined()
+	{
+		//Write the undefined code (0x0) to the output stream.
+		$this->outBuffer .= "\0";
+	}
+	
 	function writeAmf3Null()
 	{
 		//Write the null code (0x1) to the output stream.
 		$this->outBuffer .= "\1";
 	}
-
 	function writeAmf3Bool($d)
 	{
 		$this->outBuffer .= $d ? "\3" : "\2";
@@ -800,18 +813,20 @@ class AMFSerializer extends AMFBaseSerializer {
 		}
 	}
 
-	function writeAmf3String($d, $raw = false)
+	// NOTE: The store_ok parameter was added because some string-like data
+	// (for example, ByteArray) should not get a reference index.
+	function writeAmf3String($d, $raw = false, $store_ok = true)
 	{
 		if( $d == "" )
 		{
-			//Write 0x01 to specify the empty ctring
+			//Write 0x01 to specify the empty string
 			$this->outBuffer .= "\1";
 		}
 		else
 		{
 			if( !isset($this->storedStrings[$d]))
 			{
-				if(strlen($d) < 64)
+				if($store_ok && strlen($d) < 64)
 				{
 					$this->storedStrings[$d] = $this->encounteredStrings;
 				}
@@ -823,7 +838,7 @@ class AMFSerializer extends AMFBaseSerializer {
 				$handle = strlen($d);
 				$this->writeAmf3Int($handle*2 + 1);
 				$this->outBuffer .= $d;
-				$this->encounteredStrings++;
+				if ($store_ok) $this->encounteredStrings++;
 				return $this->encounteredStrings - 1;
 			}
 			else
@@ -993,8 +1008,10 @@ class AMFSerializer extends AMFBaseSerializer {
 	function writeAmf3ByteArray($d)
 	{
 		$this->writeByte(0x0C);
-		$this->writeAmf3String($d, true);
-		$this->writeAmf3ByteArrayBody($d);
+		// NOTE: ByteArray contents do not seem to be counted in string reference count.
+		$this->writeAmf3String($d, true, false);
+		// NOTE: There seems to be no reason to call writeAmf3ByteArrayBody... it always causes a failure for me.
+ 		//$this->writeAmf3ByteArrayBody($d);
 	}
 	
 	function writeAmf3ByteArrayBody($d)

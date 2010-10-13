@@ -16,9 +16,10 @@
 	
 	define("BACKEND_PATH", realpath(AERIAL_EXTERNAL."/../model"));						// Path to project development backend
 
-	define("FRONTEND_PATH", realpath(AERIAL_EXTERNAL."/../../src_flex"));				// Path to project development fronend
+	define("FRONTEND_PATH", realpath(AERIAL_EXTERNAL."/../../src_flex"));				// Path to project development frontend
 
 	define("UTILS", realpath(AERIAL_INTERNAL."/utils"));				                // Path to utils
+
 	define("USE_AUTH", true);															// Use authentication
 	
 	// models & services

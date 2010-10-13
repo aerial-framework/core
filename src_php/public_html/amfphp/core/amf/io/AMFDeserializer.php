@@ -11,7 +11,6 @@
  */
 
 include_once(AMFPHP_BASE . "amf/io/AMFBaseDeserializer.php");
-include_once(AMFPHP_BASE . "amf/app/Undefined.php");
 
 class AMFDeserializer extends AMFBaseDeserializer {
 	/**
@@ -551,8 +550,8 @@ class AMFDeserializer extends AMFBaseDeserializer {
 		{
 			//an object reference
 			return $this->storedObjects[$handle];
-		}		
-		
+		}
+
 		
 		$type = $classDefinition['type'];
 		$obj = $this->mapClass($type);
@@ -617,7 +616,29 @@ class AMFDeserializer extends AMFBaseDeserializer {
 					$key = $this->readAmf3String();
 				}
 			}
-			
+
+			/**
+			*	This converts an anonymous object to a Doctrine model
+			*	based on the _explicitType
+			*/
+			if(!is_object($obj))
+			{
+				$oldType = $type;
+
+				$type = $obj["_explicitType"];
+				if($type)
+				{
+					$type = explode(".", $type);
+					$class = $type[count($type) - 1];
+					$instance = new $class;
+					$instance->fromArray($obj);
+
+					$obj = $instance;
+				}
+
+				$type = $oldType;
+			}
+
 			if($type != '' && !$isObject)
 			{
 				$obj['_explicitType'] = $type;

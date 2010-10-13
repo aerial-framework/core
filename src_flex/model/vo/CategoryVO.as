@@ -2,7 +2,8 @@ package model.vo
 {
 	import org.aerial.rpc.AbstractVO;
 	import model.vo.*;
-	
+	import mx.collections.ArrayCollection;
+
 	[Bindable]	
 	public class CategoryVO extends AbstractVO
 	{		
@@ -84,12 +85,12 @@ package model.vo
 			_User = value;
 		}
 			
-		public function get topics():Array
+		public function get topics():ArrayCollection
 		{
 			return _topics;
 		}
 		
-		public function set topics(value:Array):void
+		public function set topics(value:ArrayCollection):void
 		{
 			_topics = value;
 		}

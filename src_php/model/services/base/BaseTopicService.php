@@ -11,30 +11,49 @@ class BaseTopicService
 		$this->table = $this->connection->getTable($this->modelName);
 	}
 
-	public function findAll($criteria, $offset, $limit)
+	public function findAll($criteria, $limit, $offset, $sort, $relations)
 	{
 		//$q = Doctrine_Query::create()->select("*")->from("Topic y");
 		$q = Doctrine_Query::create()->from('Topic n');
-		$selectTables = 'n.*'; //Parent nodes/depth will be of form p1, p2, p3.  Child nodes/depth will be of form c1, c2, c3
-		
-		//Set Table and Relations
-		$q = $q->select($selectTables);
 
+		//Set Table and Relations
+		$selectTables = 'n.*'; //Parent nodes/depth will be of form p1, p2, p3.  Child nodes/depth will be of form c1, c2, c3
+		if($relations)
+		{
+			foreach($relations as $key=>$value)
+			{
+				$i++;
+				$selectTables .= ',z' . $i . '.*';
+				$q->leftJoin('n.' . $key . ' z' . $i);
+			}
+		}
+		$q->select($selectTables);
+		
 		//Set Criteria
-		if($criteria <> null)
+		if($criteria)
 		{
 			foreach($criteria as $key=>$value)
-				$q = $q->where("n.$key =?", $value);
+			$q->where("n.$key =?", $value);
 		}
-		
+
+		//Set Order
+		if($sort){
+			foreach($sort as $key=>$value)
+			{
+				$q->orderBy("$key $value");
+			}
+		}
+
 		//Set Pagination
 		if($limit) $q->limit($limit);
 		if($offset) $q->offset($offset);
-
-		
 			
-		//$q->setHydrationMode("amf_collection");
-		return $q->execute();
+		//$q->setHydrationMode(Aerial_Core::HYDRATE_AMF_COLLECTION);
+		$q->setHydrationMode(Aerial_Core::HYDRATE_AMF_ARRAY);
+		
+		$results = $q->execute();//->toAmf(true);
+		
+		return $results;
 
 	}
 

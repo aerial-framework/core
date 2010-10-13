@@ -11,10 +11,15 @@
 	
 	<fx:Script>
 		<![CDATA[
+			import flash.net.registerClassAlias;
+			
 			import model.services.PostService;
+			
 			import model.vo.*;
 			
 			import mx.collections.ArrayCollection;
+			import mx.collections.ICollectionView;
+			import mx.collections.IList;
 			import mx.collections.ListCollectionView;
 			import mx.controls.Alert;
 			import mx.messaging.messages.RemotingMessage;
@@ -24,6 +29,8 @@
 			import org.aerial.rpc.operation.Operation;
 			
 			public var user:UserVO;
+			
+			public var find:Operation;
 			
 			
 			public function init():void
@@ -42,7 +49,7 @@
 				topicVo.name = "Robert";
 				topicVo.description = "test description";
 				
-				relations:{
+				/* relations:{
 					break relations;
 					
 					var p1:PostVO = new PostVO();
@@ -56,12 +63,37 @@
 					topicVo.posts = [p1, p2];
 					topicVo.User = new UserVO();
 					topicVo.User.username = "danny";
-				}
+				} */
 				
 				
 				//this.topicService.insert(topicVo).execute();
-				this.topicService.findAll({userId:9, categoryId:3}).execute();
 				
+			}
+			
+			public function findAll():void
+			{
+//				var g:CategoryVO = new CategoryVO();
+//				var p:PostVO= new PostVO();
+//				
+				registerClassAlias("model.vo.Category",CategoryVO);
+				registerClassAlias("model.vo.Post",PostVO);
+				
+				find = this.topicService.findAll({userId:9, categoryId:3});
+				find.sortBy("id", "ASC");
+				find.relations({Category:"*", posts:"*"});
+				find.execute();
+				
+			}
+			
+			public function findNext():void
+			{
+				find.nextPage();
+				
+			}
+			
+			public function findPrevious():void
+			{
+				find.previousPage();
 			}
 			
 			
@@ -108,7 +140,6 @@
 					case "UserService.save":
 						
 						break;
-					
 				}
 			}
 			
@@ -127,7 +158,18 @@
 			
 			protected function result(event:ResultEvent):void
 			{
-				trace("RESULT: " + event.result.toString());
+				if((event.result is IList || event.result is ICollectionView) ){
+					if(event.result.length > 0){
+						for each (var result:Object in event.result){
+							trace(result.id);
+						}
+					}else{
+						trace("no records");
+					}
+				}else{
+					trace(event.result);
+				}
+				//trace("RESULT: " + event.result.toString());
 			}
 			
 			
@@ -140,7 +182,9 @@
 			
 		]]>
 	</fx:Script>
-	<s:Button x="153" y="98" label="Button" click="testMethod()"/>
+	<s:Button x="95" y="82" label="previousPage()" id="previous" click="this.findPrevious()"/>
+	<s:Button x="228" y="67" label="Service.execute()" click="this.findAll()" height="50"/>
+	<s:Button x="372" y="83" label="nextPage()" id="next" click="this.findNext()"/>
 	
 	
 </s:WindowedApplication>

@@ -2,7 +2,8 @@ package model.vo
 {
 	import org.aerial.rpc.AbstractVO;
 	import model.vo.*;
-	
+	import mx.collections.ArrayCollection;
+
 	[Bindable]	
 	public class CommentVO extends AbstractVO
 	{		

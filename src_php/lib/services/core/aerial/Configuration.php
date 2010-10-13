@@ -192,10 +192,18 @@
 			$template = ActionScriptGenerator::readTemplate("AS3.VO");
 			$accessorStub = ActionScriptGenerator::getTemplatePart("as3AccessorStub");
 
-			$replacementTokens = array("package", "class","remoteClass", "privateVars", "accessors");
+			$replacementTokens = array("package", "collectionImport", "class","remoteClass", "privateVars", "accessors");
 
 			$package = FRONTEND_MODELS_PACKAGE;
-
+			
+			if(AMFPHP_USE_ARRAYCOLLECTION){
+				$collectionImport = "import mx.collections.ArrayCollection;\n";
+				$collectionType = "ArrayCollection";
+			}else{
+				$collectionPackage = "";
+				$collectionType = "Array";
+			}
+			
 			$models = ActionScriptGenerator::getModelData();
 
 			foreach($models as $model)
@@ -232,7 +240,7 @@
 				foreach($relations as $relation)
 				{
 					$field = $relation["alias"];
-					$type = $relation["type"] == "one" ? $relation["table"].VO_SUFFIX : "Array";
+					$type = $relation["type"] == "one" ? $relation["table"].VO_SUFFIX : $collectionType;
 
 					//Create Private Vars
 					$privateVars .= "\t\t" . "private var _$field:*\n";

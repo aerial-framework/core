@@ -18,7 +18,10 @@ package org.aerial.rpc.operation
 		private var _callback:Function;
 		private var token:AsyncToken;
 		private var _op:AbstractOperation;
-		private var _args:*;
+		private var _args:*; 
+		private var _offset:uint;
+		private var _limit:uint;
+		private var _page:uint;
 		private var _sort:Object;
 		private var _relations:Object;
 		 
@@ -28,7 +31,10 @@ package org.aerial.rpc.operation
 			_method = method;
 			_op = service.getOperation(_method);
 			_args = args;
-			_sort = new Array();
+			_limit = 0;
+			_offset = 0;
+			_sort = new Object();
+			_relations = new Object();
 		}
 		
 		
@@ -38,10 +44,12 @@ package org.aerial.rpc.operation
 			return this;
 		}
 		
-		public function relations(value:Object):Operation
+		public function relations(relations:Object):Operation
 		{
+			_relations = relations;
 			return this;
 		}
+		
 		
 		public function sortBy(field:String, order:String = "ASC"):Operation
 		{
@@ -63,15 +71,41 @@ package org.aerial.rpc.operation
 			event.preventDefault(); //Prevent the service result handler from firing.
 			_callback(event);
 		}
-
 		
-		public function execute(offset:uint=0, limit:uint=0):AsyncToken
+		public function nextPage():AsyncToken
 		{
+			if(_limit > 0){
+				_offset += _limit;
+			}
+			return  _execute(_limit, _offset);
+		}
+		
+		public function previousPage():AsyncToken
+		{
+			if(_limit > 0){
+				_offset -= _limit;
+			}
+			return  _execute(_limit, _offset);
+		}
+		
+		
+		public function execute(limit:uint=0, offset:uint=0):AsyncToken
+		{
+			_limit = limit;
+			_offset = offset;
 			
-			token = _op.send(_args, offset, limit);
+			return  _execute(_limit, _offset);
+		}
+		
+		private function _execute(limit:uint, offset:uint):AsyncToken
+		{
+			token = _op.send(_args, _limit, _offset, _sort, _relations);
+			
 			if(_callback !== null) token.addResponder(new Responder(notifyCaller,null));
-			
+		
 			return token;
 		}
+		
+		
 	}
 }

@@ -44,7 +44,7 @@
 					//Need to figure out how to retrieve orphaned topics.
 					this.topics = new ArrayCollection();
 				}else if(cat != null){
-					this.topicService.findAllWithRelated({"categoryId":this.currentCategory.id});
+					this.topicService.findAll({"categoryId":this.currentCategory.id});
 				}
 			}
 			
@@ -57,19 +57,19 @@
 				switch(operation)
 				{
 					
-					case topicService.FIND_ALL:
+					case "topicService.findAll":
 						this.topics = event.result as ArrayCollection;
 						break;
-					case topicService.SAVE:
-						this.topicService.findAllWithRelated({"categoryId":this.currentCategory.id});
+					case "topicService.save":
+						this.topicService.findAll({"categoryId":this.currentCategory.id});
 						break;
-					case topicService.UPDATE:
-						this.topicService.findAllWithRelated({"categoryId":this.currentCategory.id});
+					case "topicService.update":
+						this.topicService.findAll({"categoryId":this.currentCategory.id});
 						break;
-					case topicService.DROP:
-						this.topicService.findAllWithRelated({"categoryId":this.currentCategory.id});
+					case "topicService.drop":
+						this.topicService.findAll({"categoryId":this.currentCategory.id});
 						break;
-					case topicService.FIND_ALL_WITH_RELATED:
+					case "topicService.findAll":
 						this.topics = (event.result as ArrayCollection);
 						break;
 				}

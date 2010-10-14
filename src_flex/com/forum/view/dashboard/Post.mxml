@@ -35,7 +35,7 @@
 			{
 				_currentTopic = topic;
 				if(topic != null){
-					this.postService.findAllWithRelated({"topicId": this.currentTopic.id});
+					this.postService.findAll({"topicId": this.currentTopic.id});
 				}else{
 					posts = new ArrayCollection();  //We need to clear out the Posts if no Topic is selected.
 				}
@@ -50,19 +50,19 @@
 				switch(operation)
 				{
 					
-					case postService.FIND_ALL:
+					case "postService.findAll":
 						this.posts = event.result as ArrayCollection;
 						break;
-					case postService.SAVE:
-						this.postService.findAllWithRelated({"topicId":this.currentTopic.id});
+					case "postService.save":
+						this.postService.findAll({"topicId":this.currentTopic.id});
 						break;
-					case postService.UPDATE:
-						this.postService.findAllWithRelated({"topicId":this.currentTopic.id});
+					case "postService.update":
+						this.postService.findAll({"topicId":this.currentTopic.id});
 						break;
-					case postService.DROP:
-						this.postService.findAllWithRelated({"topicId":this.currentTopic.id});
+					case "postService.drop":
+						this.postService.findAll({"topicId":this.currentTopic.id});
 						break;
-					case postService.FIND_ALL_WITH_RELATED:
+					case "postService.findAll":
 						this.posts = (event.result as ArrayCollection);
 						break;
 				}

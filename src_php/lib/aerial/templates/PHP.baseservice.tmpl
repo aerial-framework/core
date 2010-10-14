@@ -18,10 +18,16 @@
 				{
 					if($descriptor["type"] == "many")
 					{
-						for($x = 0; $x < count($descriptor["value"]); $x++)
+						$relationRef =& ${{object}}->$relation;
+						$count = 0;
+
+						foreach($descriptor["value"] as $element)
 						{
-							$arr =& ${{object}}->$relation;
-							$arr[$x] = $descriptor["value"][$x];
+							$relationRef[$count] = $element;
+							if($element["id"])
+								$relationRef[$count]->assignIdentifier($element["id"]);
+								
+							$count++;
 						}
 					}
 					else

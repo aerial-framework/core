@@ -147,6 +147,26 @@ class Gateway {
 		if (!isset($GLOBALS['HTTP_RAW_POST_DATA'])){
 		    $GLOBALS['HTTP_RAW_POST_DATA'] = file_get_contents('php://input');
 		}
+
+		// DANNY DEBUG
+		$mode = "pass";
+		
+		switch($mode)
+		{
+			case "write":
+				$f = fopen(realpath("./")."/instream.amf", "w+");
+				fwrite($f, $GLOBALS['HTTP_RAW_POST_DATA']);
+				fclose($f);
+				die();
+		        break;
+			case "read":
+				$f = fopen(realpath("./")."/instream.amf", "r");
+				$data = fread($f, filesize(realpath("./")."/instream.amf"));
+				fclose($f);
+
+				$GLOBALS["HTTP_RAW_POST_DATA"] = $data;
+		        break;
+		}
 		
 		if(isset($GLOBALS["HTTP_RAW_POST_DATA"]) && $GLOBALS["HTTP_RAW_POST_DATA"] != "")
 		{

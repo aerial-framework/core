@@ -85,7 +85,7 @@
 				var topic:TopicVO = new TopicVO();
 				if(this.currentCategory) topic.categoryId = this.currentCategory.id;
 				topic.userId = this.user.id;
-				topic.name = name;
+				//topic.name = name;
 				topic.description = description;
 				this.topicService.save(topic);
 			}
@@ -94,7 +94,7 @@
 			public function updateTopic(name:String, description:String):void
 			{
 				var topic:TopicVO = new TopicVO();
-				topic.name = name;
+				//topic.name = name;
 				topic.description = description;
 				topic.id = (this.topicList.selectedItem as TopicVO).id;
 				
@@ -113,7 +113,7 @@
 			
 			public function clickTopicItem(event:ListEvent):void
 			{
-				this.topicName.text = (event.itemRenderer.data as TopicVO).name;
+				//this.topicName.text = (event.itemRenderer.data as TopicVO).name;
 				this.topicDescription.text = (event.itemRenderer.data as TopicVO).description;
 			}
 		

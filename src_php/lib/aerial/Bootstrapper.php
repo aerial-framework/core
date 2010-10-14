@@ -1,8 +1,8 @@
 <?php
 	require_once(DOCTRINE_PATH.'/Doctrine.php');
 	require_once(AMFPHP_PATH.'/globals.php');
-    require_once(UTILS."/ArrayCollection.php");
 	require_once("config/Authentication.php");
+	require_once(DOCTRINE_PATH.'/Aerial.php');
 
 	class Bootstrapper
 	{
@@ -21,12 +21,17 @@
 		{
 			spl_autoload_register(array('Doctrine', 'autoload'));
 			spl_autoload_register(array('Doctrine_Core', 'modelsAutoload'));
-
+			spl_autoload_register(array('Aerial', 'autoload'));
+			
 			self::$_instance->manager = Doctrine_Manager::getInstance();
-
+			
+			self::$_instance->manager->registerHydrator(Aerial_Core::HYDRATE_AMF_COLLECTION, Aerial_Core::HYDRATE_AMF_COLLECTION);
+			self::$_instance->manager->registerHydrator(Aerial_Core::HYDRATE_AMF_ARRAY, Aerial_Core::HYDRATE_AMF_ARRAY);
+			
 			self::$_instance->manager->setAttribute(Doctrine_Core::ATTR_MODEL_LOADING, Doctrine_Core::MODEL_LOADING_CONSERVATIVE);
 			self::$_instance->manager->setAttribute(Doctrine_Core::ATTR_AUTO_ACCESSOR_OVERRIDE, true);
 			self::$_instance->manager->setAttribute(Doctrine_Core::ATTR_AUTOLOAD_TABLE_CLASSES, true);
+			require_once(UTILS."/Aerial_Record.php");
 
 			$connectionString = DB_ENGINE."://".
 								DB_USER.":".
@@ -41,6 +46,8 @@
 			Doctrine_Core::loadModels(BACKEND_MODELS_PATH);
 			
 			Authentication::getInstance();
+
+			require_once(dirname(__FILE__)."/../services/core/aerial/Configuration.php");
 		}
 		
 		public static function setCredentials($username, $password)

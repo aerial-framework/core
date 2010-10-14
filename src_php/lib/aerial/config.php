@@ -12,7 +12,6 @@
 	define("AERIAL_EXTERNAL", realpath(AERIAL_BASE_PATH."/.."));						// Path outside of aerial core
 	define("DOCTRINE_PATH", realpath(AERIAL_BASE_PATH. "/../doctrine"));				// Path to Doctrine library
 	define("AMFPHP_PATH", realpath(AERIAL_BASE_PATH."/../../public_html/amfphp"));		// Path to AMFPHP library
-	define("AMFPHP_GATEWAY_URL", "com.forum.config.Config,Config.GATEWAY_URL");				// Path to AMFPHP gateway.php file
 	
 	define("BACKEND_PATH", realpath(AERIAL_EXTERNAL."/../model"));						// Path to project development backend
 
@@ -31,6 +30,7 @@
 	define("FRONTEND_MODELS_PATH", realpath(FRONTEND_PATH."/model/vo"));				// Path to generated frontend vo
 	define("FRONTEND_SERVICES_PACKAGE", "model.services");								// ActionScript package for generated services
 	define("FRONTEND_SERVICES_PATH", realpath(FRONTEND_PATH."/model/services"));		// Path to generated frontend services
+	define("FRONTEND_CONFIG_CLASS", "com.forum.config.Config");							// Fully qualified frontend configuration path.  Needs to implement IConfig
 
 	define("VO_SUFFIX", "VO");
 	

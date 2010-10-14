@@ -6,36 +6,128 @@
 					   >
 	<fx:Declarations>
 		<services:UserService id="userService" result="resultHandler(event)" fault="faultHandler(event)" />
+		<services:TopicService id="topicService" result="result(event)" fault="fault(event)" />
 	</fx:Declarations>
 	
 	<fx:Script>
 		<![CDATA[
+			import flash.net.registerClassAlias;
 			
 			
 			import model.vo.*;
 			
+			import mx.collections.ArrayCollection;
+			import mx.collections.ICollectionView;
+			import mx.collections.IList;
+			import mx.collections.ListCollectionView;
 			import mx.controls.Alert;
 			import mx.messaging.messages.RemotingMessage;
 			import mx.rpc.events.FaultEvent;
 			import mx.rpc.events.ResultEvent;
 			
+			import org.aerial.rpc.operation.Operation;
+			
 			public var user:UserVO;
+			public var find:Operation;
 			
 			
 			public function init():void
 			{
 				WindowStuff();
 				
-				//	this.userService.getUser(1);
-				//this.testService.findAll();
+				//Registering remote aliases to bypass errors for testing purposes.
+				registerClassAlias("model.vo.User",UserVO);
+				registerClassAlias("model.vo.Category",CategoryVO);
+				registerClassAlias("model.vo.Topic",TopicVO);
+				registerClassAlias("model.vo.Post",PostVO);
+				registerClassAlias("model.vo.Coment",CommentVO);
 			}
+
+			
+			public function testMethod():void
+			{
+				var topicVo:TopicVO = new TopicVO();
+				topicVo.userId = 1;
+				topicVo.categoryId = 2;
+				topicVo.name = "Robert";
+				topicVo.description = "test description";
+				
+				/* relations:{
+					break relations;
+					
+					var p1:PostVO = new PostVO();
+					p1.message = "HI!";
+					p1.title = "Hello";
+					
+					var p2:PostVO = new PostVO();
+					p2.message = "Bye!";
+					p2.title = "Cheers";
+					
+					topicVo.posts = [p1, p2];
+					topicVo.User = new UserVO();
+					topicVo.User.username = "danny";
+				} */
+				
+				
+				//this.topicService.insert(topicVo).execute();
+				
+			}
+			
+			public function findAll():void
+			{
+				find = this.topicService.findAll({userId:9, categoryId:3}).callback(findResult,findFault);
+				find.sortBy("id", "ASC");
+				find.relations({Category:"*", posts:"*"});
+				find.execute();
+				
+			}
+			
+			public function findResult(event:ResultEvent):void
+			{
+				if((event.result is IList || event.result is ICollectionView) ){
+					if(event.result.length > 0){
+						for each (var result:Object in event.result){
+							trace(result.id);
+						}
+					}else{
+						trace("no records");
+					}
+				}else{
+					trace(event.result);
+				}
+			}
+			
+			public function findFault(event:FaultEvent):void
+			{
+				trace("custom fault event");
+			}
+			
+			public function findNext():void
+			{
+				find.nextPage();
+				
+			}
+			
+			public function findPrevious():void
+			{
+				find.previousPage();
+			}
+			
+			
+			public function testCallbacks():void
+			{
+			/* 	this.test2Service.findAll().callback(myCallBack).execute();
+				this.test2Service.findAll().execute();
+				this.test2Service.findAll().callback(myCallBack).execute(); */
+			}
+			
 			
 			public function WindowStuff():void
 			{
 				nativeWindow.x = Screen.mainScreen.bounds.width - width - 50;
 				nativeWindow.y = Screen.mainScreen.bounds.height - height - 150;
 				
-				nativeWindow.alwaysInFront = true;
+				nativeWindow.alwaysInFront = false;
 				nativeWindow.orderToFront();
 			}
 			
@@ -65,7 +157,6 @@
 					case "UserService.save":
 						
 						break;
-					
 				}
 			}
 			
@@ -76,14 +167,15 @@
 			}
 			
 			
-			public function myCallBack(event:ResultEvent):void{
-				trace("test callBack");				
+			public function myCallBack(event:ResultEvent):void
+			{
+				trace("CALLBACK_1:"  + event.result.toString());	
 			}
 			
 			
 			protected function result(event:ResultEvent):void
 			{
-				trace("test result");
+				trace("DEFAULT RESULT: " + event.result.toString());
 			}
 			
 			
@@ -96,6 +188,9 @@
 			
 		]]>
 	</fx:Script>
+	<s:Button x="95" y="82" label="previousPage()" id="previous" click="this.findPrevious()"/>
+	<s:Button x="228" y="67" label="Service.execute()" click="this.findAll()" height="50"/>
+	<s:Button x="372" y="83" label="nextPage()" id="next" click="this.findNext()"/>
 	
 	
 </s:WindowedApplication>

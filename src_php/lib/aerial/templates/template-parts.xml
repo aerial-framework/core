@@ -11,18 +11,28 @@
 	</part>
 	<part name="as3SetterStub">
 	<content><![CDATA[
-		public function set {{alias}}(value:*):void
+		public function set {{field}}(value:{{type}}):void
 		{
-			related["{{alias}}"] = {table:"{{table}}", value:value, type:"{{type}}",
-									local_key:"{{local_key}}", foreign_key:"{{foreign_key}}", refTable:"{{refTable}}"};
+			_{{field}} = value;
 		}]]></content>
 	</part>
 	<part name="as3GetterStub">
 	<content><![CDATA[
-		[Transient]
-		public function get {{alias}}():*
+		public function get {{field}}():{{type}}
 		{
-			return related["{{alias}}"];
+			return _{{field}};
+		}]]></content>
+	</part>
+	<part name="as3AccessorStub">
+	<content><![CDATA[
+		public function get {{field}}():{{type}}
+		{
+			return _{{field}};
+		}
+		
+		public function set {{field}}(value:{{type}}):void
+		{
+			_{{field}} = value;
 		}]]></content>
 	</part>
 	<part name="phpServiceStub">

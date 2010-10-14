@@ -74,7 +74,7 @@ package model.services.base
 								   
 		public function save(category:CategoryVO):void
 		{
-			this.getOperation("save").send(category, category.getRelatedData());
+			this.getOperation("save").send(category);
 		}
 		
 		public function update(category:CategoryVO):void

@@ -19,7 +19,7 @@
  * @author     ##NAME## <##EMAIL##>
  * @version    SVN: $Id: Builder.php 6820 2009-11-30 17:27:49Z jwage $
  */
-abstract class BaseComment extends Doctrine_Record
+abstract class BaseComment extends Aerial_Record
 {
     public function setTableDefinition()
     {

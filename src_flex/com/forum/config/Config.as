@@ -1,13 +1,15 @@
 package com.forum.config
 {
-	public class Config
-	{
+	import org.aerial.system.IConfig;
 
-		public static const GATEWAY_URL:String = "http://aerial-test/amfphp/gateway.php";
+	public class Config implements IConfig
+	{
 		
-		public function Config()
+		public function get AMF_GATEWAY():String
 		{
+			return "http://aerial-test/amfphp/gateway.php";
 		}
+		
 		
 	}
 }

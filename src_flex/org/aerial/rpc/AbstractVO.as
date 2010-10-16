@@ -1,50 +1,65 @@
 package org.aerial.rpc
 {
+	import flash.net.registerClassAlias;
+	import flash.utils.IDataInput;
+	import flash.utils.IDataOutput;
+	import flash.utils.IExternalizable;
 	import flash.utils.describeType;
 	import flash.utils.getDefinitionByName;
-	import flash.net.registerClassAlias;
-	
-	import mx.binding.utils.ChangeWatcher;
-	import mx.events.PropertyChangeEvent;
+	import flash.utils.getQualifiedClassName;
 	
 	
-	public class AbstractVO implements IAbstractVO
+	public class AbstractVO implements IExternalizable
 	{
-		private var vo:Object;
+		private var getPrivateProperty:Function;
 		
-		public function AbstractVO(aliasName:String)
+		public function AbstractVO(aliasName:String, getProp:Function)
 		{
-			vo = new Object();
-			vo["_explicitType"] = aliasName;
+			getPrivateProperty = getProp;
 			
-			var descr:XML = describeType(this);
-			var props:XMLList = descr..accessor + descr..variable;
-
-			for each(var prop:XML in props)
-			{ 
-				ChangeWatcher.watch(this, prop.@name.toString(), propertyChanged);
-				vo[prop.@name.toString()] = undefined;				
-			}
-			
-			var voType:String = descr.@name.toString();
-			voType = voType.replace("::", ".");
+			var voType:String = getQualifiedClassName(this).replace("::",".");
 			var voClass:Class = getDefinitionByName(voType) as Class;
 			
 			registerClassAlias(aliasName, voClass); 
 		}
 		
-		private function propertyChanged(event:PropertyChangeEvent):void
+		public function isUndefined(property:String):Boolean
 		{
-			if(event.newValue)
-				vo[event.property.toString()] = event.newValue;
+			try{
+				var isUndef:Boolean = (getPrivateProperty("_" + property) === undefined);
+			}catch(e:ReferenceError){
+				throw e;
+			}
+			return isUndef;
 		}
 		
-		public function getObject():Object
-		{
-			return vo;
+		public function readExternal(input:IDataInput):void
+		{	
+			//We shouldn't have to set this as long as we don't return an IExternalizable from AMFPHP.
+			//Otherwise, we'll need to loop through the input and set each property.
 		}
 		
-		
-		
+		public function writeExternal(output:IDataOutput):void
+		{
+			//To preserve the "undefined" values, we'll just set the private vars.
+			var voOutput:Object = new Object();
+			
+			var descr:XML = describeType(this);
+			var props:XMLList = descr..accessor + descr..variable;
+			
+			for each(var prop:XML in props)
+			{ 
+				var propName:String = prop.@name.toString();
+				try{
+					var propValue:* = getPrivateProperty("_" + propName);
+				}catch(e:Error){
+					throw e;
+				}
+				voOutput[propName] = propValue;				
+			}
+			
+			output.writeObject(voOutput);
+		}
 	}
+
 }

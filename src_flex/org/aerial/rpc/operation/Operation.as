@@ -27,10 +27,10 @@ package org.aerial.rpc.operation
 		private var _sort:Object;
 		private var _relations:Object;
 		 
-		public function Operation(service:AbstractService, method:String, args:*=null)
+		public function Operation(service:AbstractService, remoteMethod:String, args:*=null)
 		{
 			_service = service;
-			_method = method;
+			_method = remoteMethod;
 			_op = service.getOperation(_method);
 			_args = args;
 			_limit = 0;
@@ -53,10 +53,30 @@ package org.aerial.rpc.operation
 			return this;
 		}
 		
-		
 		public function sortBy(field:String, order:String = "ASC"):Operation
 		{
+			//TODO: Validate that the fields exist in the VO.  Do we create a static graph object to conserve proc?
 			_sort[field] = order;
+			return this;
+		}
+		
+		public function sortAsc(field:String, ... fields):Operation
+		{
+			_sort[field] = "ASC";
+			
+			for each(var f:String in fields)
+				_sort[f] = "ASC";
+
+			return this;
+		}
+		
+		public function sortDesc(field:String, ... fields):Operation
+		{
+			_sort[field] = "DESC";
+			
+			for each(var f:String in fields)
+				_sort[f] = "DESC";
+			
 			return this;
 		}
 		

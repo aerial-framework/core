@@ -13,7 +13,6 @@
 		<![CDATA[
 			import flash.net.registerClassAlias;
 			
-			
 			import model.vo.*;
 			
 			import mx.collections.ArrayCollection;
@@ -27,7 +26,6 @@
 			
 			import org.aerial.rpc.operation.Operation;
 			
-			public var user:UserVO;
 			public var find:Operation;
 			
 			
@@ -52,8 +50,8 @@
 				topicVo.name = "Robert";
 				topicVo.description = "test description";
 				
-				/* relations:{
-					break relations;
+				 relations:{
+					//break relations;
 					
 					var p1:PostVO = new PostVO();
 					p1.message = "HI!";
@@ -63,23 +61,26 @@
 					p2.message = "Bye!";
 					p2.title = "Cheers";
 					
-					topicVo.posts = [p1, p2];
+					topicVo.posts = new ArrayCollection([p1, p2]);
+					
 					topicVo.User = new UserVO();
 					topicVo.User.username = "danny";
-				} */
+				} 
 				
-				
-				//this.topicService.insert(topicVo).execute();
-				
+				this.topicService.insert(topicVo).execute();
 			}
 			
-			public function findAll():void
+			// Optimistic -  will return all properties in each object.
+			// Use (-) in front of property name to remove. 
+			public function findAll():void 
 			{
-				find = this.topicService.findAll({userId:9, categoryId:3}).callback(findResult,findFault);
-				find.sortBy("id", "ASC");
-				find.relations({Category:"*", posts:"*"});
+				find = this.topicService
+					.findAll({userId:9, categoryId:3})
+					.callback(findResult,findFault)
+					.sortAsc("id")
+					.relations({Category:"name", Post:"*"});
+					
 				find.execute();
-				
 			}
 			
 			public function findResult(event:ResultEvent):void
@@ -189,7 +190,8 @@
 		]]>
 	</fx:Script>
 	<s:Button x="95" y="82" label="previousPage()" id="previous" click="this.findPrevious()"/>
-	<s:Button x="228" y="67" label="Service.execute()" click="this.findAll()" height="50"/>
+	<s:Button x="228" y="67" label="Find.execute()" click="this.findAll()" height="50"/>
+	<s:Button x="228" y="163" label="Insert.execute()" click="this.testMethod()" height="50"/>
 	<s:Button x="372" y="83" label="nextPage()" id="next" click="this.findNext()"/>
 	
 	

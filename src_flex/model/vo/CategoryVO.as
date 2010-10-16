@@ -9,7 +9,7 @@ package model.vo
 	{		
 		public function CategoryVO()
 		{
-			super("model.vo.Category");
+			super("model.vo.Category", function(field:String):*{return this[field]});
 		}
 		
 		private var _id:*

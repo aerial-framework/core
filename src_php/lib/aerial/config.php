@@ -19,7 +19,7 @@
 
 	define("UTILS", realpath(AERIAL_INTERNAL."/utils"));				                // Path to utils
 
-	define("USE_AUTH", true);															// Use authentication
+	define("USE_AUTH", false);															// Use authentication
 	
 	// models & services
 	

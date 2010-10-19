@@ -142,7 +142,7 @@
 				$complex->$key = $value;
 				
 			foreach($relations as $relation)
-				$complex->$relation["alias"] = $this->getRelated($relation["alias"], ${{object}}_id, $paged, $limit, $offset);
+				$complex->$relation["alias"] = $this->findRelated($relation["alias"], ${{object}}_id, $paged, $limit, $offset);
 				
 			return $complex;
 		}
@@ -270,7 +270,7 @@
 		
 		public function countRelated($field, ${{object}}_id)
 		{
-			$related = $this->getRelated($field, ${{object}}_id);
+			$related = $this->findRelated($field, ${{object}}_id);
 			return get_class($related) != "Doctrine_Collection" ? 1 : $related->count();
 		}
 	}

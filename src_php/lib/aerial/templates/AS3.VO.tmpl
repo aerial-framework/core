@@ -8,7 +8,7 @@ package {{package}}
 	{		
 		public function {{class}}()
 		{
-			super("{{package}}.{{remoteClass}}");
+			super("{{package}}.{{remoteClass}}", function(field:String):*{return this[field]});
 		}
 		
 {{privateVars}}{{accessors}}

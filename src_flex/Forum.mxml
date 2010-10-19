@@ -15,7 +15,7 @@
 		<![CDATA[
 			import com.forum.event.LoginEvent;
 			
-			import model.services.UserSpecialtyService;
+			//import model.services.UserSpecialtyService;
 			import model.vo.*;
 			
 			import mx.controls.Alert;
@@ -43,21 +43,21 @@
 				nativeWindow.alwaysInFront = true;
 				nativeWindow.orderToFront();
 				
-				var specialty:SpecialtyVO = new SpecialtyVO();
+				/* var specialty:SpecialtyVO = new SpecialtyVO();
 				specialty.name = "Anthropology";
-				specialty.description = "They used to love smelling feet, back in the time before christ...";
+				specialty.description = "They used to love smelling feet, back in the time before christ..."; */
 				
 				var user:UserVO = new UserVO();
 				user.id = 1;
 				
-				var us:UserSpecialtyVO = new UserSpecialtyVO();
+				/* var us:UserSpecialtyVO = new UserSpecialtyVO();
 				us.Specialty = specialty;
-				us.User = user;
+				us.User = user; */
 				
-				var uss:UserSpecialtyService = new UserSpecialtyService();
+				/* var uss:UserSpecialtyService = new UserSpecialtyService();
 				uss.addEventListener(ResultEvent.RESULT, resultHandler);
 				uss.addEventListener(FaultEvent.FAULT, faultHandler);
-				uss.save(us);
+				uss.save(us); */
 			}
 
 			private function resultHandler(event:ResultEvent):void

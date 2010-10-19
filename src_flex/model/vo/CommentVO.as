@@ -9,7 +9,7 @@ package model.vo
 	{		
 		public function CommentVO()
 		{
-			super("model.vo.Comment");
+			super("model.vo.Comment", function(field:String):*{return this[field]});
 		}
 		
 		private var _id:*

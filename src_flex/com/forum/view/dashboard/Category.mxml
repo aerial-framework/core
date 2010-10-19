@@ -90,16 +90,16 @@
 				switch(operation)
 				{
 					
-					case categoryService.FIND_ALL:
+					case "categoryService.findAll":
 						this.categories = event.result as ArrayCollection;
 						break;
-					case categoryService.SAVE:
+					case "categoryService.save":
 						this.categoryService.findAll();
 						break;
-					case categoryService.UPDATE:
+					case "categoryService.update":
 						this.categoryService.findAll();
 						break;
-					case categoryService.DROP:
+					case "categoryService.drop":
 						this.categoryService.findAll();
 						break;
 				}

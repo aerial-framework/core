@@ -663,7 +663,8 @@ class AMFDeserializer extends AMFBaseDeserializer {
 			trigger_error("Unable to read externalizable data type " . $type, E_USER_ERROR);
 
 		$instance = new $class();
-		$instance->fromArray($data);
+		foreach($data as $key => $value)
+			$instance[$key] = $value;
 
 		return $instance;
 	}

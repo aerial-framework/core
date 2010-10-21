@@ -109,5 +109,52 @@
 				$this->refresh();
 			}
 		}
+
+		/**
+		 * loads all the uninitialized properties from the database.
+		 * Used to move a record from PROXY to CLEAN/DIRTY state.
+		 *
+		 * @param array $data  overwriting data to load in the record. Instance is hydrated from the table if not specified.
+		 * @return boolean
+		 */
+		public function load(array $data = array())
+		{
+			// only load the data from database if the Doctrine_Record is in proxy state
+			if ($this->exists() && $this->isInProxyState()) {
+				$id = $this->identifier();
+
+				if ( ! is_array($id)) {
+					$id = array($id);
+				}
+
+				if (empty($id)) {
+					return false;
+				}
+
+				$data = empty($data) ? $this->getTable()->find($id, Doctrine_Core::HYDRATE_ARRAY) : $data;
+
+				if($data)
+					foreach ($data as $field => $value) {
+						if ( ! array_key_exists($field, $this->_data) || $this->_data[$field] === self::$_null) {
+						   $this->_data[$field] = $value;
+					   }
+					}
+
+				if ($this->isModified()) {
+				   $this->_state = Doctrine_Record::STATE_DIRTY;
+				} else if (!$this->isInProxyState()) {
+					$this->_state = Doctrine_Record::STATE_CLEAN;
+				}
+
+				return true;
+			}
+
+			return false;
+		}
+
+		public function getIdentifier()
+		{
+			return $this[$this->table->getIdentifier()];
+		}
 	}
 ?>

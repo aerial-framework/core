@@ -13,6 +13,8 @@
 
 		public function save($topic)
 		{
+			$topic = ModelMapper::mapToModel($this->modelName, $topic, true);
+
 			$result = $topic->trySave();
 			return ($result === true)
 			?   $topic->getIdentifier()
@@ -21,13 +23,11 @@
 
 		public function insert($topic)
 		{
+			$topic = ModelMapper::mapToModel($this->modelName, $topic);
+
 			// unset the primary key values if one is set to insert a new record
 			foreach($topic->table->getIdentifierColumnNames() as $primaryKey)
 				unset($topic->$primaryKey);
-
-			// "copy" function removes Doctrine's references - possible bug? (id property was not really unset)
-			// ...by creating a copy, Doctrine resets its internal references and gives us what we need
-			$topic = $topic->copy(true);
 
 			$result = $topic->trySave();
 			return ($result === true)
@@ -35,31 +35,9 @@
 			:   $topic->save();
 		}
 
-		public function update($topic_id, $fields)
-		{
-			$existing = $this->find($topic_id);
-			if(!$existing)
-				return;
-
-			foreach($fields as $key => $val)
-			{
-				if($existing->$key != $val)
-				{
-					if($val != $existing->$key && $val == null)
-						continue;
-
-					$existing->$key = $val;
-				}
-			}
-
-			$result = $existing->trySave();
-			return ($result === true)
-			?   $existing
-			:   $existing->save();
-		}
-
 		public function drop($topic)
 		{
+			$topic = ModelMapper::mapToModel($this->modelName, $topic, true);
 			return $topic->delete();
 		}
 		
@@ -204,9 +182,9 @@
 			if($paged)
 			{
 				if($limit)
-					$q->limit($limit);
+				$q->limit($limit);
 				if($offset)
-					$q->offset($offset);
+				$q->offset($offset);
 			}
 	
 			return $q->execute()->toAmf(true);

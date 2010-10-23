@@ -7,14 +7,17 @@
 	<fx:Declarations>
 		<services:UserService id="userService" result="resultHandler(event)" fault="faultHandler(event)" />
 		<services:TopicService id="topicService" result="result(event)" fault="fault(event)" />
+        <services:PostService id="postService" result="result(event)" fault="fault(event)" />
 	</fx:Declarations>
 	
 	<fx:Script>
 		<![CDATA[
 			import flash.net.registerClassAlias;
-			
-			import model.vo.*;
-			
+
+            import flashx.textLayout.formats.Category;
+
+            import model.vo.*;
+
 			import mx.collections.ArrayCollection;
 			import mx.collections.ICollectionView;
 			import mx.collections.IList;
@@ -23,16 +26,16 @@
 			import mx.messaging.messages.RemotingMessage;
 			import mx.rpc.events.FaultEvent;
 			import mx.rpc.events.ResultEvent;
-			
+
 			import org.aerial.rpc.operation.Operation;
-			
+
 			public var find:Operation;
-			
-			
+
+
 			public function init():void
 			{
 				WindowStuff();
-				
+
 				//Registering remote aliases to bypass errors for testing purposes.
 				registerClassAlias("model.vo.User",UserVO);
 				registerClassAlias("model.vo.Category",CategoryVO);
@@ -41,33 +44,35 @@
 				registerClassAlias("model.vo.Coment",CommentVO);
 			}
 
-			
+
 			public function testMethod():void
 			{
-				var topicVo:TopicVO = new TopicVO();
-				topicVo.userId = 1;
-				topicVo.categoryId = 2;
-				topicVo.name = "Robert";
-				topicVo.description = "test description";
-				
-				 relations:{
-					//break relations;
-					
-					var p1:PostVO = new PostVO();
-					p1.message = "HI!";
-					p1.title = "Hello";
-					
-					var p2:PostVO = new PostVO();
-					p2.message = "Bye!";
-					p2.title = "Cheers";
-					
-					topicVo.posts = new ArrayCollection([p1, p2]);
-					
-					topicVo.User = new UserVO();
-					topicVo.User.username = "danny";
-				} 
-				
-				this.topicService.insert(topicVo).execute();
+				var post:PostVO = new PostVO();
+                post.title = "My New Posty";
+
+                var user:UserVO = new UserVO();
+                user.username = "rob";
+                user.password = "123456789";
+
+                var topic:TopicVO = new TopicVO();
+                topic.name = "My New Topic";
+                topic.description = "...";
+                topic.User = user;
+
+                post.Topic = topic;
+                post.User = user;
+
+                post.modDate = "2010-10-10 10:10:10";
+
+                post.id = 1;
+
+                var tag:TagVO = new TagVO();
+                tag.name = "my other tag";
+
+                post.tags = new ArrayCollection([tag]);
+
+                postService.insert(post).execute();
+                //postService.findRelated("tags", 1).execute();
 			}
 			
 			// Optimistic -  will return all properties in each object.

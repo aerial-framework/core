@@ -14,8 +14,6 @@
  * @property Doctrine_Collection $comments
  * @property Doctrine_Collection $categories
  * @property Doctrine_Collection $topics
- * @property Doctrine_Collection $specialties
- * @property Doctrine_Collection $UserSpecialty
  * 
  * @package    ##PACKAGE##
  * @subpackage ##SUBPACKAGE##
@@ -73,15 +71,6 @@ abstract class BaseUser extends Aerial_Record
         $this->hasMany('Topic as topics', array(
              'local' => 'id',
              'foreign' => 'userId'));
-
-        $this->hasMany('Specialty as specialties', array(
-             'refClass' => 'UserSpecialty',
-             'local' => 'user_id',
-             'foreign' => 'specialty_id'));
-
-        $this->hasMany('UserSpecialty', array(
-             'local' => 'id',
-             'foreign' => 'user_id'));
     }
 
     public function construct()

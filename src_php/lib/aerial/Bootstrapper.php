@@ -3,6 +3,7 @@
 	require_once(AMFPHP_PATH.'/globals.php');
 	require_once("config/Authentication.php");
 	require_once(DOCTRINE_PATH.'/Aerial.php');
+	require_once(UTILS."/ModelMapper.php");
 
 	class Bootstrapper
 	{

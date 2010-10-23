@@ -1,9 +1,9 @@
 <?php	
-	class BaseCommentService
+	class BaseTagService
 	{	
 		protected $connection;
 		protected $table;
-		protected $modelName = "Comment";
+		protected $modelName = "Tag";
 		
 		public function __construct()
 		{
@@ -11,39 +11,39 @@
 			$this->table = $this->connection->getTable($this->modelName);
 		}
 
-		public function save($comment)
+		public function save($tag)
 		{
-			$comment = ModelMapper::mapToModel($this->modelName, $comment, true);
+			$tag = ModelMapper::mapToModel($this->modelName, $tag, true);
 
-			$result = $comment->trySave();
+			$result = $tag->trySave();
 			return ($result === true)
-			?   $comment->getIdentifier()
-			:   $comment->save();
+			?   $tag->getIdentifier()
+			:   $tag->save();
 		}
 
-		public function insert($comment)
+		public function insert($tag)
 		{
-			$comment = ModelMapper::mapToModel($this->modelName, $comment);
+			$tag = ModelMapper::mapToModel($this->modelName, $tag);
 
 			// unset the primary key values if one is set to insert a new record
-			foreach($comment->table->getIdentifierColumnNames() as $primaryKey)
-				unset($comment->$primaryKey);
+			foreach($tag->table->getIdentifierColumnNames() as $primaryKey)
+				unset($tag->$primaryKey);
 
-			$result = $comment->trySave();
+			$result = $tag->trySave();
 			return ($result === true)
-			?   $comment->getIdentifier()
-			:   $comment->save();
+			?   $tag->getIdentifier()
+			:   $tag->save();
 		}
 
-		public function drop($comment)
+		public function drop($tag)
 		{
-			$comment = ModelMapper::mapToModel($this->modelName, $comment, true);
-			return $comment->delete();
+			$tag = ModelMapper::mapToModel($this->modelName, $tag, true);
+			return $tag->delete();
 		}
 		
-		public function find($comment_id)
+		public function find($tag_id)
 		{
-			return $this->table->find($comment_id);
+			return $this->table->find($tag_id);
 		}
 		
 		public function findByField($field, $value, $paged=false, $limit=0, $offset=0)
@@ -90,49 +90,49 @@
 		}
 		
 		// get all relations and find related data
-		public function findWithRelated($comment_id)
+		public function findWithRelated($tag_id)
 		{
-			$relations = array("User" => array("type" => "one",
-													"alias" => "User",
-													"table" => "User",
-													"local_key" => "userid",
-													"foreign_key" => "id",
+			$relations = array("topicTags" => array("type" => "many",
+													"alias" => "topicTags",
+													"table" => "TopicTag",
+													"local_key" => "id",
+													"foreign_key" => "tagId",
 													"refTable" => ""),
-								"Post" => array("type" => "one",
-													"alias" => "Post",
-													"table" => "Post",
-													"local_key" => "postid",
-													"foreign_key" => "id",
+								"postTags" => array("type" => "many",
+													"alias" => "postTags",
+													"table" => "PostTag",
+													"local_key" => "id",
+													"foreign_key" => "tagId",
 													"refTable" => ""));
 			$complex = new stdClass();
 			
-			$record = $this->table->find($comment_id);
+			$record = $this->table->find($tag_id);
 			foreach($record as $key => $value)
 				$complex->$key = $value;
 				
 			foreach($relations as $relation)
-				$complex->$relation["alias"] = $this->findRelated($relation["alias"], $comment_id, $paged, $limit, $offset);
+				$complex->$relation["alias"] = $this->findRelated($relation["alias"], $tag_id, $paged, $limit, $offset);
 				
 			return $complex;
 		}
 		
 		public function findAllWithRelated($criteria = null)
 		{
-			$relations = array("User" => array("type" => "one",
-													"alias" => "User",
-													"table" => "User",
-													"local_key" => "userid",
-													"foreign_key" => "id",
+			$relations = array("topicTags" => array("type" => "many",
+													"alias" => "topicTags",
+													"table" => "TopicTag",
+													"local_key" => "id",
+													"foreign_key" => "tagId",
 													"refTable" => ""),
-								"Post" => array("type" => "one",
-													"alias" => "Post",
-													"table" => "Post",
-													"local_key" => "postid",
-													"foreign_key" => "id",
+								"postTags" => array("type" => "many",
+													"alias" => "postTags",
+													"table" => "PostTag",
+													"local_key" => "id",
+													"foreign_key" => "tagId",
 													"refTable" => ""));
 				
 				
-			$q = Doctrine_Query::create()->from('Comment y');
+			$q = Doctrine_Query::create()->from('Tag y');
 			$selectTables = 'y.*';
 			
 			foreach($relations as $relation)
@@ -168,11 +168,11 @@
 		}
 		
 		// get related data for field
-		public function findRelated($field, $comment_id, $paged=false, $limit=0, $offset=0)
+		public function findRelated($field, $tag_id, $paged=false, $limit=0, $offset=0)
 		{
 			//	available relations:
-			//		Alias: User, Type: one
-			//		Alias: Post, Type: one
+			//		Alias: topicTags, Type: many
+			//		Alias: postTags, Type: many
 			
 			$rel = $this->table->getRelation($field);
 			
@@ -190,13 +190,13 @@
 					$q = Doctrine_Query::create()
 							->select("x.*")
 							->from("$foreignTable x, $joining y")
-							->where("y.{$rel->getLocalFieldName()} = $comment_id")
+							->where("y.{$rel->getLocalFieldName()} = $tag_id")
 							->andWhere("x.id = y.{$rel->getForeignFieldName()}");
 
 					return $q->execute();
 				}
 				else	
-					$q->where($rel->getForeignFieldName()." = $comment_id");
+					$q->where($rel->getForeignFieldName()." = $tag_id");
 			}
 			else
 			{
@@ -213,7 +213,7 @@
 				}
 
 				$q->leftJoin("x.$foreignRelation y")
-					->where("y.".$rel->getForeign()." = $comment_id");
+					->where("y.".$rel->getForeign()." = $tag_id");
 			}
 					
 			if($paged)
@@ -232,7 +232,7 @@
 		
 		public function findAll($paged=false, $limit=0, $offset=0)
 		{
-			$q = Doctrine_Query::create()->select("*")->from("Comment");
+			$q = Doctrine_Query::create()->select("*")->from("Tag");
 					
 			if($paged)
 			{
@@ -250,9 +250,9 @@
 			return $this->table->count();
 		}
 		
-		public function countRelated($field, $comment_id)
+		public function countRelated($field, $tag_id)
 		{
-			$related = $this->findRelated($field, $comment_id);
+			$related = $this->findRelated($field, $tag_id);
 			return get_class($related) != "Doctrine_Collection" ? 1 : $related->count();
 		}
 	}

@@ -24,6 +24,7 @@ package model.vo
 		private var _Category:*
 		private var _User:*
 		private var _posts:*
+		private var _topicTags:*
 
 			
 		public function get id():int
@@ -126,6 +127,16 @@ package model.vo
 		public function set posts(value:ArrayCollection):void
 		{
 			_posts = value;
+		}
+			
+		public function get topicTags():ArrayCollection
+		{
+			return _topicTags;
+		}
+		
+		public function set topicTags(value:ArrayCollection):void
+		{
+			_topicTags = value;
 		}
 		
 	}

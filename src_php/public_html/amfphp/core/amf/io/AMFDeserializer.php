@@ -662,38 +662,7 @@ class AMFDeserializer extends AMFBaseDeserializer {
 		if(!$class)
 			trigger_error("Unable to read externalizable data type " . $type, E_USER_ERROR);
 
-		$instance = new $class();
-		$primaryKeys = $instance->table->getIdentifierColumnNames();
-
-		// assign identifiers first, then properties
-		foreach($data as $key => $value)
-		{
-			if(is_undefined($value) || !$this->isPrimary($key, $primaryKeys))
-				continue;
-
-			unset($data[$key]);
-			$instance->assignIdentifier($value);
-		}
-
-		// now assign properties
-		foreach($data as $key => $value)
-		{
-			if(is_undefined($value))
-				continue;
-
-			$instance->$key = $value;
-		}
-
-		return $instance;
-	}
-
-	function isPrimary($key, $keys)
-	{
-		foreach($keys as $value)
-			if($value == $key)
-				return true;
-
-		return false;
+		return $data;
 	}
     
     /**

@@ -1,8 +1,9 @@
 package org.aerial.rpc
 {
 	import flash.utils.getQualifiedClassName;
-	
-	import mx.rpc.remoting.RemoteObject;
+
+    import mx.rpc.AbstractOperation;
+    import mx.rpc.remoting.RemoteObject;
 	
 	import org.aerial.rpc.IService;
 	import org.aerial.rpc.operation.Operation;
@@ -18,10 +19,12 @@ package org.aerial.rpc
 			this.source = source;
 			this.endpoint = endpoint;
 			_voClass = voClass;
+
+            this.convertParametersHandler = preprocessArguments;
 		}
 		
 		
-		//Modifiy Methods
+		//Modify Methods
 		
 		public function insert(vo:Object):Operation
 		{
@@ -54,8 +57,19 @@ package org.aerial.rpc
 			
 			return op;
 		}
-		
-		
+
+        /**
+         * Pre-processes an array of given arguments so that it will not send an array of arguments
+         * but rather a collection of arguments
+         *
+         * @param args The arguments to be sent to PHP
+         * @return
+         */
+		public function preprocessArguments(args:Array):Array
+        {
+            return args[0];
+        }
+
 		// Find Methods
 		
 		public function findAll(criteria:* = null):Operation
@@ -78,7 +92,14 @@ package org.aerial.rpc
 		
 		public function findById(id:int):Operation
 		{
-			var op:Operation = new Operation(this, "findLast", id); 
+			var op:Operation = new Operation(this, "findById", id);
+			return op;
+		}
+
+		public function findRelated(field:String, id:int):Operation
+		{
+			var op:Operation = new Operation(this, "findRelated", field, id);
+
 			return op;
 		}
 		

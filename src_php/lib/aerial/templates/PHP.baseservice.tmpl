@@ -11,76 +11,34 @@
 			$this->table = $this->connection->getTable($this->modelName);
 		}
 
-		public function save(${{object}}, $related=null)
+		public function save(${{object}})
 		{
-			if($related)
-				foreach($related as $relation => $descriptor)
-				{
-					if($descriptor["type"] == "many")
-					{
-						$relationRef =& ${{object}}->$relation;
-						$count = 0;
-
-						foreach($descriptor["value"] as $element)
-						{
-							$relationRef[$count] = $element;
-							if($element["id"])
-								$relationRef[$count]->assignIdentifier($element["id"]);
-								
-							$count++;
-						}
-					}
-					else
-					{
-						// check for existence of related item
-						$testTable = $this->connection->getTable($descriptor["table"]);
-						$foreign_key = $descriptor["foreign_key"];
-						$test = $testTable->find($descriptor["value"]["$foreign_key"]);
-						
-						(is_object($test))
-						?	${{object}}->$descriptor["local_key"] = $descriptor["value"]["$foreign_key"]
-						:	${{object}}->$relation = $descriptor["value"];
-					}
-				}
+			${{object}} = ModelMapper::mapToModel($this->modelName, ${{object}}, true);
 
 			$result = ${{object}}->trySave();
 			return ($result === true)
-			?   ${{object}}->id
+			?   ${{object}}->getIdentifier()
 			:   ${{object}}->save();
 		}
 
-		public function update(${{object}}_id, $fields)
+		public function insert(${{object}})
 		{
-			$existing = $this->find(${{object}}_id);
-			if(!$existing)
-				return;
+			${{object}} = ModelMapper::mapToModel($this->modelName, ${{object}});
 
-			foreach($fields as $key => $val)
-			{
-				if($existing->$key != $val)
-				{
-					if($val != $existing->$key && $val == null)
-						continue;
+			// unset the primary key values if one is set to insert a new record
+			foreach(${{object}}->table->getIdentifierColumnNames() as $primaryKey)
+				unset(${{object}}->$primaryKey);
 
-					$existing->$key = $val;
-				}
-			}
-
-			$result = $existing->trySave();
+			$result = ${{object}}->trySave();
 			return ($result === true)
-			?   $existing
-			:   $existing->save();
+			?   ${{object}}->getIdentifier()
+			:   ${{object}}->save();
 		}
 
 		public function drop(${{object}})
 		{
-			$existing = $this->find(${{object}}->id);
-			if(!$existing)
-				return;
-
-			$oldID = $existing->id;
-			if($existing->delete())
-			    return $oldID;
+			${{object}} = ModelMapper::mapToModel($this->modelName, ${{object}}, true);
+			return ${{object}}->delete();
 		}
 		
 		public function find(${{object}}_id)

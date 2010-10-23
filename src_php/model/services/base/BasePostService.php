@@ -11,70 +11,34 @@
 			$this->table = $this->connection->getTable($this->modelName);
 		}
 
-		public function save($post, $related=null)
+		public function save($post)
 		{
-			if($related)
-				foreach($related as $relation => $descriptor)
-				{
-					if($descriptor["type"] == "many")
-					{
-						for($x = 0; $x < count($descriptor["value"]); $x++)
-						{
-							$arr =& $post->$relation;
-							$arr[$x] = $descriptor["value"][$x];
-						}
-					}
-					else
-					{
-						// check for existence of related item
-						$testTable = $this->connection->getTable($descriptor["table"]);
-						$foreign_key = $descriptor["foreign_key"];
-						$test = $testTable->find($descriptor["value"]["$foreign_key"]);
-						
-						(is_object($test))
-						?	$post->$descriptor["local_key"] = $descriptor["value"]["$foreign_key"]
-						:	$post->$relation = $descriptor["value"];
-					}
-				}
+			$post = ModelMapper::mapToModel($this->modelName, $post, true);
 
 			$result = $post->trySave();
 			return ($result === true)
-			?   $post->id
+			?   $post->getIdentifier()
 			:   $post->save();
 		}
 
-		public function update($post_id, $fields)
+		public function insert($post)
 		{
-			$existing = $this->find($post_id);
-			if(!$existing)
-				return;
+			$post = ModelMapper::mapToModel($this->modelName, $post);
 
-			foreach($fields as $key => $val)
-			{
-				if($existing->$key != $val)
-				{
-					if($val != $existing->$key && $val == null)
-						continue;
+			// unset the primary key values if one is set to insert a new record
+			foreach($post->table->getIdentifierColumnNames() as $primaryKey)
+				unset($post->$primaryKey);
 
-					$existing->$key = $val;
-				}
-			}
-
-			$result = $existing->trySave();
+			$result = $post->trySave();
 			return ($result === true)
-			?   $existing
-			:   $existing->save();
+			?   $post->getIdentifier()
+			:   $post->save();
 		}
 
 		public function drop($post)
 		{
-			$existing = $this->find($post->id);
-			if(!$existing)
-				return;
-
-			$oldID = $existing->id;
-			if($existing->delete())
-			    return $oldID;
+			$post = ModelMapper::mapToModel($this->modelName, $post, true);
+			return $post->delete();
 		}
 		
 		public function find($post_id)
@@ -145,6 +109,12 @@
 													"table" => "Comment",
 													"local_key" => "id",
 													"foreign_key" => "postId",
+													"refTable" => ""),
+								"postTags" => array("type" => "many",
+													"alias" => "postTags",
+													"table" => "PostTag",
+													"local_key" => "id",
+													"foreign_key" => "postId",
 													"refTable" => ""));
 			$complex = new stdClass();
 			
@@ -153,7 +123,7 @@
 				$complex->$key = $value;
 				
 			foreach($relations as $relation)
-				$complex->$relation["alias"] = $this->getRelated($relation["alias"], $post_id, $paged, $limit, $offset);
+				$complex->$relation["alias"] = $this->findRelated($relation["alias"], $post_id, $paged, $limit, $offset);
 				
 			return $complex;
 		}
@@ -175,6 +145,12 @@
 								"comments" => array("type" => "many",
 													"alias" => "comments",
 													"table" => "Comment",
+													"local_key" => "id",
+													"foreign_key" => "postId",
+													"refTable" => ""),
+								"postTags" => array("type" => "many",
+													"alias" => "postTags",
+													"table" => "PostTag",
 													"local_key" => "id",
 													"foreign_key" => "postId",
 													"refTable" => ""));
@@ -222,6 +198,7 @@
 			//		Alias: User, Type: one
 			//		Alias: Topic, Type: one
 			//		Alias: comments, Type: many
+			//		Alias: postTags, Type: many
 			
 			$rel = $this->table->getRelation($field);
 			
@@ -301,7 +278,7 @@
 		
 		public function countRelated($field, $post_id)
 		{
-			$related = $this->getRelated($field, $post_id);
+			$related = $this->findRelated($field, $post_id);
 			return get_class($related) != "Doctrine_Collection" ? 1 : $related->count();
 		}
 	}

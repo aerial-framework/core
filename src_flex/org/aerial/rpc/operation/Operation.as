@@ -20,14 +20,14 @@ package org.aerial.rpc.operation
 		private var _faultHandler:Function;
 		private var token:AsyncToken;
 		private var _op:AbstractOperation;
-		private var _args:*; 
+		private var _args:Array;
 		private var _offset:uint;
 		private var _limit:uint;
 		private var _page:uint;
 		private var _sort:Object;
 		private var _relations:Object;
 		 
-		public function Operation(service:AbstractService, remoteMethod:String, args:*=null)
+		public function Operation(service:AbstractService, remoteMethod:String, ...args)
 		{
 			_service = service;
 			_method = remoteMethod;
@@ -130,13 +130,13 @@ package org.aerial.rpc.operation
 		
 		private function _execute(limit:uint, offset:uint):AsyncToken
 		{
-			token = _op.send(_args, _limit, _offset, _sort, _relations);
+            _args.push(_limit, _offset, _sort, _relations);
+
+			token = _op.send(_args);
 			
 			if(_resultHandler !== null) token.addResponder(new Responder(notifyResultHandler, notifyFaultHandler));
 		
 			return token;
 		}
-		
-		
 	}
 }

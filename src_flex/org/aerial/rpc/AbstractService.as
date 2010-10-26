@@ -10,7 +10,8 @@ package org.aerial.rpc
 
 	public class AbstractService extends RemoteObject implements IService
 	{
-		
+		import org.aerial.rpc.messages.AerialErrorMessage; AerialErrorMessage;
+
 		private var _voClass:Class;
 		
 		public function AbstractService(source:String, endpoint:String, voClass:Class)

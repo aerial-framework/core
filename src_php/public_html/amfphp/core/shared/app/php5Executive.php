@@ -167,7 +167,8 @@ class Executive {
 				{
 					$code = $fault->getCode();
 				}
-				$ex = new MessageException(E_USER_ERROR, $fault->getMessage(), $fault->getFile(), $fault->getLine(), $code);
+				
+				$ex = new MessageException(E_USER_ERROR, $fault->getMessage(), $fault->getFile(), $fault->getLine(), $code, $fault->aerialLog);
 			}
 			$output = '__amfphp_error';
 			MessageException::throwException($bodyObj, $ex);

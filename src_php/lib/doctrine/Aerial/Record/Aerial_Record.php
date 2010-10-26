@@ -1,5 +1,5 @@
 <?php
-	require_once(DOCTRINE_PATH."/Doctrine/Record.php");
+	require_once(DOCTRINE_PATH . "/Doctrine/Record.php");
 
 	abstract class Aerial_Record extends Doctrine_Record
 	{

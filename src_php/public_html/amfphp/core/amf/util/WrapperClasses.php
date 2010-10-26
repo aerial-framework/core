@@ -77,12 +77,21 @@ class RemotingMessage
 
 class ErrorMessage
 {
-	var $_explicitType = "flex.messaging.messages.SomethingMessage";
+	var $_explicitType = "flex.messaging.messages.ErrorMessage";
 	var $correlationId;
 	var $faultCode;
 	var $faultDetail;
 	var $faultString;
-	var $something;
+}
+
+class AerialErrorMessage
+{
+	var $_explicitType = "flex.messaging.messages.AerialErrorMessage";
+	var $correlationId;
+	var $faultCode;
+	var $faultDetail;
+	var $faultString;
+	var $aerialLog;
 }
 
 final class undefined

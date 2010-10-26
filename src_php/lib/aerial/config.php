@@ -33,31 +33,32 @@
 	define("FRONTEND_CONFIG_CLASS", "com.forum.config.Config");							// Fully qualified frontend configuration path.  Needs to implement IConfig
 
 	define("VO_SUFFIX", "VO");
+	define("EXCEPTIONS", realpath(AERIAL_INTERNAL."/exceptions"));
+
+	define("PRODUCTION_MODE", false);
 	
 	// connection constants
 	// PRODUCTION_SERVER defined in gateway.php
 	
-	if(PRODUCTION_SERVER)
+	if(PRODUCTION_MODE)
 	{
 		define("DB_ENGINE", "mysql");													// Database engine type
 		define("DB_NAME", "aerial_forum");												// Database name
 		define("DB_HOST", "localhost");													// Database host
-		define("DB_USER", "aerial");															// Database user
-		define("DB_PASSWORD", "secret");														// Database password
+		define("DB_USER", "aeriala");													// Database user
+		define("DB_PASSWORD", "secret");												// Database password
 		define("CONNECTION_NAME", "doctrine");
 	
-	}else{
+	}
+	else
+	{
 		define("DB_ENGINE", "mysql");													// Database engine type
 		define("DB_NAME", "aerial_forum");												// Database name
 		define("DB_HOST", "localhost");													// Database host
-		define("DB_USER", "aerial");														// Database user
-		define("DB_PASSWORD", "secret");
-
-        // Database password
-		define("CONNECTION_NAME", "doctrine");
+		define("DB_USER", "aeriala");													// Database user
+		define("DB_PASSWORD", "secret");												// Database password
+		define("CONNECTION_NAME", "doctrine");											// Connection name (internal feature)
 	}
-	
-	// Connection name (internal feature)
 	
 	require_once(AERIAL_BASE_PATH."/Bootstrapper.php");
 	Bootstrapper::getInstance();

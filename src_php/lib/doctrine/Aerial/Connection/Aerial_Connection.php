@@ -29,7 +29,7 @@
 
 						$this->dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 					} catch (PDOException $e) {
-						throw new AerialException(AerialException::CONNECTION, $e);
+						throw new Aerial_Exception(Aerial_Exception::CONNECTION, $e);
 					}
 					$found = true;
 				}

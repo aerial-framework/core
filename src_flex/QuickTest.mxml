@@ -12,183 +12,191 @@
 	
 	<fx:Script>
 		<![CDATA[
-			import flash.net.registerClassAlias;
+        import flash.net.registerClassAlias;
 
-            import flashx.textLayout.formats.Category;
+        import flashx.textLayout.formats.Category;
 
-            import model.vo.*;
+        import model.vo.*;
 
-			import mx.collections.ArrayCollection;
-			import mx.collections.ICollectionView;
-			import mx.collections.IList;
-			import mx.collections.ListCollectionView;
-			import mx.controls.Alert;
-			import mx.messaging.messages.RemotingMessage;
-			import mx.rpc.events.FaultEvent;
-			import mx.rpc.events.ResultEvent;
+        import mx.collections.ArrayCollection;
+        import mx.collections.ICollectionView;
+        import mx.collections.IList;
+        import mx.collections.ListCollectionView;
+        import mx.controls.Alert;
+        import mx.messaging.messages.RemotingMessage;
+        import mx.rpc.events.FaultEvent;
+        import mx.rpc.events.ResultEvent;
 
-			import org.aerial.rpc.operation.Operation;
+        import org.aerial.rpc.messages.AerialErrorMessage;
+        import org.aerial.rpc.operation.Operation;
 
-			public var find:Operation;
-
-
-			public function init():void
-			{
-				WindowStuff();
-
-				//Registering remote aliases to bypass errors for testing purposes.
-				registerClassAlias("model.vo.User",UserVO);
-				registerClassAlias("model.vo.Category",CategoryVO);
-				registerClassAlias("model.vo.Topic",TopicVO);
-				registerClassAlias("model.vo.Post",PostVO);
-				registerClassAlias("model.vo.Coment",CommentVO);
-			}
+        public var find:Operation;
 
 
-			public function testMethod():void
-			{
-				var post:PostVO = new PostVO();
-                post.title = "My New Posty";
+        public function init():void
+        {
+            WindowStuff();
 
-                var user:UserVO = new UserVO();
-                user.username = "rob";
-                user.password = "123456789";
+            //Registering remote aliases to bypass errors for testing purposes.
+            registerClassAlias("model.vo.User", UserVO);
+            registerClassAlias("model.vo.Category", CategoryVO);
+            registerClassAlias("model.vo.Topic", TopicVO);
+            registerClassAlias("model.vo.Post", PostVO);
+            registerClassAlias("model.vo.Coment", CommentVO);
+        }
 
-                var topic:TopicVO = new TopicVO();
-                topic.name = "My New Topic";
-                topic.description = "...";
-                topic.User = user;
 
-                post.Topic = topic;
-                post.User = user;
+        public function testMethod():void
+        {
+            var post:PostVO = new PostVO();
+            post.title = "My New Posty";
 
-                post.modDate = "2010-10-10 10:10:10";
+            var user:UserVO = new UserVO();
+            user.username = "rob";
+            user.password = "123456789";
 
-                post.id = 1;
+            var topic:TopicVO = new TopicVO();
+            topic.name = "My New Topic";
+            topic.description = "...";
+            topic.User = user;
 
-                var tag:TagVO = new TagVO();
-                tag.name = "my other tag";
+            post.Topic = topic;
+            post.User = user;
 
-                post.tags = new ArrayCollection([tag]);
+            post.modDate = "2010-10-10 10:10:10";
 
-                postService.insert(post).execute();
-                //postService.findRelated("tags", 1).execute();
-			}
-			
-			// Optimistic -  will return all properties in each object.
-			// Use (-) in front of property name to remove. 
-			public function findAll():void 
-			{
-				find = this.topicService
-					.findAll({userId:9, categoryId:3})
-					.callback(findResult,findFault)
-					.sortAsc("id")
-					.relations({Category:"name", Post:"*"});
-					
-				find.execute();
-			}
-			
-			public function findResult(event:ResultEvent):void
-			{
-				if((event.result is IList || event.result is ICollectionView) ){
-					if(event.result.length > 0){
-						for each (var result:Object in event.result){
-							trace(result.id);
-						}
-					}else{
-						trace("no records");
-					}
-				}else{
-					trace(event.result);
-				}
-			}
-			
-			public function findFault(event:FaultEvent):void
-			{
-				trace("custom fault event");
-			}
-			
-			public function findNext():void
-			{
-				find.nextPage();
-				
-			}
-			
-			public function findPrevious():void
-			{
-				find.previousPage();
-			}
-			
-			
-			public function testCallbacks():void
-			{
-			/* 	this.test2Service.findAll().callback(myCallBack).execute();
-				this.test2Service.findAll().execute();
-				this.test2Service.findAll().callback(myCallBack).execute(); */
-			}
-			
-			
-			public function WindowStuff():void
-			{
-				nativeWindow.x = Screen.mainScreen.bounds.width - width - 50;
-				nativeWindow.y = Screen.mainScreen.bounds.height - height - 150;
-				
-				nativeWindow.alwaysInFront = false;
-				nativeWindow.orderToFront();
-			}
-			
-			
-			protected function resultHandler(event:ResultEvent):void
-			{
-				var message:RemotingMessage = event.token.message as RemotingMessage;
-				var operation:String = message.source + "." + message.operation;
-				
-				switch(operation)
-				{
-					
-					case "UserService.get":
-						
-						break;
-					case "UserService.getAll":
-						
-						break;
-					case "UserService.getRelated":
-						if(message.body[0] == "inputLookups"){
-							
-						}
-						break;
-					case "UserService.update":
-						
-						break;
-					case "UserService.save":
-						
-						break;
-				}
-			}
-			
-			
-			protected function faultHandler(event:FaultEvent):void
-			{
-				Alert.show(event.fault.faultString);
-			}
-			
-			
-			public function myCallBack(event:ResultEvent):void
-			{
-				trace("CALLBACK_1:"  + event.result.toString());	
-			}
-			
-			
-			protected function result(event:ResultEvent):void
-			{
-				trace("DEFAULT RESULT: " + event.result.toString());
-			}
-			
-			
-			protected function fault(event:FaultEvent):void
-			{
-				trace("test fault");
-			}
+            post.id = 1;
+
+            var tag:TagVO = new TagVO();
+            tag.name = "my other tag";
+
+            post.tags = new ArrayCollection([tag]);
+
+            postService.insert(post).execute();
+            //postService.findRelated("tags", 1).execute();
+        }
+
+        // Optimistic -  will return all properties in each object.
+        // Use (-) in front of property name to remove.
+        public function findAll():void
+        {
+            find = this.topicService
+                    .findAll({userId:9, categoryId:3})
+                    .callback(findResult, findFault)
+                    .sortAsc("id")
+                    .relations({Category:"name", Post:"*"});
+
+            find.execute();
+        }
+
+        public function findResult(event:ResultEvent):void
+        {
+            if ((event.result is IList || event.result is ICollectionView))
+            {
+                if (event.result.length > 0)
+                {
+                    for each (var result:Object in event.result)
+                    {
+                        trace(result.id);
+                    }
+                }
+                else
+                {
+                    trace("no records");
+                }
+            }
+            else
+            {
+                trace(event.result);
+            }
+        }
+
+        public function findFault(event:FaultEvent):void
+        {
+            trace("custom fault event");
+        }
+
+        public function findNext():void
+        {
+            find.nextPage();
+
+        }
+
+        public function findPrevious():void
+        {
+            find.previousPage();
+        }
+
+
+        public function testCallbacks():void
+        {
+            /* 	this.test2Service.findAll().callback(myCallBack).execute();
+             this.test2Service.findAll().execute();
+             this.test2Service.findAll().callback(myCallBack).execute(); */
+        }
+
+
+        public function WindowStuff():void
+        {
+            nativeWindow.x = Screen.mainScreen.bounds.width - width - 50;
+            nativeWindow.y = Screen.mainScreen.bounds.height - height - 150;
+
+            nativeWindow.alwaysInFront = false;
+            nativeWindow.orderToFront();
+        }
+
+        protected function resultHandler(event:ResultEvent):void
+        {
+            var message:RemotingMessage = event.token.message as RemotingMessage;
+            var operation:String = message.source + "." + message.operation;
+
+            switch (operation)
+            {
+
+            case "UserService.get":
+
+                break;
+            case "UserService.getAll":
+
+                break;
+            case "UserService.getRelated":
+                if (message.body[0] == "inputLookups")
+                {
+
+                }
+                break;
+            case "UserService.update":
+
+                break;
+            case "UserService.save":
+
+                break;
+            }
+        }
+
+
+        protected function faultHandler(event:FaultEvent):void
+        {
+            Alert.show(event.fault.faultString);
+        }
+
+
+        public function myCallBack(event:ResultEvent):void
+        {
+            trace("CALLBACK_1:" + event.result.toString());
+        }
+
+
+        protected function result(event:ResultEvent):void
+        {
+            trace("DEFAULT RESULT: " + event.result.toString());
+        }
+
+
+        protected function fault(event:FaultEvent):void
+        {
+            trace("test fault");
+        }
 			
 			
 			

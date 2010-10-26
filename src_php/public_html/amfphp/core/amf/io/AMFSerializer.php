@@ -652,7 +652,7 @@ class AMFSerializer extends AMFBaseSerializer {
 	 *                             AMF3 related code
 	 *******************************************************************************/
 	
-	function writeAmf3Data(& $d)
+	function writeAmf3Data(& $d, $useArrayMapping = false)
 	{
 		if (is_int($d)) 
 		{ //int
@@ -688,7 +688,7 @@ class AMFSerializer extends AMFBaseSerializer {
 		}
 		elseif (is_array($d) && !isset($d->_explicitType)) 
 		{ // array
-			$this->writeAmf3Array($d);
+			$this->writeAmf3Array($d, $useArrayMapping);
 			return;
 		} 
 		elseif (is_resource($d)) 
@@ -727,7 +727,7 @@ class AMFSerializer extends AMFBaseSerializer {
 			// Fix for PHP5 overriden ArrayAccess and ArrayObjects with an explcit type
 			elseif( (is_a($d, 'ArrayAccess') || is_a($d, 'ArrayObject')) && !isset($d->_explicitType))
 			{
-				$this->writeAmf3Array($d, true);
+				$this->writeAmf3Array($d, AMFPHP_USE_ARRAYCOLLECTION);
 				return;
 			}
 			else
@@ -1073,6 +1073,10 @@ class AMFSerializer extends AMFBaseSerializer {
 			foreach($realObj as $key => $val)
 			{
 				$this->writeAmf3String($key);
+				
+				if($key == "body")
+					$this->writeAmf3Data($val, ($package == FRONTEND_MODELS_PACKAGE) ? AMFPHP_USE_ARRAYCOLLECTION : false);
+				else
 				$this->writeAmf3Data($val);
 			}
 			//Now we close the open object

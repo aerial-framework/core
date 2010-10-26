@@ -2,13 +2,14 @@ package model.vo
 {
 	import org.aerial.rpc.AbstractVO;
 	import model.vo.*;
-	
+	import mx.collections.ArrayCollection;
+
 	[Bindable]	
 	public class UserVO extends AbstractVO
 	{		
 		public function UserVO()
 		{
-			super("model.vo.User");
+			super("model.vo.User", function(field:String):*{return this[field]});
 		}
 		
 		private var _id:*
@@ -76,42 +77,42 @@ package model.vo
 
 		//Relations
 			
-		public function get posts():Array
+		public function get posts():ArrayCollection
 		{
 			return _posts;
 		}
 		
-		public function set posts(value:Array):void
+		public function set posts(value:ArrayCollection):void
 		{
 			_posts = value;
 		}
 			
-		public function get comments():Array
+		public function get comments():ArrayCollection
 		{
 			return _comments;
 		}
 		
-		public function set comments(value:Array):void
+		public function set comments(value:ArrayCollection):void
 		{
 			_comments = value;
 		}
 			
-		public function get categories():Array
+		public function get categories():ArrayCollection
 		{
 			return _categories;
 		}
 		
-		public function set categories(value:Array):void
+		public function set categories(value:ArrayCollection):void
 		{
 			_categories = value;
 		}
 			
-		public function get topics():Array
+		public function get topics():ArrayCollection
 		{
 			return _topics;
 		}
 		
-		public function set topics(value:Array):void
+		public function set topics(value:ArrayCollection):void
 		{
 			_topics = value;
 		}

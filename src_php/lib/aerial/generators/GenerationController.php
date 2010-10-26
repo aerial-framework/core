@@ -5,12 +5,21 @@ class GenerationController
 	{
 		$num = 0;
 
-		$r = new RecursiveDirectoryIterator($path);
+		try
+		{
+			$r = new RecursiveDirectoryIterator($path);
+		}
+		catch(Exception $e)
+		{
+			return 0;	
+		}
+
+
 		foreach (new RecursiveIteratorIterator($r) as $file)
 		{
 			if(strpos($file->getPath(), ".svn") !== false)
 			continue;
-				
+
 			$num++;
 		}
 

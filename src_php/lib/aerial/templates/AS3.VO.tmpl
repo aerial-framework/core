@@ -2,13 +2,13 @@ package {{package}}
 {
 	import org.aerial.rpc.AbstractVO;
 	import {{package}}.*;
-	
+	{{collectionImport}}
 	[Bindable]	
 	public class {{class}} extends AbstractVO
 	{		
 		public function {{class}}()
 		{
-			super("{{package}}.{{remoteClass}}");
+			super("{{package}}.{{remoteClass}}", function(field:String):*{return this[field]});
 		}
 		
 {{privateVars}}{{accessors}}

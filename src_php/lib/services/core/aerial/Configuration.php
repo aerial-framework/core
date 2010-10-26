@@ -41,7 +41,8 @@
 			Doctrine_Core::createDatabases();
 
 			$options = array(
-				"baseClassName" => "Aerial_Record"
+				"baseClassName" => "Aerial_Record",
+				"baseClassesDirectory" => "base"
 			);
 
 			Doctrine_Core::generateModelsFromYaml(AERIAL_BASE_PATH.'/schema.yml', BACKEND_MODELS_PATH, $options);
@@ -112,6 +113,11 @@
 			
 			return $relationships;
 		}
+
+		public static function generateSchemaFromDB()
+		{
+			return Doctrine_Core::generateYamlFromDb(AERIAL_BASE_PATH.'/schema.yml');
+		}
 		
 		public static function generateModelsAndServices()
 		{
@@ -131,7 +137,7 @@
 				ActionScriptGenerator::generateAS3BaseModel(FRONTEND_MODELS_PACKAGE.".base", "Base$class",
 												$properties, $relations, FRONTEND_MODELS_PATH."/base");
 				
-				if($numExisting != count($modelData))
+				if($numExisting != count($modelData) || $numExisting == 0)
 					ActionScriptGenerator::generateAS3Model(FRONTEND_MODELS_PACKAGE, $class, $remoteClass, FRONTEND_MODELS_PATH);
 			}
 
@@ -152,7 +158,7 @@
 				
 				PHPGenerator::generatePHPBaseService($class, $object, $relations, $model, $inflectSingle, $inflectPlural, BACKEND_SERVICES_PATH."/base");
 				
-				if($numExisting != count($phpServicesData))
+				if($numExisting != count($phpServicesData) || $numExisting == 0)
 					PHPGenerator::generatePHPService("{$model}Service", BACKEND_SERVICES_PATH);
 			}			
 		
@@ -172,7 +178,7 @@
 				
 				ActionScriptGenerator::generateASBaseService(FRONTEND_MODELS_PACKAGE, FRONTEND_SERVICES_PACKAGE, $class, $object, $relations,
 												$inflectSingle, $inflectPlural, $model.VO_SUFFIX, $model, FRONTEND_SERVICES_PATH."/base");
-				if($numExisting != count($asServicesData))
+				if($numExisting != count($asServicesData) || $numExisting == 0)
 					ActionScriptGenerator::generateASService(FRONTEND_SERVICES_PACKAGE, "{$model}Service", FRONTEND_SERVICES_PATH);
 			}
 
@@ -192,10 +198,18 @@
 			$template = ActionScriptGenerator::readTemplate("AS3.VO");
 			$accessorStub = ActionScriptGenerator::getTemplatePart("as3AccessorStub");
 
-			$replacementTokens = array("package", "class","remoteClass", "privateVars", "accessors");
+			$replacementTokens = array("package", "collectionImport", "class","remoteClass", "privateVars", "accessors");
 
 			$package = FRONTEND_MODELS_PACKAGE;
-
+			
+			if(AMFPHP_USE_ARRAYCOLLECTION){
+				$collectionImport = "import mx.collections.ArrayCollection;\n";
+				$collectionType = "ArrayCollection";
+			}else{
+				$collectionPackage = "";
+				$collectionType = "Array";
+			}
+			
 			$models = ActionScriptGenerator::getModelData();
 
 			foreach($models as $model)
@@ -232,7 +246,7 @@
 				foreach($relations as $relation)
 				{
 					$field = $relation["alias"];
-					$type = $relation["type"] == "one" ? $relation["table"].VO_SUFFIX : "Array";
+					$type = $relation["type"] == "one" ? $relation["table"].VO_SUFFIX : $collectionType;
 
 					//Create Private Vars
 					$privateVars .= "\t\t" . "private var _$field:*\n";

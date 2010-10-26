@@ -566,7 +566,7 @@ class AMFDeserializer extends AMFBaseDeserializer {
 		//Add to references as circular references may search for this object
 		$this->storedObjects[] = & $obj;
 
-		if( $classDefinition['externalizable'] )
+		if( $classDefinition['externalizable'])
 		{
 			if($type == 'flex.messaging.io.ArrayCollection')
 			{
@@ -578,7 +578,10 @@ class AMFDeserializer extends AMFBaseDeserializer {
 			}
 			else
 			{
-				trigger_error("Unable to read externalizable data type " . $type, E_USER_ERROR);
+				// Fix for externalizable Aerial VOs
+				$obj = $this->mapExternalized($type, $this->readAmf3Data());
+
+				//trigger_error("Unable to read externalizable data type " . $type, E_USER_ERROR);
 			}
 		}
 		else
@@ -651,6 +654,15 @@ class AMFDeserializer extends AMFBaseDeserializer {
 		}
 		
 		return $obj;
+	}
+
+	function mapExternalized($type, $data)
+	{
+		$class = substr($type, strrpos($type, ".") + 1);
+		if(!$class)
+			trigger_error("Unable to read externalizable data type " . $type, E_USER_ERROR);
+
+		return $data;
 	}
     
     /**

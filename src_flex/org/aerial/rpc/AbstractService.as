@@ -1,8 +1,9 @@
 package org.aerial.rpc
 {
 	import flash.utils.getQualifiedClassName;
-	
-	import mx.rpc.remoting.RemoteObject;
+
+    import mx.rpc.AbstractOperation;
+    import mx.rpc.remoting.RemoteObject;
 	
 	import org.aerial.rpc.IService;
 	import org.aerial.rpc.operation.Operation;
@@ -18,14 +19,17 @@ package org.aerial.rpc
 			this.source = source;
 			this.endpoint = endpoint;
 			_voClass = voClass;
+
+            this.convertParametersHandler = preprocessArguments;
 		}
 		
-		//Modifiy Methods
+		
+		//Modify Methods
 		
 		public function insert(vo:Object):Operation
 		{
 			validateVO(vo);
-			var op:Operation = new Operation(this, "insert", IAbstractVO(vo).getObject() );
+			var op:Operation = new Operation(this, "insert", vo);
 			
 			return op;
 		}
@@ -33,7 +37,7 @@ package org.aerial.rpc
 		public function update(vo:Object):Operation
 		{
 			validateVO(vo);
-			var op:Operation = new Operation(this, "update", IAbstractVO(vo).getObject() );
+			var op:Operation = new Operation(this, "update", vo);
 			
 			return op;
 		}
@@ -41,7 +45,7 @@ package org.aerial.rpc
 		public function save(vo:Object):Operation
 		{
 			validateVO(vo);
-			var op:Operation = new Operation(this, "save", IAbstractVO(vo).getObject() );
+			var op:Operation = new Operation(this, "save", vo);
 			
 			return op;
 		}
@@ -49,12 +53,24 @@ package org.aerial.rpc
 		public function drop(vo:Object):Operation
 		{
 			validateVO(vo);
-			var op:Operation = new Operation(this, "drop", IAbstractVO(vo).getObject() );
+			var op:Operation = new Operation(this, "drop", vo);
 			
 			return op;
 		}
-		
-		//Find Methods
+
+        /**
+         * Pre-processes an array of given arguments so that it will not send an array of arguments
+         * but rather a collection of arguments
+         *
+         * @param args The arguments to be sent to PHP
+         * @return
+         */
+		public function preprocessArguments(args:Array):Array
+        {
+            return args[0];
+        }
+
+		// Find Methods
 		
 		public function findAll(criteria:* = null):Operation
 		{
@@ -76,12 +92,20 @@ package org.aerial.rpc
 		
 		public function findById(id:int):Operation
 		{
-			var op:Operation = new Operation(this, "findLast", id); 
+			var op:Operation = new Operation(this, "findById", id);
+			return op;
+		}
+
+		public function findRelated(field:String, id:int):Operation
+		{
+			var op:Operation = new Operation(this, "findRelated", field, id);
+
 			return op;
 		}
 		
 		
-		//Helpers
+		// Helpers
+		
 		private function validateVO(vo:Object):void{
 			if(!(vo is _voClass))
 				throw new ArgumentError(this.source + ".insert(vo:Object) argument must be of type " + getQualifiedClassName(_voClass) + " (You used " + getQualifiedClassName(vo) + ")");

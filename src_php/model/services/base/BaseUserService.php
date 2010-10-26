@@ -11,70 +11,34 @@
 			$this->table = $this->connection->getTable($this->modelName);
 		}
 
-		public function save($user, $related=null)
+		public function save($user)
 		{
-			if($related)
-				foreach($related as $relation => $descriptor)
-				{
-					if($descriptor["type"] == "many")
-					{
-						for($x = 0; $x < count($descriptor["value"]); $x++)
-						{
-							$arr =& $user->$relation;
-							$arr[$x] = $descriptor["value"][$x];
-						}
-					}
-					else
-					{
-						// check for existence of related item
-						$testTable = $this->connection->getTable($descriptor["table"]);
-						$foreign_key = $descriptor["foreign_key"];
-						$test = $testTable->find($descriptor["value"]["$foreign_key"]);
-						
-						(is_object($test))
-						?	$user->$descriptor["local_key"] = $descriptor["value"]["$foreign_key"]
-						:	$user->$relation = $descriptor["value"];
-					}
-				}
+			$user = ModelMapper::mapToModel($this->modelName, $user, true);
 
 			$result = $user->trySave();
 			return ($result === true)
-			?   $user->id
+			?   $user->getIdentifier()
 			:   $user->save();
 		}
 
-		public function update($user_id, $fields)
+		public function insert($user)
 		{
-			$existing = $this->find($user_id);
-			if(!$existing)
-				return;
+			$user = ModelMapper::mapToModel($this->modelName, $user);
 
-			foreach($fields as $key => $val)
-			{
-				if($existing->$key != $val)
-				{
-					if($val != $existing->$key && $val == null)
-						continue;
+			// unset the primary key values if one is set to insert a new record
+			foreach($user->table->getIdentifierColumnNames() as $primaryKey)
+				unset($user->$primaryKey);
 
-					$existing->$key = $val;
-				}
-			}
-
-			$result = $existing->trySave();
+			$result = $user->trySave();
 			return ($result === true)
-			?   $existing
-			:   $existing->save();
+			?   $user->getIdentifier()
+			:   $user->save();
 		}
 
 		public function drop($user)
 		{
-			$existing = $this->find($user->id);
-			if(!$existing)
-				return;
-
-			$oldID = $existing->id;
-			if($existing->delete())
-			    return $oldID;
+			$user = ModelMapper::mapToModel($this->modelName, $user, true);
+			return $user->delete();
 		}
 		
 		public function find($user_id)
@@ -159,7 +123,7 @@
 				$complex->$key = $value;
 				
 			foreach($relations as $relation)
-				$complex->$relation["alias"] = $this->getRelated($relation["alias"], $user_id, $paged, $limit, $offset);
+				$complex->$relation["alias"] = $this->findRelated($relation["alias"], $user_id, $paged, $limit, $offset);
 				
 			return $complex;
 		}
@@ -314,7 +278,7 @@
 		
 		public function countRelated($field, $user_id)
 		{
-			$related = $this->getRelated($field, $user_id);
+			$related = $this->findRelated($field, $user_id);
 			return get_class($related) != "Doctrine_Collection" ? 1 : $related->count();
 		}
 	}

@@ -1,5 +1,5 @@
 ---
-detect_relations: true
+#detect_relations: true
 options:
   collate: utf8_general_ci
   charset: utf8
@@ -173,6 +173,8 @@ Topic:
       local: categoryId
       foreign: id
       foreignAlias: topics
+      onDelete: set null
+      onUpdate: set null
     User:
       class: User
       local: userId
@@ -184,34 +186,73 @@ Topic:
     fk_Topic_User1:
       fields: [userId]
 
-Specialty:
-  mapClass: model.vo.Specialty
-  tableName: Specialty
+Tag:
+  mapClass: model.vo.Tag
+  tableName: Tag
   columns:
-    name:
-      type: string(255)
+    id:
+      type: integer(4)
+      primary: true
       notnull: true
-    description: string
-  relations:
-    users:
-      foreignAlias: specialties
-      class: User
-      refClass: UserSpecialty
+      autoincrement: true
+    name:
+      type: string(100)
 
-UserSpecialty:
-  mapClass: model.vo.UserSpecialty
-  tableName: UserSpecialties
+TopicTag:
+  mapClass: model.vo.TopicTag
+  tableName: TopicTag
   columns:
-    user_id:
-      type: integer(20)
+    id:
+      type: integer(4)
       primary: true
-    specialty_id:
-      type: integer(20)
-      primary: true
+      notnull: true
+      autoincrement: true
+    topicId:
+      type: integer(4)
+      notnull: true
+    tagId:
+      type: integer(4)
+      notnull: true
   relations:
-    user:
-      alias: user
-      foreignAlias: UserSpecialties
-    specialty:
-      alias: specialty
-      foreignAlias: UserSpecialties
+    Topic:
+      class: Topic
+      local: topicId
+      foreign: id
+      foreignAlias: topicTags
+    Tag:
+      class: Tag
+      local: tagId
+      foreign: id
+      foreignAlias: topicTags
+  indexes:
+    fk_TopicTag_Topic1:
+      fields: [topicId]
+    fk_TopicTag_Tag1:
+      fields: [tagId]
+
+PostTag:
+  mapClass: model.vo.PostTag
+  tableName: PostTag
+  columns:
+    postId:
+      type: integer(4)
+      primary: true
+      notnull: true
+    tagId:
+      type: integer(4)
+      primary: true
+      notnull: true
+  relations:
+    Post:
+      class: Post
+      local: postId
+      foreign: id
+      foreignAlias: postTags
+    Tag:
+      class: Tag
+      local: tagId
+      foreign: id
+      foreignAlias: postTags
+  indexes:
+    fk_Post_has_Tag_Tag1:
+      fields: [tagId]

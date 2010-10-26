@@ -11,70 +11,34 @@
 			$this->table = $this->connection->getTable($this->modelName);
 		}
 
-		public function save($comment, $related=null)
+		public function save($comment)
 		{
-			if($related)
-				foreach($related as $relation => $descriptor)
-				{
-					if($descriptor["type"] == "many")
-					{
-						for($x = 0; $x < count($descriptor["value"]); $x++)
-						{
-							$arr =& $comment->$relation;
-							$arr[$x] = $descriptor["value"][$x];
-						}
-					}
-					else
-					{
-						// check for existence of related item
-						$testTable = $this->connection->getTable($descriptor["table"]);
-						$foreign_key = $descriptor["foreign_key"];
-						$test = $testTable->find($descriptor["value"]["$foreign_key"]);
-						
-						(is_object($test))
-						?	$comment->$descriptor["local_key"] = $descriptor["value"]["$foreign_key"]
-						:	$comment->$relation = $descriptor["value"];
-					}
-				}
+			$comment = ModelMapper::mapToModel($this->modelName, $comment, true);
 
 			$result = $comment->trySave();
 			return ($result === true)
-			?   $comment->id
+			?   $comment->getIdentifier()
 			:   $comment->save();
 		}
 
-		public function update($comment_id, $fields)
+		public function insert($comment)
 		{
-			$existing = $this->find($comment_id);
-			if(!$existing)
-				return;
+			$comment = ModelMapper::mapToModel($this->modelName, $comment);
 
-			foreach($fields as $key => $val)
-			{
-				if($existing->$key != $val)
-				{
-					if($val != $existing->$key && $val == null)
-						continue;
+			// unset the primary key values if one is set to insert a new record
+			foreach($comment->table->getIdentifierColumnNames() as $primaryKey)
+				unset($comment->$primaryKey);
 
-					$existing->$key = $val;
-				}
-			}
-
-			$result = $existing->trySave();
+			$result = $comment->trySave();
 			return ($result === true)
-			?   $existing
-			:   $existing->save();
+			?   $comment->getIdentifier()
+			:   $comment->save();
 		}
 
 		public function drop($comment)
 		{
-			$existing = $this->find($comment->id);
-			if(!$existing)
-				return;
-
-			$oldID = $existing->id;
-			if($existing->delete())
-			    return $oldID;
+			$comment = ModelMapper::mapToModel($this->modelName, $comment, true);
+			return $comment->delete();
 		}
 		
 		public function find($comment_id)
@@ -147,7 +111,7 @@
 				$complex->$key = $value;
 				
 			foreach($relations as $relation)
-				$complex->$relation["alias"] = $this->getRelated($relation["alias"], $comment_id, $paged, $limit, $offset);
+				$complex->$relation["alias"] = $this->findRelated($relation["alias"], $comment_id, $paged, $limit, $offset);
 				
 			return $complex;
 		}
@@ -288,7 +252,7 @@
 		
 		public function countRelated($field, $comment_id)
 		{
-			$related = $this->getRelated($field, $comment_id);
+			$related = $this->findRelated($field, $comment_id);
 			return get_class($related) != "Doctrine_Collection" ? 1 : $related->count();
 		}
 	}

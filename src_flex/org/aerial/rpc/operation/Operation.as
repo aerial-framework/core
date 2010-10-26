@@ -5,6 +5,7 @@ package org.aerial.rpc.operation
 	import mx.rpc.AbstractOperation;
 	import mx.rpc.AsyncToken;
 	import mx.rpc.Responder;
+	import mx.rpc.events.FaultEvent;
 	import mx.rpc.events.ResultEvent;
 	import mx.rpc.http.Operation;
 	
@@ -15,37 +16,67 @@ package org.aerial.rpc.operation
 		
 		private var _service:AbstractService;
 		private var _method:String;
-		private var _callback:Function;
+		private var _resultHandler:Function;
+		private var _faultHandler:Function;
 		private var token:AsyncToken;
 		private var _op:AbstractOperation;
-		private var _args:*;
+		private var _args:Array;
+		private var _offset:uint;
+		private var _limit:uint;
+		private var _page:uint;
 		private var _sort:Object;
 		private var _relations:Object;
 		 
-		public function Operation(service:AbstractService, method:String, args:*=null)
+		public function Operation(service:AbstractService, remoteMethod:String, ...args)
 		{
 			_service = service;
-			_method = method;
+			_method = remoteMethod;
 			_op = service.getOperation(_method);
 			_args = args;
-			_sort = new Array();
+			_limit = 0;
+			_offset = 0;
+			_sort = new Object();
+			_relations = new Object();
 		}
 		
 		
-		public function callback(value:Function):Operation
+		public function callback(resultHandler:Function, faultHandler:Function = null):Operation
 		{
-			_callback = value;
+			_faultHandler = faultHandler;
+			_resultHandler = resultHandler;
 			return this;
 		}
 		
-		public function relations(value:Object):Operation
+		public function relations(relations:Object):Operation
 		{
+			_relations = relations;
 			return this;
 		}
 		
 		public function sortBy(field:String, order:String = "ASC"):Operation
 		{
+			//TODO: Validate that the fields exist in the VO.  Do we create a static graph object to conserve proc?
 			_sort[field] = order;
+			return this;
+		}
+		
+		public function sortAsc(field:String, ... fields):Operation
+		{
+			_sort[field] = "ASC";
+			
+			for each(var f:String in fields)
+				_sort[f] = "ASC";
+
+			return this;
+		}
+		
+		public function sortDesc(field:String, ... fields):Operation
+		{
+			_sort[field] = "DESC";
+			
+			for each(var f:String in fields)
+				_sort[f] = "DESC";
+			
 			return this;
 		}
 		
@@ -58,19 +89,53 @@ package org.aerial.rpc.operation
 			}
 		}
 		
-		public function notifyCaller(event:ResultEvent):void
+		private function notifyResultHandler(event:ResultEvent):void
 		{
-			event.preventDefault(); //Prevent the service result handler from firing.
-			_callback(event);
+			event.preventDefault(); 
+			_resultHandler(event);
 		}
-
 		
-		public function execute(offset:uint=0, limit:uint=0):AsyncToken
+		private function notifyFaultHandler(event:FaultEvent):void
 		{
+			if(_faultHandler != null){
+				event.preventDefault();
+				_faultHandler(event);
+			}
+		}
+		
+		public function nextPage():AsyncToken
+		{
+			if(_limit > 0){
+				_offset += _limit;
+			}
+			return  _execute(_limit, _offset);
+		}
+		
+		public function previousPage():AsyncToken
+		{
+			if(_limit > 0){
+				_offset -= _limit;
+			}
+			return  _execute(_limit, _offset);
+		}
+		
+		
+		public function execute(limit:uint=0, offset:uint=0):AsyncToken
+		{
+			_limit = limit;
+			_offset = offset;
 			
-			token = _op.send(_args, offset, limit);
-			if(_callback !== null) token.addResponder(new Responder(notifyCaller,null));
+			return  _execute(_limit, _offset);
+		}
+		
+		private function _execute(limit:uint, offset:uint):AsyncToken
+		{
+            _args.push(_limit, _offset, _sort, _relations);
+
+			token = _op.send(_args);
 			
+			if(_resultHandler !== null) token.addResponder(new Responder(notifyResultHandler, notifyFaultHandler));
+		
 			return token;
 		}
 	}

@@ -56,6 +56,9 @@ class Executive {
 	{
 		try
 		{
+            // Authentication
+            self::doAuthentication($bodyObj);
+
 			$output = Executive::deferredMethodCall($bodyObj, $object, $method, $args);
 		}
 		catch(Exception $fault)
@@ -77,7 +80,31 @@ class Executive {
 			$output = '__amfphp_error';
 		}
 		return $output;
-	} 
+	}
+
+    /**
+     * Processes the authentication rules
+     */
+    function doAuthentication($descriptor)
+    {
+		session_start();
+		
+        if($_SESSION["authenticated"] === true)         // session already authenticated
+            return;
+
+        if(!USE_AUTH)
+            return;
+
+        $class = $descriptor->className;
+        $function = $descriptor->methodName;
+
+        $user = Authentication::getInstance()->isValid();
+        if(!$user)
+            throw new Exception("User authentication failed.");
+
+        // user is validated, now process rules
+        Authentication::getInstance()->canAccess($user, "$class.$function");
+    }
 	
 	/**
 	 * Builds a class using a class name

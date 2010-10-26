@@ -7,45 +7,116 @@
 	<fx:Declarations>
 		<services:UserService id="userService" result="resultHandler(event)" fault="faultHandler(event)" />
 		<services:TopicService id="topicService" result="result(event)" fault="fault(event)" />
+        <services:PostService id="postService" result="result(event)" fault="fault(event)" />
 	</fx:Declarations>
 	
 	<fx:Script>
 		<![CDATA[
-			import model.services.PostService;
-			import model.vo.*;
-			
+			import flash.net.registerClassAlias;
+
+            import flashx.textLayout.formats.Category;
+
+            import model.vo.*;
+
 			import mx.collections.ArrayCollection;
+			import mx.collections.ICollectionView;
+			import mx.collections.IList;
 			import mx.collections.ListCollectionView;
 			import mx.controls.Alert;
 			import mx.messaging.messages.RemotingMessage;
 			import mx.rpc.events.FaultEvent;
 			import mx.rpc.events.ResultEvent;
-			
+
 			import org.aerial.rpc.operation.Operation;
-			
-			SomethingMessage;
-			
-			public var user:UserVO;
-			
-			
+
+			public var find:Operation;
+
+
 			public function init():void
 			{
 				WindowStuff();
-				
-				testMethod();
+
+				//Registering remote aliases to bypass errors for testing purposes.
+				registerClassAlias("model.vo.User",UserVO);
+				registerClassAlias("model.vo.Category",CategoryVO);
+				registerClassAlias("model.vo.Topic",TopicVO);
+				registerClassAlias("model.vo.Post",PostVO);
+				registerClassAlias("model.vo.Coment",CommentVO);
 			}
 
-			
+
 			public function testMethod():void
 			{
-				var user:UserVO = new UserVO();
+				var post:PostVO = new PostVO();
+                post.title = "My New Posty";
 
-                var sp1:SpecialtyVO = new SpecialtyVO();
-                sp1.id = 1;
-                sp1.name = "Test";
+                var user:UserVO = new UserVO();
+                user.username = "rob";
+                user.password = "123456789";
 
-				//user.specialties = [sp1];
-                userService.save(user).execute();
+                var topic:TopicVO = new TopicVO();
+                topic.name = "My New Topic";
+                topic.description = "...";
+                topic.User = user;
+
+                post.Topic = topic;
+                post.User = user;
+
+                post.modDate = "2010-10-10 10:10:10";
+
+                post.id = 1;
+
+                var tag:TagVO = new TagVO();
+                tag.name = "my other tag";
+
+                post.tags = new ArrayCollection([tag]);
+
+                postService.insert(post).execute();
+                //postService.findRelated("tags", 1).execute();
+			}
+			
+			// Optimistic -  will return all properties in each object.
+			// Use (-) in front of property name to remove. 
+			public function findAll():void 
+			{
+				find = this.topicService
+					.findAll({userId:9, categoryId:3})
+					.callback(findResult,findFault)
+					.sortAsc("id")
+					.relations({Category:"name", Post:"*"});
+					
+				find.execute();
+			}
+			
+			public function findResult(event:ResultEvent):void
+			{
+				if((event.result is IList || event.result is ICollectionView) ){
+					if(event.result.length > 0){
+						for each (var result:Object in event.result){
+							trace(result.id);
+						}
+					}else{
+						trace("no records");
+					}
+				}else{
+					trace(event.result);
+				}
+			}
+			
+			public function findFault(event:FaultEvent):void
+			{
+				trace("custom fault event");
+			}
+			
+			public function findNext():void
+			{
+				find.nextPage();
+				
+			}
+			
+			public function findPrevious():void
+			{
+				find.previousPage();
 			}
 			
 			
@@ -55,7 +126,8 @@
 				this.test2Service.findAll().execute();
 				this.test2Service.findAll().callback(myCallBack).execute(); */
 			}
-						
+			
+			
 			public function WindowStuff():void
 			{
 				nativeWindow.x = Screen.mainScreen.bounds.width - width - 50;
@@ -91,7 +163,6 @@
 					case "UserService.save":
 						
 						break;
-					
 				}
 			}
 			
@@ -110,7 +181,7 @@
 			
 			protected function result(event:ResultEvent):void
 			{
-				trace("RESULT: " + event.result.toString());
+				trace("DEFAULT RESULT: " + event.result.toString());
 			}
 			
 			
@@ -123,7 +194,10 @@
 			
 		]]>
 	</fx:Script>
-	<s:Button x="153" y="98" label="Button" click="testMethod()"/>
+	<s:Button x="95" y="82" label="previousPage()" id="previous" click="this.findPrevious()"/>
+	<s:Button x="228" y="67" label="Find.execute()" click="this.findAll()" height="50"/>
+	<s:Button x="228" y="163" label="Insert.execute()" click="this.testMethod()" height="50"/>
+	<s:Button x="372" y="83" label="nextPage()" id="next" click="this.findNext()"/>
 	
 	
 </s:WindowedApplication>

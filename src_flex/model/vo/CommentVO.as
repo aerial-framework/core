@@ -2,13 +2,14 @@ package model.vo
 {
 	import org.aerial.rpc.AbstractVO;
 	import model.vo.*;
-	
+	import mx.collections.ArrayCollection;
+
 	[Bindable]	
 	public class CommentVO extends AbstractVO
 	{		
 		public function CommentVO()
 		{
-			super("model.vo.Comment");
+			super("model.vo.Comment", function(field:String):*{return this[field]});
 		}
 		
 		private var _id:*

@@ -15,11 +15,11 @@
 	
 	define("BACKEND_PATH", realpath(AERIAL_EXTERNAL."/../model"));						// Path to project development backend
 
-	define("FRONTEND_PATH", realpath(AERIAL_EXTERNAL."/../../src_flex"));				// Path to project development fronend
+	define("FRONTEND_PATH", realpath(AERIAL_EXTERNAL."/../../src_flex"));				// Path to project development frontend
 
-	define("EXCEPTIONS", realpath(AERIAL_INTERNAL."/exceptions"));				                // Path to exceptions
 	define("UTILS", realpath(AERIAL_INTERNAL."/utils"));				                // Path to utils
-	define("USE_AUTH", true);															// Use authentication
+
+	define("USE_AUTH", false);															// Use authentication
 	
 	// models & services
 	
@@ -42,23 +42,23 @@
 		define("DB_ENGINE", "mysql");													// Database engine type
 		define("DB_NAME", "aerial_forum");												// Database name
 		define("DB_HOST", "localhost");													// Database host
-		define("DB_USER", "aeriala");													// Database user
-		define("DB_PASSWORD", "secret");												// Database password
+		define("DB_USER", "aerial");															// Database user
+		define("DB_PASSWORD", "secret");														// Database password
 		define("CONNECTION_NAME", "doctrine");
 	
 	}else{
 		define("DB_ENGINE", "mysql");													// Database engine type
 		define("DB_NAME", "aerial_forum");												// Database name
 		define("DB_HOST", "localhost");													// Database host
-		define("DB_USER", "aeriala");													// Database user
-		define("DB_PASSWORD", "secret");                                                // Database password
+		define("DB_USER", "aerial");														// Database user
+		define("DB_PASSWORD", "secret");
 
-	    // Connection name (internal feature)
+        // Database password
 		define("CONNECTION_NAME", "doctrine");
 	}
-
+	
+	// Connection name (internal feature)
+	
 	require_once(AERIAL_BASE_PATH."/Bootstrapper.php");
-
-	xdebug_disable();
 	Bootstrapper::getInstance();
 ?>

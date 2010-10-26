@@ -2,13 +2,14 @@ package model.vo
 {
 	import org.aerial.rpc.AbstractVO;
 	import model.vo.*;
-	
+	import mx.collections.ArrayCollection;
+
 	[Bindable]	
 	public class TopicVO extends AbstractVO
 	{		
 		public function TopicVO()
 		{
-			super("model.vo.Topic");
+			super("model.vo.Topic", function(field:String):*{return this[field]});
 		}
 		
 		private var _id:*
@@ -23,6 +24,7 @@ package model.vo
 		private var _Category:*
 		private var _User:*
 		private var _posts:*
+		private var _topicTags:*
 
 			
 		public function get id():int
@@ -117,14 +119,24 @@ package model.vo
 			_User = value;
 		}
 			
-		public function get posts():Array
+		public function get posts():ArrayCollection
 		{
 			return _posts;
 		}
 		
-		public function set posts(value:Array):void
+		public function set posts(value:ArrayCollection):void
 		{
 			_posts = value;
+		}
+			
+		public function get topicTags():ArrayCollection
+		{
+			return _topicTags;
+		}
+		
+		public function set topicTags(value:ArrayCollection):void
+		{
+			_topicTags = value;
 		}
 		
 	}

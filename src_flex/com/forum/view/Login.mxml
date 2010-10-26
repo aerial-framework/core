@@ -18,7 +18,7 @@
 			private function login(username:String, password:String):void
 			{
                 this.userService.setCredentials("danny", "1234");
-				this.userService.findByFields(["username", "password"],[username, password]);
+				this.userService.findAll({username:username, password:password});
 			}
 			
 			private function result(event:ResultEvent):void
@@ -28,7 +28,7 @@
 				
 				switch(operation){
 					
-					case userService.FIND_BY_FIELDS:
+					case "userService.FIND_BY_FIELDS":
 						
 						var le:LoginEvent = new LoginEvent(LoginEvent.LOGIN_ACTION);
 						
@@ -51,7 +51,7 @@
 				
 				switch(operation)
 				{
-					case userService.FIND_BY_FIELDS:
+					case "userService.findAll":
 						Alert.show("An error occured while attempting to login this user!");
 						break;
 				}	

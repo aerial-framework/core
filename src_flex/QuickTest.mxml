@@ -50,29 +50,9 @@
         {
             var post:PostVO = new PostVO();
             post.title = "My New Posty";
-
-            var user:UserVO = new UserVO();
-            user.username = "rob";
-            user.password = "123456789";
-
-            var topic:TopicVO = new TopicVO();
-            topic.name = "My New Topic";
-            topic.description = "...";
-            topic.User = user;
-
-            post.Topic = topic;
-            post.User = user;
-
-            post.modDate = "2010-10-10 10:10:10";
-
             post.id = 1;
 
-            var tag:TagVO = new TagVO();
-            tag.name = "my other tag";
-
-            post.tags = new ArrayCollection([tag]);
-
-            postService.insert(post).execute();
+            postService.save(post).execute();
             //postService.findRelated("tags", 1).execute();
         }
 

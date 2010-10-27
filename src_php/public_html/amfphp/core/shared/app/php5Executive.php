@@ -125,11 +125,24 @@ class Executive {
 		}
 		catch(Exception $fault)
 		{
-			//When constructing a class, getLine and getFile don't refer to the appropriate thing,
-			//hence this hack
-			$ex = new MessageException(E_USER_ERROR, $fault->getMessage(), $bodyObj->classPath, 'Undetermined line  in constructor', 'AMFPHP_BUILD_ERROR');
+			if(get_class($fault) == "Aerial_Exception")
+			{
+				$code = "AMFPHP_RUNTIME_ERROR";
+				if($fault->getCode() != 0)
+				{
+					$code = $fault->getCode();
+				}
+
+				$ex = new MessageException(E_USER_ERROR, $fault->getMessage(), $fault->getFile(), $fault->getLine(), $code, $fault->debug);
+			}
+			else
+			{
+				//When constructing a class, getLine and getFile don't refer to the appropriate thing,
+				//hence this hack
+				$ex = new MessageException(E_USER_ERROR, $fault->getMessage(), $bodyObj->classPath, 'Undetermined line  in constructor', 'AMFPHP_BUILD_ERROR');
+			}
 			MessageException::throwException($bodyObj, $ex);
-			$construct = '__amfphp_error';
+			$construct = '__amfphp_error';	
 		}
 		
 		return $construct;
@@ -168,7 +181,7 @@ class Executive {
 					$code = $fault->getCode();
 				}
 				
-				$ex = new MessageException(E_USER_ERROR, $fault->getMessage(), $fault->getFile(), $fault->getLine(), $code, $fault->aerialLog);
+				$ex = new MessageException(E_USER_ERROR, $fault->getMessage(), $fault->getFile(), $fault->getLine(), $code, $fault->debug);
 			}
 			$output = '__amfphp_error';
 			MessageException::throwException($bodyObj, $ex);

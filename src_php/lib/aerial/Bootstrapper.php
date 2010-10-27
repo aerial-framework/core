@@ -20,9 +20,6 @@
 
 		private static function init()
 		{
-			xdebug_disable();
-			set_exception_handler(array("Bootstrapper", "exceptionHandler"));
-
 			spl_autoload_register(array('Doctrine', 'autoload'));
 			spl_autoload_register(array('Doctrine_Core', 'modelsAutoload'));
 			spl_autoload_register(array('Aerial', 'autoload'));
@@ -42,7 +39,7 @@
 
 			self::setCustomConnections();
 
-			$connectionString = "aerial-".DB_ENGINE."://".
+			$connectionString = DB_ENGINE."://".
 								DB_USER.":".
 								DB_PASSWORD.
 								"@".DB_HOST."/".
@@ -88,24 +85,17 @@
 		 */
 		private static function setCustomConnections()
 		{
-			self::$_instance->manager->registerConnectionDriver('aerial-sqlite', 'Aerial_Connection');
-			self::$_instance->manager->registerConnectionDriver('aerial-sqlite2', 'Aerial_Connection');
-			self::$_instance->manager->registerConnectionDriver('aerial-sqlite3', 'Aerial_Connection');
-			self::$_instance->manager->registerConnectionDriver('aerial-dblib', 'Aerial_Connection');
-			self::$_instance->manager->registerConnectionDriver('aerial-mysql', 'Aerial_Connection');
-			self::$_instance->manager->registerConnectionDriver('aerial-oci8', 'Aerial_Connection');
-			self::$_instance->manager->registerConnectionDriver('aerial-oci', 'Aerial_Connection');
-			self::$_instance->manager->registerConnectionDriver('aerial-pgsql', 'Aerial_Connection');
-			self::$_instance->manager->registerConnectionDriver('aerial-odbc', 'Aerial_Connection');
-			self::$_instance->manager->registerConnectionDriver('aerial-mock', 'Aerial_Connection');
-			self::$_instance->manager->registerConnectionDriver('aerial-oracle', 'Aerial_Connection');
-		}
-
-		public static function exceptionHandler(Exception $ex)
-		{
-			trigger_error($ex->getMessage());
-			//die(get_class($ex));
-
+			self::$_instance->manager->registerConnectionDriver('sqlite', 'Aerial_Connection');
+			self::$_instance->manager->registerConnectionDriver('sqlite2', 'Aerial_Connection');
+			self::$_instance->manager->registerConnectionDriver('sqlite3', 'Aerial_Connection');
+			self::$_instance->manager->registerConnectionDriver('dblib', 'Aerial_Connection');
+			self::$_instance->manager->registerConnectionDriver('mysql', 'Aerial_Connection');
+			self::$_instance->manager->registerConnectionDriver('oci8', 'Aerial_Connection');
+			self::$_instance->manager->registerConnectionDriver('oci', 'Aerial_Connection');
+			self::$_instance->manager->registerConnectionDriver('pgsql', 'Aerial_Connection');
+			self::$_instance->manager->registerConnectionDriver('odbc', 'Aerial_Connection');
+			self::$_instance->manager->registerConnectionDriver('mock', 'Aerial_Connection');
+			self::$_instance->manager->registerConnectionDriver('oracle', 'Aerial_Connection');
 		}
 	}
 ?>

@@ -5,7 +5,7 @@ package org.aerial.rpc.messages
     [RemoteClass(alias="flex.messaging.messages.AerialErrorMessage")]
     public class AerialErrorMessage extends ErrorMessage
     {
-        public var aerialLog:String;
+        public var debug:Object;
 
         public function AerialErrorMessage()
         {

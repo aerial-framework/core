@@ -4,15 +4,15 @@
         const CONNECTION = "Error connecting to database";
 	    const UNKNOWN = "Unknown exception";
 
-		public $aerialLog;
+		public $debug;
 
-	    public function __construct($message, Exception $ex=null)
+	    public function __construct($message, $debug=null, Exception $ex=null)
 	    {
 			$this->message = $message ? $message : self::UNKNOWN;
 			$this->code = ($ex ? $ex->getCode() : 0);
 
 			if(!PRODUCTION_MODE)
-				$this->aerialLog = "Hello from AMFPHP error handling!";
+				$this->debug = $debug;
 	    }
     }
 ?>

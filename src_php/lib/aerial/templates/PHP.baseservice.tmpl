@@ -8,6 +8,11 @@
 		public function __construct()
 		{
 			$this->connection = Doctrine_Manager::connection();
+			
+			// try connect when create so that any connection errors can be detected early
+			if(!$this->connection->isConnected())
+				$this->connection->connect();
+
 			$this->table = $this->connection->getTable($this->modelName);
 		}
 

@@ -45,7 +45,7 @@
 		define("DB_ENGINE", "mysql");													// Database engine type
 		define("DB_NAME", "aerial_forum");												// Database name
 		define("DB_HOST", "localhost");													// Database host
-		define("DB_USER", "aeriala");													// Database user
+		define("DB_USER", "aerial");													// Database user
 		define("DB_PASSWORD", "secret");												// Database password
 		define("CONNECTION_NAME", "doctrine");
 	
@@ -55,7 +55,7 @@
 		define("DB_ENGINE", "mysql");													// Database engine type
 		define("DB_NAME", "aerial_forum");												// Database name
 		define("DB_HOST", "localhost");													// Database host
-		define("DB_USER", "aeriala");													// Database user
+		define("DB_USER", "aerial");													// Database user
 		define("DB_PASSWORD", "secret");												// Database password
 		define("CONNECTION_NAME", "doctrine");											// Connection name (internal feature)
 	}

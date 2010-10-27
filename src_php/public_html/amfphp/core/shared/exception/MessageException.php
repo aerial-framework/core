@@ -32,13 +32,14 @@ class MessageException {
 	 * @param string $file The file name that the error occured
 	 * @param int $line The line number where the error was detected
 	 */
-	function MessageException ($code, $description, $file, $line, $detailCode = 'AMFPHP_RUNTIME_ERROR', $aerialLog=null) {
+	function MessageException ($code, $description, $file, $line, $detailCode = 'AMFPHP_RUNTIME_ERROR', $debug=null) {
 		$this->code = $detailCode;
 		$this->description = $description; // pass the description    
 		$this->details = $file; // pass the details
 		$this->level = MessageException::getFriendlyError($code); 
 		$this->line = $line; // pass the line number
-		$this->aerialLog = $aerialLog;
+		if(!PRODUCTION_MODE)
+			$this->debug = $debug;
 	}
 	
 	/**
@@ -69,7 +70,7 @@ class MessageException {
 			$results->faultDetail = $exception->details . ' on line ' . $exception->line;
 			$results->faultString = $exception->description;
 			if(!PRODUCTION_MODE)
-				$results->aerialLog = $exception->aerialLog;
+				$results->debug = $exception->debug;
 		}
 		elseif($GLOBALS['amfphp']['encoding'] == 'amf0')
 		{

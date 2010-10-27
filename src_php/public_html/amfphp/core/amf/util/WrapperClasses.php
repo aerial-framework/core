@@ -91,7 +91,7 @@ class AerialErrorMessage
 	var $faultCode;
 	var $faultDetail;
 	var $faultString;
-	var $aerialLog;
+	var $debug;
 }
 
 final class undefined

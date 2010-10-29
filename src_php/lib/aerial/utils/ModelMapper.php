@@ -25,7 +25,7 @@
 			// now assign properties
 			foreach($data as $key => $value)
 			{
-				if(is_undefined($value))
+				if(is_undefined($value) || $key == "_nulled")
 					continue;
 
 				$found = false;
@@ -54,6 +54,15 @@
 					else
 						$instance[$alias] = self::mapToModel($relation->getClass(), $data[$alias], true);
 				}
+			}
+
+			// check if any keys have been set to null
+			if($data["_nulled"])
+			{
+				foreach($data["_nulled"] as $property)
+					$instance[$property] = null;
+
+				unset($data["_nulled"]);
 			}
 
 			return self::checkLookup($instance);

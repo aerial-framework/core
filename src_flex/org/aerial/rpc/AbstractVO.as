@@ -1,17 +1,21 @@
 package org.aerial.rpc
 {
 	import flash.net.registerClassAlias;
-	import flash.utils.IDataInput;
-	import flash.utils.IDataOutput;
-	import flash.utils.IExternalizable;
+    import flash.utils.IDataInput;
+    import flash.utils.IDataOutput;
+    import flash.utils.IExternalizable;
 	import flash.utils.describeType;
 	import flash.utils.getDefinitionByName;
 	import flash.utils.getQualifiedClassName;
-	
-	
-	public class AbstractVO implements IExternalizable
+
+    import org.aerial.type.AerialUndefined;
+
+
+    public class AbstractVO implements IExternalizable
 	{
 		private var getPrivateProperty:Function;
+
+        private var _nulled:Array = [];
 		
 		public function AbstractVO(aliasName:String, getProp:Function)
 		{
@@ -20,7 +24,8 @@ package org.aerial.rpc
 			var voType:String = getQualifiedClassName(this).replace("::",".");
 			var voClass:Class = getDefinitionByName(voType) as Class;
 			
-			registerClassAlias(aliasName, voClass); 
+			registerClassAlias(aliasName, voClass);
+            _nulled = [];
 		}
 		
 		public function isUndefined(property:String):Boolean
@@ -32,6 +37,27 @@ package org.aerial.rpc
 			}
 			return isUndef;
 		}
+
+        public function setNull(property:String):void
+        {
+            if(!this.hasOwnProperty(property))
+            {
+                var voType:String = getQualifiedClassName(this).replace("::",".");
+			    var voClass:Class = getDefinitionByName(voType) as Class;
+                throw new ArgumentError("No such property [" + property + "] in " + voClass);
+            }
+
+            _nulled.push(property);
+        }
+
+        public function clean(value:*):*
+        {
+            var defaultValue:* = AerialUndefined;
+            //return value == defaultValue ? undefined : value;
+
+            trace(defaultValue + " > " + value + " > " + (defaultValue == value));
+            return (defaultValue == value) ? undefined : value;
+        }
 		
 		public function readExternal(input:IDataInput):void
 		{	
@@ -57,7 +83,9 @@ package org.aerial.rpc
 				}
 				voOutput[propName] = propValue;				
 			}
-			
+
+            if(_nulled.length > 0)
+                voOutput["_nulled"] = _nulled;
 			output.writeObject(voOutput);
 		}
 	}

@@ -229,7 +229,7 @@
 					$type = $property["type"];
 
 					//Create Private Vars
-					$privateVars .= "\t\t" . "private var _$field:*\n";
+					$privateVars .= "\t\t" . "private var _$field:*;\n";
 
 					//Create Accessors
 					$a_stub = "\n\t\t\t" . $accessorStub;
@@ -249,7 +249,7 @@
 					$type = $relation["type"] == "one" ? $relation["table"].VO_SUFFIX : $collectionType;
 
 					//Create Private Vars
-					$privateVars .= "\t\t" . "private var _$field:*\n";
+					$privateVars .= "\t\t" . "private var _$field:*;\n";
 
 					//Create Accessors
 					$a_stub = "\n\t\t\t" . $accessorStub;
@@ -261,7 +261,7 @@
 					
 				//Create the VO file
 				foreach($replacementTokens as $token)
-				$contents = str_replace("{{".$token."}}", $$token, $contents);
+					$contents = str_replace("{{".$token."}}", $$token, $contents);
 					
 				ActionScriptGenerator::writeFile(FRONTEND_MODELS_PATH . "/$class.as", $contents);
 			}

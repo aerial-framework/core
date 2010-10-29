@@ -86,6 +86,7 @@ package org.aerial.rpc
 
             if(_nulled.length > 0)
                 voOutput["_nulled"] = _nulled;
+            
 			output.writeObject(voOutput);
 		}
 	}

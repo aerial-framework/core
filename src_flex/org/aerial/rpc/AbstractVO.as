@@ -28,10 +28,6 @@ package org.aerial.rpc
             //_nulled = [];
 		}
 		
-		protected function setter(field:String, value:*):*{
-			this[field]=value
-		}
-		
 		public function isUndefined(property:String):Boolean
 		{
 			try{

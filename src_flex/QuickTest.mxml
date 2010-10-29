@@ -51,8 +51,15 @@
             var post:PostVO = new PostVO();
             post.title = "My New Posty";
             post.id = 1;
+			
+			post.setNull("message");
+			trace(post.message);
 
-            postService.save(post).execute();
+			post.setNull("userId");
+			trace(post.userId);  // 0
+			trace(post.isNull("userId")); // true
+			
+           postService.save(post).execute();
             //postService.findRelated("tags", 1).execute();
         }
 

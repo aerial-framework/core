@@ -1,9 +1,9 @@
 package org.aerial.rpc
 {
 	import flash.net.registerClassAlias;
-    import flash.utils.IDataInput;
-    import flash.utils.IDataOutput;
-    import flash.utils.IExternalizable;
+	import flash.utils.IDataInput;
+	import flash.utils.IDataOutput;
+	import flash.utils.IExternalizable;
 	import flash.utils.describeType;
 	import flash.utils.getDefinitionByName;
 	import flash.utils.getQualifiedClassName;
@@ -12,18 +12,24 @@ package org.aerial.rpc
     public class AbstractVO implements IExternalizable
 	{
 		private var getPrivateProperty:Function;
+		private var setPrivateProperty:Function;
 
-        private var _nulled:Array = [];
+       //private var _nulled:Array = [];
 		
-		public function AbstractVO(aliasName:String, getProp:Function)
+		public function AbstractVO(aliasName:String, getProp:Function, setProp:Function)
 		{
 			getPrivateProperty = getProp;
+			setPrivateProperty = setProp;
 			
 			var voType:String = getQualifiedClassName(this).replace("::",".");
 			var voClass:Class = getDefinitionByName(voType) as Class;
 			
 			registerClassAlias(aliasName, voClass);
-            _nulled = [];
+            //_nulled = [];
+		}
+		
+		protected function setter(field:String, value:*):*{
+			this[field]=value
 		}
 		
 		public function isUndefined(property:String):Boolean
@@ -35,17 +41,29 @@ package org.aerial.rpc
 			}
 			return isUndef;
 		}
+		
+		public function isNull(property:String):Boolean
+		{
+			try{
+				var _isNull:Boolean = (getPrivateProperty("_" + property) === null);
+			}catch(e:ReferenceError){
+				throw e;
+			}
+			return _isNull;
+		}
 
         public function setNull(property:String):void
         {
-            if(!this.hasOwnProperty(property))
+			if(!this.hasOwnProperty(property))
             {
                 var voType:String = getQualifiedClassName(this).replace("::",".");
 			    var voClass:Class = getDefinitionByName(voType) as Class;
                 throw new ArgumentError("No such property [" + property + "] in " + voClass);
             }
+			
+			setPrivateProperty("_" + property, null);
 
-            _nulled.push(property);
+           // _nulled.push(property);
         }
 		
 		public function readExternal(input:IDataInput):void
@@ -73,8 +91,8 @@ package org.aerial.rpc
 				voOutput[propName] = propValue;				
 			}
 
-            if(_nulled.length > 0)
-                voOutput["_nulled"] = _nulled;
+           // if(_nulled.length > 0)
+             //   voOutput["_nulled"] = _nulled;
             
 			output.writeObject(voOutput);
 		}

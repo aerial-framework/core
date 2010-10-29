@@ -8,8 +8,6 @@ package org.aerial.rpc
 	import flash.utils.getDefinitionByName;
 	import flash.utils.getQualifiedClassName;
 
-    import org.aerial.type.AerialUndefined;
-
 
     public class AbstractVO implements IExternalizable
 	{
@@ -48,15 +46,6 @@ package org.aerial.rpc
             }
 
             _nulled.push(property);
-        }
-
-        public function clean(value:*):*
-        {
-            var defaultValue:* = AerialUndefined;
-            //return value == defaultValue ? undefined : value;
-
-            trace(defaultValue + " > " + value + " > " + (defaultValue == value));
-            return (defaultValue == value) ? undefined : value;
         }
 		
 		public function readExternal(input:IDataInput):void

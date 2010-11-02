@@ -95,10 +95,9 @@ abstract class BasePost extends Aerial_Record
              'local' => 'id',
              'foreign' => 'postId'));
 
-        $this->hasMany('Tag as tags', array(
-             'local' => 'postId',
-			 'refClass' => 'PostTag',
-             'foreign' => 'tagId'));
+        $this->hasMany('PostTag as postTags', array(
+             'local' => 'id',
+             'foreign' => 'postId'));
     }
 
     public function construct()

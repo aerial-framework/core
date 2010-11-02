@@ -36,13 +36,6 @@
         public function init():void
         {
             WindowStuff();
-
-            //Registering remote aliases to bypass errors for testing purposes.
-            registerClassAlias("model.vo.User", UserVO);
-            registerClassAlias("model.vo.Category", CategoryVO);
-            registerClassAlias("model.vo.Topic", TopicVO);
-            registerClassAlias("model.vo.Post", PostVO);
-            registerClassAlias("model.vo.Coment", CommentVO);
         }
 
 
@@ -50,16 +43,22 @@
         {
             var post:PostVO = new PostVO();
             post.title = "My New Posty";
-            post.id = 1;
-			
 			post.setNull("message");
-			trace(post.message);
-
 			post.setNull("userId");
-			trace(post.userId);  // 0
-			trace(post.isNull("userId")); // true
+
+            var user:UserVO = new UserVO();
+            user.username = "danny";
+            user.password = "12345";
+
+            var topic:TopicVO = new TopicVO();
+            topic.name = "topic";
+
+            post.Topic = topic;
+
+            topic.User = user;
+            post.User = user;
 			
-           postService.save(post).execute();
+            postService.save(post).execute();
             //postService.findRelated("tags", 1).execute();
         }
 

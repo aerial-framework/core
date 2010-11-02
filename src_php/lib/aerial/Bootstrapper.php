@@ -39,12 +39,24 @@
 
 			self::setCustomConnections();
 
-			$connectionString = DB_ENGINE."://".
+			if(PRODUCTION_MODE)
+			{
+				$connectionString = PROD_DB_ENGINE."://".
+								PROD_DB_USER.":".
+								PROD_DB_PASSWORD.
+								"@".PROD_DB_HOST."/".
+								PROD_DB_NAME;
+			}
+			else
+			{
+				$connectionString = DB_ENGINE."://".
 								DB_USER.":".
 								DB_PASSWORD.
 								"@".DB_HOST."/".
 								DB_NAME;
-			self::$_instance->conn = Doctrine_Manager::connection($connectionString, CONNECTION_NAME);
+			}								
+								
+			self::$_instance->conn = Doctrine_Manager::connection($connectionString, PRODUCTION_MODE ? PROD_CONNECTION_NAME : CONNECTION_NAME);
 			
 			if(!file_exists(BACKEND_MODELS_PATH))					// if the folder does not exist, create it to avoid errors!
 				mkdir(BACKEND_MODELS_PATH, AERIAL_DIR_CHMOD);

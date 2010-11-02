@@ -7,7 +7,7 @@ package com.forum.config
 		
 		public function get AMF_GATEWAY():String
 		{
-			return "http://aerial-test/amfphp/gateway.php";
+			return "http://aerial-test/server.php";
 		}
 		
 		

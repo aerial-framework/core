@@ -1,8 +1,4 @@
 <?php
-	
-	//Aerial Config
-	require_once(dirname(__FILE__)."../../../lib/aerial/config.php");
-
 	//Set start time before loading framework
 	list($usec, $sec) = explode(" ", microtime());
 	$amfphp['startTime'] = ((float)$usec + (float)$sec);

@@ -19,12 +19,6 @@
  */
 
 /**
- * AMFPHP_BASE is the location of the flashservices folder in the files system.  
- * It is used as the absolute path to load all other required system classes.
- */
-define("AMFPHP_BASE", realpath(dirname(dirname(dirname(__FILE__)))) . "/");
-
-/**
  * required classes for the application
  */
 require_once(AMFPHP_BASE . "shared/app/Constants.php");

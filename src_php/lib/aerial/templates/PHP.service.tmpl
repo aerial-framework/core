@@ -4,4 +4,11 @@
 	class {{class}} extends Base{{class}}
 	{
 	}
+
+	require_once(AERIAL_BASE_PATH."/service/AbstractService.php");
+
+	class {{class}}Service extends AbstractService
+	{
+		public $modelName = "{{class}}";
+	}
 ?>

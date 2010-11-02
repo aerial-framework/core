@@ -2,9 +2,9 @@
 <development>
     <!-- paths -->
     <AERIAL_BASE_PATH>C:\UniServer\www\open-source\aerial-test\src_php\lib\aerial</AERIAL_BASE_PATH>
-    <AERIAL_DIR_CHMOD>511</AERIAL_DIR_CHMOD>
+    <AERIAL_DIR_CHMOD>0777</AERIAL_DIR_CHMOD>
     <AERIAL_EXTERNAL>C:\UniServer\www\open-source\aerial-test\src_php\lib</AERIAL_EXTERNAL>
-    <AERIAL_FILE_CHMOD>436</AERIAL_FILE_CHMOD>
+    <AERIAL_FILE_CHMOD>0664</AERIAL_FILE_CHMOD>
     <AERIAL_INTERNAL>C:\UniServer\www\open-source\aerial-test\src_php\lib\aerial</AERIAL_INTERNAL>
     <AMFPHP_BASE>C:\UniServer\www\open-source\aerial-test\src_php\public_html\amfphp\core/</AMFPHP_BASE>
     <AMFPHP_PATH>C:\UniServer\www\open-source\aerial-test\src_php\public_html\amfphp</AMFPHP_PATH>

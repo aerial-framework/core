@@ -4,7 +4,7 @@
 
 	$_configPath = realpath(__DIR__."/config");
 	$_config = simplexml_load_file($_configPath."/config.xml");
-	$_config_alt = simplexml_load_file($_configPath."/config-alt.xml");
+	$_config_alt = @simplexml_load_file($_configPath."/config-alt.xml");
 
 	// Get the base path
 	$_base = $_config->xpath("paths/project");

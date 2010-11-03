@@ -1,50 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
-<development>
-    <!-- paths -->
-    <AERIAL_BASE_PATH>C:\UniServer\www\open-source\aerial-test\src_php\lib\aerial</AERIAL_BASE_PATH>
-    <AERIAL_DIR_CHMOD>0777</AERIAL_DIR_CHMOD>
-    <AERIAL_EXTERNAL>C:\UniServer\www\open-source\aerial-test\src_php\lib</AERIAL_EXTERNAL>
-    <AERIAL_FILE_CHMOD>0664</AERIAL_FILE_CHMOD>
-    <AERIAL_INTERNAL>C:\UniServer\www\open-source\aerial-test\src_php\lib\aerial</AERIAL_INTERNAL>
-    <AMFPHP_BASE>C:\UniServer\www\open-source\aerial-test\src_php\public_html\amfphp\core/</AMFPHP_BASE>
-    <AMFPHP_PATH>C:\UniServer\www\open-source\aerial-test\src_php\public_html\amfphp</AMFPHP_PATH>
-    <BACKEND_MODELS_PATH>C:\UniServer\www\open-source\aerial-test\src_php\model/vo</BACKEND_MODELS_PATH>
-    <BACKEND_PATH>C:\UniServer\www\open-source\aerial-test\src_php\model</BACKEND_PATH>
-    <BACKEND_SERVICES_PATH>C:\UniServer\www\open-source\aerial-test\src_php\model\services</BACKEND_SERVICES_PATH>
-    <DOCTRINE_PATH>C:\UniServer\www\open-source\aerial-test\src_php\lib\doctrine</DOCTRINE_PATH>
-    <INTERNAL_SERVICES_PATH>C:\UniServer\www\open-source\aerial-test\src_php\lib\services</INTERNAL_SERVICES_PATH>
-    <UTILS>C:\UniServer\www\open-source\aerial-test\src_php\lib\aerial\utils</UTILS>
-    <EXCEPTIONS>C:\UniServer\www\open-source\aerial-test\src_php\lib\aerial\exceptions</EXCEPTIONS>
-    <FRONTEND_CONFIG_CLASS>com.forum.config.Config</FRONTEND_CONFIG_CLASS>
-    <FRONTEND_MODELS_PACKAGE>model.vo</FRONTEND_MODELS_PACKAGE>
-    <FRONTEND_MODELS_PATH>C:\UniServer\www\open-source\aerial-test\src_flex\model\vo</FRONTEND_MODELS_PATH>
-    <FRONTEND_PATH>C:\UniServer\www\open-source\aerial-test\src_flex</FRONTEND_PATH>
-    <FRONTEND_SERVICES_PACKAGE>model.services</FRONTEND_SERVICES_PACKAGE>
-    <FRONTEND_SERVICES_PATH>C:\UniServer\www\open-source\aerial-test\src_flex\model\services</FRONTEND_SERVICES_PATH>
+<config>
+    <debug-mode>true</debug-mode>
 
-    <!-- Data Options -->
-    <AMFPHP_USE_ARRAYCOLLECTION>true</AMFPHP_USE_ARRAYCOLLECTION>
-    <USE_AUTH>false</USE_AUTH>
+    <paths>
+        <project>C:/UniServer/www/open-source/aerial-test</project>
+        <aerial>src_php/lib/aerial</aerial>
+        <amfphp>src_php/public_html/amfphp/core</amfphp>
+        <doctrine>src_php/lib/doctrine</doctrine>
+        <internal-services>src_php/lib/services</internal-services>
+    </paths>
 
-    <!-- Server Details -->
-    <GATEWAY_URL>http://aerial-test/server.php</GATEWAY_URL>
+    <!-- package structure to be concatenated when used, e.g. org.aerial.vo or org.aerial.services -->
+    <code-generation>
+        <php>src_php/model</php>
+        <as3>src_flex</as3>
+    </code-generation>
 
-    <!-- Development Connection Details -->
-    <CONNECTION_NAME>doctrine</CONNECTION_NAME>
-    <DB_ENGINE>mysql</DB_ENGINE>
-    <DB_HOST>localhost</DB_HOST>
-    <DB_NAME>aerial_forum</DB_NAME>
-    <DB_PASSWORD>secret</DB_PASSWORD>
-    <DB_USER>aerial</DB_USER>
+    <options>
+        <directory-mode>0666</directory-mode>
+        <file-mode>0664</file-mode>
+        <use-arraycollection>true</use-arraycollection>
+        <use-authentication>false</use-authentication>
 
-    <!-- Production Connection Details -->
-    <PROD_CONNECTION_NAME>doctrine</PROD_CONNECTION_NAME>
-    <PROD_DB_ENGINE>mysql</PROD_DB_ENGINE>
-    <PROD_DB_HOST>localhost</PROD_DB_HOST>
-    <PROD_DB_NAME>aerial_forum</PROD_DB_NAME>
-    <PROD_DB_PASSWORD>secret</PROD_DB_PASSWORD>
-    <PROD_DB_USER>aerial</PROD_DB_USER>
+        <package>org.aerial</package>
+        <models-folder>vo</models-folder>
+        <services-folder>services</services-folder>
 
-    <!-- Development/Production Switch -->
-    <PRODUCTION_MODE>false</PRODUCTION_MODE>
-</development>
+        <vo>VO</vo>
+        <service>Service</service>
+    </options>
+
+    <server-url>http://aerial-test/server.php</server-url>
+
+    <database use="development">
+        <development>
+            <engine>mysql</engine>
+            <host>localhost</host>
+            <database>aerial_forum</database>
+            <username>aerial</username>
+            <password>secret</password>
+        </development>
+
+        <production>
+            <engine>mysql</engine>
+            <host>localhost</host>
+            <database>aerial_forum</database>
+            <username>aerial</username>
+            <password>secret</password>
+        </production>
+    </database>
+</config>

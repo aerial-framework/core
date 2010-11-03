@@ -1,9 +1,8 @@
 <?php
-	require_once(DOCTRINE_PATH.'/Doctrine.php');
-	require_once(AMFPHP_PATH.'/globals.php');
-	require_once("config/Authentication.php");
-	require_once(DOCTRINE_PATH.'/Aerial.php');
-	require_once(UTILS."/ModelMapper.php");
+	require_once(conf("paths/doctrine").'Doctrine.php');
+	require_once(conf("paths/aerial")."config/Authentication.php");
+	require_once(conf("paths/doctrine").'Aerial.php');
+	require_once(conf("paths/aerial")."utils/ModelMapper.php");
 
 	class Bootstrapper
 	{
@@ -24,8 +23,8 @@
 			spl_autoload_register(array('Doctrine_Core', 'modelsAutoload'));
 			spl_autoload_register(array('Aerial', 'autoload'));
 
-			require_once(DOCTRINE_PATH.'/Aerial/Connection/Aerial_Connection.php');
-			require_once(EXCEPTIONS."/Aerial_Exception.php");
+			require_once(conf("paths/doctrine").'Aerial/Connection/Aerial_Connection.php');
+			require_once(conf("paths/aerial")."exceptions/Aerial_Exception.php");
 			
 			self::$_instance->manager = Doctrine_Manager::getInstance();
 			
@@ -35,37 +34,31 @@
 			self::$_instance->manager->setAttribute(Doctrine_Core::ATTR_MODEL_LOADING, Doctrine_Core::MODEL_LOADING_CONSERVATIVE);
 			self::$_instance->manager->setAttribute(Doctrine_Core::ATTR_AUTO_ACCESSOR_OVERRIDE, true);
 			self::$_instance->manager->setAttribute(Doctrine_Core::ATTR_AUTOLOAD_TABLE_CLASSES, true);
-			require_once(DOCTRINE_PATH."/Aerial/Record/Aerial_Record.php");
+			require_once(conf("paths/doctrine")."Aerial/Record/Aerial_Record.php");
 
 			self::setCustomConnections();
 
-			if(PRODUCTION_MODE)
-			{
-				$connectionString = PROD_DB_ENGINE."://".
-								PROD_DB_USER.":".
-								PROD_DB_PASSWORD.
-								"@".PROD_DB_HOST."/".
-								PROD_DB_NAME;
-			}
-			else
-			{
-				$connectionString = DB_ENGINE."://".
-								DB_USER.":".
-								DB_PASSWORD.
-								"@".DB_HOST."/".
-								DB_NAME;
-			}								
+			$connectionString = conf("database", false, false, "engine")."://".
+							conf("database", false, false, "username").":".
+							conf("database", false, false, "password").
+							"@".conf("database", false, false, "host")."/".
+							conf("database", false, false, "database");
 								
-			self::$_instance->conn = Doctrine_Manager::connection($connectionString, PRODUCTION_MODE ? PROD_CONNECTION_NAME : CONNECTION_NAME);
+			self::$_instance->conn = Doctrine_Manager::connection($connectionString, "doctrine");
+
+			$php_path = conf("code-generation/php");
+			$package = conf("options/package");
+			$php_path .= implode("/", explode(".", $package))."/";
+			$models_path = $php_path.conf("options/models-folder");
+
+			if(!file_exists($models_path))					// if the folder does not exist, create it to avoid errors!
+				mkdir($models_path, conf("options/directory-mode", false));
 			
-			if(!file_exists(BACKEND_MODELS_PATH))					// if the folder does not exist, create it to avoid errors!
-				mkdir(BACKEND_MODELS_PATH, AERIAL_DIR_CHMOD);
-			
-			Doctrine_Core::loadModels(BACKEND_MODELS_PATH);
+			Doctrine_Core::loadModels($models_path);
 			
 			Authentication::getInstance();
 
-			require_once(dirname(__FILE__)."/../services/core/aerial/Configuration.php");
+			require_once(__DIR__."/../services/core/aerial/Configuration.php");
 		}
 		
 		public static function setCredentials($username, $password)

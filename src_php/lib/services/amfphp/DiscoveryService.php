@@ -1,5 +1,5 @@
 <?php
-	include_once(AMFPHP_PATH."/core/shared/util/MethodTable.php");
+	include_once(AMFPHP_BASE."/shared/util/MethodTable.php");
 
 	/**
 	 * A built-in amfphp service that allows introspection into services and their methods.
@@ -7,13 +7,24 @@
 	 */
 	class DiscoveryService
 	{
+		private $services_path;
+
+		public function __construct()
+		{
+			$php_path = conf("code-generation/php");
+			$package = conf("options/package", false);
+			$php_path .= implode("/", explode(".", $package))."/";
+			$this->services_path = $php_path.conf("options/services-folder", true, false);
+		}
+
 		/**
 		 * Get the list of services
 		 * @returns An array of array ready to be bound to a Tree
 		 */
 		function getServices()
 		{
-			$paths = array("Aerial Services" => INTERNAL_SERVICES_PATH, "User-defined Services" => BACKEND_SERVICES_PATH);
+			$paths = array("Aerial Services" => conf("paths/internal-services", true, false),
+							"User-defined Services" => $this->services_path);
 			$temp = array();
 	
 			// build deep array of services
@@ -25,6 +36,7 @@
 					
 				foreach($r as $name => $file)
 				{
+					//echo $file.":".$path."\n";
 					$folder = substr($name, strlen($path) + 1);
 					if(strpos($folder, ".svn") !== false)
 						continue;
@@ -77,14 +89,14 @@
 					$absolute = substr($value, 0, strrpos($value, DIRECTORY_SEPARATOR) + 1);
 					$file = substr($value, strlen($absolute));
 					
-					if(substr($absolute, 0, strlen(INTERNAL_SERVICES_PATH)) == INTERNAL_SERVICES_PATH)
+					if(substr($absolute, 0, strlen(conf("paths/internal-services"))) == conf("paths/internal-services"))
 					{
-						$sub = substr($absolute, 0, strlen(INTERNAL_SERVICES_PATH));  
+						$sub = substr($absolute, 0, strlen(conf("paths/internal-services")));
 						$base = substr($absolute, strlen($sub) + 1);
 					}
-					else if(substr($absolute, 0, strlen(BACKEND_SERVICES_PATH)) == BACKEND_SERVICES_PATH)
+					else if(substr($absolute, 0, strlen($this->services_path)) == $this->services_path)
 					{
-						$sub = substr($absolute, 0, strlen(BACKEND_SERVICES_PATH));  
+						$sub = substr($absolute, 0, strlen($this->services_path));  
 						$base = substr($absolute, strlen($sub) + 1);
 					}
 					
@@ -109,11 +121,11 @@
 			$folder = $data['folder'];
 			
 			$path = $folder.$className.".php";
-//			if(realpath(INTERNAL_SERVICES_PATH."/".$folder.$className.".php"))
-//				$path = realpath(INTERNAL_SERVICES_PATH."/".$folder.$className.".php");
+//			if(realpath(conf("paths/internal-services")."/".$folder.$className.".php"))
+//				$path = realpath(conf("paths/internal-services")."/".$folder.$className.".php");
 //				
-//			if(realpath(BACKEND_SERVICES_PATH."/".$folder.$className.".php"))
-//				$path = realpath(BACKEND_SERVICES_PATH."/".$folder.$className.".php");
+//			if(realpath($this->services_path."/".$folder.$className.".php"))
+//				$path = realpath($this->services_path."/".$folder.$className.".php");
 
 			//die($folder.$className);
 			$methodTable = MethodTable::create($path, NULL, $classComment);

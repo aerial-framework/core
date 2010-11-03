@@ -727,7 +727,7 @@ class AMFSerializer extends AMFBaseSerializer {
 			// Fix for PHP5 overriden ArrayAccess and ArrayObjects with an explcit type
 			elseif( (is_a($d, 'ArrayAccess') || is_a($d, 'ArrayObject')) && !isset($d->_explicitType))
 			{
-				$this->writeAmf3Array($d, AMFPHP_USE_ARRAYCOLLECTION);
+				$this->writeAmf3Array($d, conf("options/use-arraycollection", false));
 				return;
 			}
 			else
@@ -1075,7 +1075,7 @@ class AMFSerializer extends AMFBaseSerializer {
 				$this->writeAmf3String($key);
 				
 				if($key == "body")
-					$this->writeAmf3Data($val, ($package == FRONTEND_MODELS_PACKAGE) ? AMFPHP_USE_ARRAYCOLLECTION : false);
+					$this->writeAmf3Data($val, ($package == $this->models_path) ? conf("options/use-arraycollection", false) : false);
 				else
 				$this->writeAmf3Data($val);
 			}

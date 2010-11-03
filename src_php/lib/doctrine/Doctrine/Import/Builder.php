@@ -1,6 +1,6 @@
 <?php
 /*
- *  $Id: Builder.php 6820 2009-11-30 17:27:49Z jwage $
+ *  $Id$
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -30,7 +30,7 @@
  * @link        www.phpdoctrine.org
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @since       1.0
- * @version     $Revision: 6820 $
+ * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @author      Jukka Hassinen <Jukka.Hassinen@BrainAlliance.com>
  * @author      Nicolas Bérard-Nault <nicobn@php.net>
@@ -122,11 +122,11 @@ class Doctrine_Import_Builder extends Doctrine_Builder
      */
     protected $_classPrefix = null;
 
-    /** 
-     * Whether to use the class prefix for the filenames too 
-     * 
-     * @var boolean 
-     **/ 
+    /**
+     * Whether to use the class prefix for the filenames too
+     *
+     * @var boolean
+     **/
     protected $_classPrefixFiles = true;
 
     /**
@@ -392,7 +392,7 @@ class Doctrine_Import_Builder extends Doctrine_Builder
             foreach ($definition['relations'] as $name => $relation) {
                 $class = isset($relation['class']) ? $relation['class']:$name;
                 $alias = (isset($relation['alias']) && $relation['alias'] !== $this->_classPrefix . $relation['class']) ? ' as ' . $relation['alias'] : '';
-				
+
                 if ( ! isset($relation['type'])) {
                     $relation['type'] = Doctrine_Relation::ONE;
                 }
@@ -408,11 +408,11 @@ class Doctrine_Import_Builder extends Doctrine_Builder
                 if (isset($relation['refClass'])) {
                     $a[] = '\'refClass\' => ' . $this->varExport($relation['refClass']);
                 }
-                
+
                 if (isset($relation['refClassRelationAlias'])) {
                     $a[] = '\'refClassRelationAlias\' => ' . $this->varExport($relation['refClassRelationAlias']);
                 }
-                
+
                 if (isset($relation['deferred']) && $relation['deferred']) {
                     $a[] = '\'default\' => ' . $this->varExport($relation['deferred']);
                 }
@@ -499,21 +499,6 @@ class Doctrine_Import_Builder extends Doctrine_Builder
         }
         return $build;
     }
-
-	/**
-	 * Build php code for AMFPHP class mapping
-	 *
-	 * @param array $mapping
-	 * @return string $build
-	 */
-	public function buildClassMapping($definition)
-	{
-		if(!isset($definition['mapClass']) || empty($definition['mapClass']))
-			return;
-
-        $build = "\$this->mapValue('_explicitType', '".$definition['mapClass']."');" . PHP_EOL;
-		return '    public function construct()' . PHP_EOL . '    {' . PHP_EOL . '        ' . $build . '    }';
-	}
 
     /**
      * buildColumns
@@ -661,7 +646,7 @@ class Doctrine_Import_Builder extends Doctrine_Builder
         $ret[] = '@package    ' . $this->_phpDocPackage;
         $ret[] = '@subpackage ' . $this->_phpDocSubpackage;
         $ret[] = '@author     ' . $this->_phpDocName . ' <' . $this->_phpDocEmail . '>';
-        $ret[] = '@version    SVN: $Id: Builder.php 6820 2009-11-30 17:27:49Z jwage $';
+        $ret[] = '@version    SVN: $Id$';
 
         $ret = ' * ' . implode(PHP_EOL . ' * ', $ret);
         $ret = ' ' . trim($ret);
@@ -760,17 +745,17 @@ class Doctrine_Import_Builder extends Doctrine_Builder
                         } else {
                             $leftActAs[$name] = $options[$name];
                         }
-                    } 
+                    }
 
                     $optionPHP = $this->varExport($realOptions);
-                    $build .= $this->emitAssign($level, $template, $optionPHP); 
+                    $build .= $this->emitAssign($level, $template, $optionPHP);
                     if ($level == 0) {
                         $emittedActAs[] = $this->emitActAs($level, $template);
                     } else {
                         $build .= $this->emitAddChild($level, $currentParent, $template);
                     }
                     // descend for the remainings actAs
-                    $parent = $template;            
+                    $parent = $template;
                     $build .= $this->innerBuildActAs($leftActAs, $level, $template, $emittedActAs);
                 } else {
                     $build .= $this->emitAssign($level, $template, null);
@@ -779,7 +764,7 @@ class Doctrine_Import_Builder extends Doctrine_Builder
                     } else {
                         $build .= $this->emitAddChild($level, $currentParent, $template);
                     }
-                    $parent = $template;            
+                    $parent = $template;
                 }
             }
         } else {
@@ -797,20 +782,20 @@ class Doctrine_Import_Builder extends Doctrine_Builder
     /**
      * Build php code for adding record listeners
      *
-     * @param string $listeners 
+     * @param string $listeners
      * @return string $build
      */
     public function buildListeners($listeners)
     {
         $build = '';
-        
+
         foreach($listeners as $name => $options) {
             if ( ! is_array($options) && $options !== null) {
                 $name = $options;
                 $options = null;
             }
 
-            $useOptions = ( ! empty($options) && isset($options['useOptions']) && $options['useOptions'] == true) 
+            $useOptions = ( ! empty($options) && isset($options['useOptions']) && $options['useOptions'] == true)
                 ? '$this->getOptions()' : 'array()';
             $class = ( ! empty($options) && isset($options['class'])) ? $options['class'] : $name;
 
@@ -830,7 +815,7 @@ class Doctrine_Import_Builder extends Doctrine_Builder
     {
         $build = PHP_EOL;
         foreach ($attributes as $key => $value) {
-    
+
             $values = array();
             if (is_bool($value))
             {
@@ -839,7 +824,7 @@ class Doctrine_Import_Builder extends Doctrine_Builder
                 if ( ! is_array($value)) {
                     $value = array($value);
                 }
-    
+
                 foreach ($value as $attr) {
                     $const = "Doctrine_Core::" . strtoupper($key) . "_" . strtoupper($attr);
                     if (defined($const)) {
@@ -849,11 +834,11 @@ class Doctrine_Import_Builder extends Doctrine_Builder
                     }
                 }
             }
-    
+
             $string = implode(' ^ ', $values);
             $build .= "        \$this->setAttribute(Doctrine_Core::ATTR_" . strtoupper($key) . ", " . $string . ");" . PHP_EOL;
         }
-    
+
         return $build;
     }
 
@@ -910,28 +895,23 @@ class Doctrine_Import_Builder extends Doctrine_Builder
         if ( ! (isset($definition['no_definition']) && $definition['no_definition'] === true)) {
             $tableDefinitionCode = $this->buildTableDefinition($definition);
             $setUpCode = $this->buildSetUp($definition);
-			$mapping = $this->buildClassMapping($definition);
         } else {
             $tableDefinitionCode = null;
             $setUpCode = null;
-			$mapping = null;
         }
 
         if ($tableDefinitionCode && $setUpCode) {
-            $setUpCode = PHP_EOL . $setUpCode . PHP_EOL;
-			if($mapping)
-				$setUpCode .= PHP_EOL . $mapping;
+            $setUpCode = PHP_EOL . $setUpCode;
         }
 
-        
+
         $docs = PHP_EOL . $this->buildPhpDocs($definition);
 
         $content = sprintf(self::$_tpl, $docs, $abstract,
                                        $className,
                                        $extends,
                                        $tableDefinitionCode,
-                                       $setUpCode,
-									   $mapping);
+                                       $setUpCode);
 
         return $content;
     }
@@ -1048,7 +1028,7 @@ class Doctrine_Import_Builder extends Doctrine_Builder
         if ($prefix = $this->_classPrefix) {
             $className = $prefix . $definition['tableClassName'];
             if ($this->_classPrefixFiles) {
-                $fileName = $className . $this->_suffix;               
+                $fileName = $className . $this->_suffix;
             } else {
                 $fileName = $definition['tableClassName'] . $this->_suffix;
             }
@@ -1072,7 +1052,6 @@ class Doctrine_Import_Builder extends Doctrine_Builder
 
         if ( ! file_exists($writePath)) {
             file_put_contents($writePath, $content);
-            if(defined('AERIAL_FILE_CHMOD') && trim(AERIAL_FILE_CHMOD)  <> "") chmod($writePath, AERIAL_FILE_CHMOD);  //Mod for Aerial
         }
     }
 
@@ -1110,10 +1089,10 @@ class Doctrine_Import_Builder extends Doctrine_Builder
             $definitionCode = str_replace("'refClass' => '", "'refClass' => '$prefix", $definitionCode);
         }
 
-        if ($this->_classPrefixFiles) { 
-            $fileName = $definition['className'] . $this->_suffix; 
-        } else { 
-            $fileName = $originalClassName . $this->_suffix; 
+        if ($this->_classPrefixFiles) {
+            $fileName = $definition['className'] . $this->_suffix;
+        } else {
+            $fileName = $originalClassName . $this->_suffix;
         }
 
         if ($this->_pearStyle) {
@@ -1186,11 +1165,9 @@ class Doctrine_Import_Builder extends Doctrine_Builder
         if (isset($definition['generate_once']) && $definition['generate_once'] === true) {
             if ( ! file_exists($writePath)) {
                 $bytes = file_put_contents($writePath, $code);
-                if(defined('AERIAL_FILE_CHMOD') && trim(AERIAL_FILE_CHMOD)  <> "") chmod($writePath, AERIAL_FILE_CHMOD);  //Mod for Aerial
             }
         } else {
             $bytes = file_put_contents($writePath, $code);
-            if(defined('AERIAL_FILE_CHMOD') && trim(AERIAL_FILE_CHMOD)  <> "") chmod($writePath, AERIAL_FILE_CHMOD);  //Mod for Aerial
         }
 
         if (isset($bytes) && $bytes === false) {

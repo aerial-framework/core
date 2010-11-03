@@ -284,15 +284,10 @@ class Doctrine_Lib
         if ( ! $path) {
           return false;
         }
-
         if (is_dir($path) || is_file($path)) {
           return true;
         }
-
-        mkdir(trim($path), $mode, true);
-        if(defined('AERIAL_DIR_CHMOD') && trim(AERIAL_DIR_CHMOD)  <> "") chmod($path, AERIAL_DIR_CHMOD);  //Mod for Aerial.
-        return true;
-        
+        return mkdir(trim($path), $mode, true);        
     }
 
     /**

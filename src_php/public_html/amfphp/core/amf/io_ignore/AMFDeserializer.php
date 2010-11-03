@@ -99,6 +99,15 @@ class AMFDeserializer extends AMFBaseDeserializer {
 	
 	var $native;
 
+	private $models_path;
+
+	public function __construct()
+	{
+		$as3_path = conf("code-generation/as3");
+		$as3_path .= implode("/", explode(".", conf("options/package", false)))."/";
+		$this->models_path = $as3_path.conf("options/models-folder");
+	}
+
 	/**
 	 * Constructor method for the deserializer.  Constructing the deserializer converts the input stream
 	 * content to a AMFObject.
@@ -535,7 +544,8 @@ class AMFDeserializer extends AMFBaseDeserializer {
 				}
 				
 				$package = substr($typeIdentifier, 0, strrpos($typeIdentifier, "."));
-				if($package == FRONTEND_MODELS_PACKAGE && $externalizable)
+
+				if($package == $this->models_path && $externalizable)
 				{
 					$class = substr($typeIdentifier, strrpos($typeIdentifier, ".") + 1);
 					$valueObject = new $class();
@@ -589,7 +599,7 @@ class AMFDeserializer extends AMFBaseDeserializer {
 				//Handle other IExternalizable classes by comparing package to models package in config file
 				
 				$package = substr($type, 0, strrpos($type, "."));
-				if($package == FRONTEND_MODELS_PACKAGE)
+				if($package == $this->models_path)
 				{
 					$obj = $this->readAmf3Data();										
 					

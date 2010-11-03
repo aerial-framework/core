@@ -92,9 +92,10 @@ class Executive {
         if($_SESSION["authenticated"] === true)         // session already authenticated
             return;
 
-        if(!USE_AUTH)
+        if(!conf("options/use-authentication", false))
             return;
 
+		die(conf("options/use-authentication", false));
         $class = $descriptor->className;
         $function = $descriptor->methodName;
 

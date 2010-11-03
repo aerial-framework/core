@@ -3,20 +3,14 @@
 	list($usec, $sec) = explode(" ", microtime());
 	$amfphp['startTime'] = ((float)$usec + (float)$sec);
 
-	$basePath = AMFPHP_PATH;
-	$servicesPath = INTERNAL_SERVICES_PATH;
-	$voPath = realpath(BACKEND_MODELS_PATH . "/..");  //Needed to make this the "model" directory for AMFPHP.  Rob: 4-16-2010
-	
-	//As an example of what you might want to do here, consider:
-	
-	/*
-	if(!PRODUCTION_SERVER)
-	{
-		define("DB_HOST", "localhost");
-		define("DB_USER", "root");
-		define("DB_PASS", "");
-		define("DB_NAME", "amfphp");
-	}
-	*/
-	
+	$basePath = AMFPHP_BASE;
+
+	$servicesPath = conf("paths/internal-services");
+
+	$php_path = conf("code-generation/php");
+	$package = conf("options/package", false);
+	$php_path .= implode("/", explode(".", $package))."/";
+	$models_path = $php_path.conf("options/models-folder");
+
+	$voPath = realpath($models_path."/..");  //Needed to make this the "model" directory for AMFPHP.  Rob: 4-16-2010	
 ?>

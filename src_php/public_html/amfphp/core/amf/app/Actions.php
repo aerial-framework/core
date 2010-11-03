@@ -22,6 +22,11 @@ function adapterAction (&$amfbody) {
 	$methodname = "";
 	$isWebServiceURI = false;
 
+	$php_path = conf("code-generation/php");
+	$package = conf("options/package", false);
+	$php_path .= implode("/", explode(".", $package))."/";
+	$services_path = $php_path.conf("options/services-folder");
+
 	$target = $amfbody->targetURI;
 	
 	if (strpos($target, "http://") === false && strpos($target, "https://") === false) { // check for a http link which means web service
@@ -61,12 +66,12 @@ function adapterAction (&$amfbody) {
 					$classname = $classAndPackage;
 				}
 				$uriclasspath = str_replace('.','/',$classAndPackage) . '.php';
-				
-				if(realpath(INTERNAL_SERVICES_PATH."/".$uriclasspath))
-					$classpath = realpath(INTERNAL_SERVICES_PATH."/".$uriclasspath);
+
+				if(realpath(conf("paths/internal-services")."/".$uriclasspath))
+					$classpath = realpath(conf("paths/internal-services")."/".$uriclasspath);
 					
-				if(realpath(BACKEND_SERVICES_PATH."/".$uriclasspath))
-					$classpath = realpath(BACKEND_SERVICES_PATH."/".$uriclasspath);
+				if(realpath($services_path."/".$uriclasspath))
+					$classpath = realpath($services_path."/".$uriclasspath);
 				
 				//$classpath = $baseClassPath . $uriclasspath;
 				//die($classpath);
@@ -136,11 +141,11 @@ function adapterAction (&$amfbody) {
 					$uriclasspath = $trunced . ".php";
 					//$classpath = $baseClassPath . $trunced . ".php";
 					
-					if(realpath(INTERNAL_SERVICES_PATH."/".$uriclasspath))
-						$classpath = realpath(INTERNAL_SERVICES_PATH."/".$uriclasspath);
+					if(realpath(conf("paths/internal-services")."/".$uriclasspath))
+						$classpath = realpath(conf("paths/internal-services")."/".$uriclasspath);
 						
-					if(realpath(BACKEND_SERVICES_PATH."/".$uriclasspath))
-						$classpath = realpath(BACKEND_SERVICES_PATH."/".$uriclasspath);
+					if(realpath($services_path."/".$uriclasspath))
+						$classpath = realpath($services_path."/".$uriclasspath);
 				} 
 			} else {
 				$classname = substr($trunced, $lpos + 1);

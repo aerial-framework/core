@@ -15,7 +15,7 @@
 			$this->message = $message ? $message : self::UNKNOWN;
 			$this->code = ($ex ? $ex->getCode() : 0);
 
-			if(!PRODUCTION_MODE)
+			if(!conf("debug-mode", false))
 				$this->debug = $debug;
 	    }
 

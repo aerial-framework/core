@@ -30,6 +30,15 @@ class AMFSerializer extends AMFBaseSerializer {
    
    var $native = false;
 
+	private $models_path;
+
+	public function __construct()
+	{
+		$as3_path = conf("code-generation/as3");
+		$as3_path .= implode("/", explode(".", conf("options/package", false)))."/";
+		$this->models_path = $as3_path.conf("options/models-folder");
+	}
+
 	/**
 	 * AMFSerializer is the constructor function.  You must pass the
 	 * method an AMFOutputStream as the single argument.
@@ -717,7 +726,7 @@ class AMFSerializer extends AMFBaseSerializer {
 			// Fix for PHP5 overriden ArrayAccess and ArrayObjects with an explcit type
 			elseif( (is_a($d, 'ArrayAccess') || is_a($d, 'ArrayObject')) && !isset($d->_explicitType))
 			{
-				$this->writeAmf3Array($d, AMFPHP_USE_ARRAYCOLLECTION);
+				$this->writeAmf3Array($d, conf("options/use-arraycollection", false));
 				return;
 			}
 			else
@@ -1060,7 +1069,7 @@ class AMFSerializer extends AMFBaseSerializer {
 				$obj = $realObj["body"];
 				$objPackage = substr($obj->_explicitType, 0, strrpos($obj->_explicitType, "."));
 				
-				if($objPackage == FRONTEND_MODELS_PACKAGE)
+				if($objPackage == $this->models_path)
 				{				
 					$newObj = new stdClass();
 					foreach($obj as $key => $val)
@@ -1081,7 +1090,7 @@ class AMFSerializer extends AMFBaseSerializer {
 				$this->writeAmf3String($key);
 				
 				if($key == "body")
-					$this->writeAmf3Data($val, ($package == FRONTEND_MODELS_PACKAGE) ? AMFPHP_USE_ARRAYCOLLECTION : false);
+					$this->writeAmf3Data($val, ($package == $this->models_path) ? conf("options/use-arraycollection", false) : false);
 				else
 					$this->writeAmf3Data($val);
 			}

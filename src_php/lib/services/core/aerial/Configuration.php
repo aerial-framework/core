@@ -1,8 +1,4 @@
 <?php
-	require_once(AERIAL_INTERNAL.'/generators/ActionScriptGenerator.php');
-	require_once(AERIAL_INTERNAL.'/generators/PHPGenerator.php');
-	require_once(AERIAL_INTERNAL.'/generators/GenerationController.php');
-
 	/**
 	 * Modification of configuration values
 	 *
@@ -45,7 +41,12 @@
 				"baseClassesDirectory" => "base"
 			);
 
-			Doctrine_Core::generateModelsFromYaml(AERIAL_BASE_PATH.'/schema.yml', BACKEND_MODELS_PATH, $options);
+			$php_path = conf("code-generation/php");
+			$package = conf("options/package", false);
+			$php_path .= implode("/", explode(".", $package))."/";
+			$models_path = $php_path.conf("options/models-folder");
+
+			Doctrine_Core::generateModelsFromYaml(conf("paths/aerial").'schema.yml', $models_path, $options);
 			Doctrine_Core::createTablesFromModels();
 			//self::generateModelsAndServices();
 		}

@@ -1,9 +1,9 @@
 <?php
-	$aerialPath =	realpath(__DIR__."/../lib/aerial");
+	$configPath =	realpath(__DIR__."/../lib/");
 
 	// Load Aerial's configuration data
-	set_include_path($aerialPath);
-	include($aerialPath."/config.php");
+	set_include_path($configPath);
+	include($configPath."/config.php");
 
 	// define AMFPHP base path for AMFPHP's usage
 	define("AMFPHP_BASE", conf("paths/amfphp"));

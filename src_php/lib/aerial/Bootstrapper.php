@@ -1,6 +1,6 @@
 <?php
 	require_once(conf("paths/doctrine").'Doctrine.php');
-	require_once(conf("paths/aerial")."config/Authentication.php");
+	require_once(conf("paths/libs")."config/Authentication.php");
 	require_once(conf("paths/doctrine").'Aerial.php');
 	require_once(conf("paths/aerial")."utils/ModelMapper.php");
 

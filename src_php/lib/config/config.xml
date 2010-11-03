@@ -1,10 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <config>
+    <!--
+        If you're in a team environment and want to use your own config file,
+        create one in this directory called "config-alt.xml" and override the values
+        you need to. Take care not to add this file to your source-control system.
+    -->
+
     <debug-mode>true</debug-mode>
 
     <paths>
         <project>C:/UniServer/www/open-source/aerial-test</project>
         <aerial>src_php/lib/aerial</aerial>
+        <libs>src_php/lib</libs>
         <amfphp>src_php/public_html/amfphp/core</amfphp>
         <doctrine>src_php/lib/doctrine</doctrine>
         <internal-services>src_php/lib/services</internal-services>

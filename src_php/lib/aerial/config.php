@@ -4,6 +4,7 @@
 
 	$_configPath = realpath(__DIR__."/config");
 	$_config = simplexml_load_file($_configPath."/config.xml");
+	$_config_alt = simplexml_load_file($_configPath."/config-alt.xml");
 
 	// Get the base path
 	$_base = $_config->xpath("paths/project");
@@ -25,8 +26,12 @@
 	{
 		global $_config;
 		global $_base;
+		global $_config_alt;
 
 		$node = $_config->xpath($path);
+		if($_config_alt && $_config_alt->xpath($path))
+			$node = $_config_alt->xpath($path);
+
 		if(!$node)
 			throw new Exception("Could not find configuration value [$path]");
 
@@ -38,7 +43,7 @@
 			if(realpath("$_base/$value"))
 				$value = realpath("$_base/$value");
 
-			return $value.($trailingSlash ? "/" : "");
+			return $value.($trailingSlash ? DIRECTORY_SEPARATOR : "");
 		}
 
 		if($subnode)				// only return the node that matches the "use" attribute's value (see database node)

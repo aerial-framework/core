@@ -8,13 +8,21 @@
 	class DiscoveryService
 	{
 		private $services_path;
+		private $internal_services_path;
 
 		public function __construct()
 		{
 			$php_path = conf("code-generation/php");
 			$package = conf("options/package", false);
-			$php_path .= implode("/", explode(".", $package))."/";
+
+			if($package)
+				$php_path .= implode(DIRECTORY_SEPARATOR, explode(".", $package)).DIRECTORY_SEPARATOR;
+
+			$this->internal_services_path = conf("paths/internal-services", true, false);
 			$this->services_path = $php_path.conf("options/services-folder", true, false);
+
+			if(!file_exists($this->services_path))					// if the folder does not exist, create it to avoid errors!
+				mkdir($this->services_path, conf("options/directory-mode", false), true);
 		}
 
 		/**
@@ -23,7 +31,7 @@
 		 */
 		function getServices()
 		{
-			$paths = array("Aerial Services" => conf("paths/internal-services", true, false),
+			$paths = array("Aerial Services" => $this->internal_services_path,
 							"User-defined Services" => $this->services_path);
 			$temp = array();
 	
@@ -67,7 +75,7 @@
 					array_push($container, substr($file, 0, strrpos($file, ".php")));
 				}
 			}
-	
+
 			// format array
 			
 			$services = array();
@@ -89,9 +97,9 @@
 					$absolute = substr($value, 0, strrpos($value, DIRECTORY_SEPARATOR) + 1);
 					$file = substr($value, strlen($absolute));
 					
-					if(substr($absolute, 0, strlen(conf("paths/internal-services"))) == conf("paths/internal-services"))
+					if(substr($absolute, 0, strlen($this->internal_services_path)) == $this->internal_services_path)
 					{
-						$sub = substr($absolute, 0, strlen(conf("paths/internal-services")));
+						$sub = substr($absolute, 0, strlen($this->internal_services_path));
 						$base = substr($absolute, strlen($sub) + 1);
 					}
 					else if(substr($absolute, 0, strlen($this->services_path)) == $this->services_path)
@@ -102,6 +110,8 @@
 					
 					if(!$base)
 						$base = "";
+
+					//echo "---------$base------------\n";
 					
 					//substr($value, 0, strrpos($value, "."))
 					array_push($target, array("label" => $file, "data" => $base, "folder" => $absolute));
@@ -121,8 +131,8 @@
 			$folder = $data['folder'];
 			
 			$path = $folder.$className.".php";
-//			if(realpath(conf("paths/internal-services")."/".$folder.$className.".php"))
-//				$path = realpath(conf("paths/internal-services")."/".$folder.$className.".php");
+//			if(realpath($this->internal_services_path."/".$folder.$className.".php"))
+//				$path = realpath($this->internal_services_path."/".$folder.$className.".php");
 //				
 //			if(realpath($this->services_path."/".$folder.$className.".php"))
 //				$path = realpath($this->services_path."/".$folder.$className.".php");

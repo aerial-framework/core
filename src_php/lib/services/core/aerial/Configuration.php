@@ -43,7 +43,7 @@
 
 			$php_path = conf("code-generation/php");
 			$package = conf("options/package", false);
-			$php_path .= implode("/", explode(".", $package))."/";
+			$php_path .= implode(DIRECTORY_SEPARATOR, explode(".", $package)).DIRECTORY_SEPARATOR;
 			$models_path = $php_path.conf("options/models-folder");
 
 			Doctrine_Core::generateModelsFromYaml(conf("paths/aerial").'schema.yml', $models_path, $options);

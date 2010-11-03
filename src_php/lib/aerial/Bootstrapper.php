@@ -47,12 +47,15 @@
 			self::$_instance->conn = Doctrine_Manager::connection($connectionString, "doctrine");
 
 			$php_path = conf("code-generation/php");
-			$package = conf("options/package");
-			$php_path .= implode("/", explode(".", $package))."/";
-			$models_path = $php_path.conf("options/models-folder");
+			$package = conf("options/package", false);
+
+			if($package)
+				$php_path .= implode(DIRECTORY_SEPARATOR, explode(".", $package)).DIRECTORY_SEPARATOR;
+
+			$models_path = $php_path.conf("options/models-folder", true, false);
 
 			if(!file_exists($models_path))					// if the folder does not exist, create it to avoid errors!
-				mkdir($models_path, conf("options/directory-mode", false));
+				mkdir($models_path, conf("options/directory-mode", false), true);
 			
 			Doctrine_Core::loadModels($models_path);
 			

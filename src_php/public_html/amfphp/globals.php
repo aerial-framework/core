@@ -9,7 +9,10 @@
 
 	$php_path = conf("code-generation/php");
 	$package = conf("options/package", false);
-	$php_path .= implode("/", explode(".", $package))."/";
+
+	if($package)
+		$php_path .= implode(DIRECTORY_SEPARATOR, explode(".", $package)).DIRECTORY_SEPARATOR;
+
 	$models_path = $php_path.conf("options/models-folder");
 
 	$voPath = realpath($models_path."/..");  //Needed to make this the "model" directory for AMFPHP.  Rob: 4-16-2010	

@@ -28,7 +28,7 @@ class Aerial_Core{
 	public static function getPath()
 	{
 		if ( ! self::$_path) {
-			self::$_path = realpath(__DIR__ . '/..');
+			self::$_path = realpath(dirname(__FILE__) . '/..');
 		}
 
 		return self::$_path;

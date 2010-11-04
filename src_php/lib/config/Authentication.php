@@ -16,7 +16,7 @@
 		
 		private static function init()
 		{
-			$file = __DIR__."/authentication.xml";
+			$file = dirname(__FILE__)."/authentication.xml";
 			$f = fopen($file, "r+");
 			$contents = fread($f, filesize($file));
 			fclose($f);

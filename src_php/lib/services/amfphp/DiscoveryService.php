@@ -158,7 +158,7 @@
 			{
 				while (false !== ($file = readdir($handle)))
 				{
-					chdir(__DIR__);
+					chdir(dirname(__FILE__));
 					if ($file != "." && $file != "..")
 					{
 						if(is_file($dir . $suffix . $file))

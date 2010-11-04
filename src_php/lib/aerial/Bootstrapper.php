@@ -61,7 +61,7 @@
 			
 			Authentication::getInstance();
 
-			require_once(__DIR__."/../services/core/aerial/Configuration.php");
+			require_once(dirname(__FILE__)."/../services/core/aerial/Configuration.php");
 		}
 		
 		public static function setCredentials($username, $password)

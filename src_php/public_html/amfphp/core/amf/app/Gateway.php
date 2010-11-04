@@ -282,8 +282,8 @@ class Gateway {
 				 "old tutorial, it will tell you that you should see a download ". 
 				 "window instead of this message. This confused people so this is " . 
 				 "the new behaviour starting from amfphp 1.2.</p><p>" . 
-				 "<a href='http://www.amfphp.org/docs'>View the amfphp documentation</p>" .
-				 "<p><a href='browser'>Load the service browser</a></p>";
+				 "<a href='http://www.amfphp.org/docs'></a>View the amfphp documentation</p>" .
+				 "<p><a href='amfphp/browser'>Load the service browser</a></p>";
 			echo "<pre>";
 		}
 	}

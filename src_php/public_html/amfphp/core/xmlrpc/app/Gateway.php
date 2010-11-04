@@ -1,5 +1,5 @@
 <?php
-define("AMFPHP_BASE", realpath(dirname(dirname(dirname(__FILE__)))) . "/");
+define("AMFPHP_BASE", realpath(dirname(dirname(__DIR__))) . "/");
 require_once(AMFPHP_BASE . "shared/app/BasicGateway.php");
 require_once(AMFPHP_BASE . "shared/util/MessageBody.php");
 require_once(AMFPHP_BASE . "xmlrpc/app/Actions.php");

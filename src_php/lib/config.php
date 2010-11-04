@@ -7,8 +7,7 @@
 	$_config_alt = @simplexml_load_file($_configPath."/config-alt.xml");
 
 	// Get the base path
-	$_base = $_config->xpath("paths/project");
-	$_base = (string) $_base[0];
+	$_base = conf("paths/project");
 
 	if(!realpath($_base))
 		throw new Exception("Project root directory is invalid [$_base]");

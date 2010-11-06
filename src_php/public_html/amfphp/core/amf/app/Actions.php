@@ -23,12 +23,12 @@ function adapterAction (&$amfbody) {
 	$isWebServiceURI = false;
 
 	$php_path = conf("code-generation/php");
-	$package = conf("options/package", false);
+	$package = conf("code-generation/package", false);
 
 	if($package)
 		$php_path .= implode(DIRECTORY_SEPARATOR, explode(".", $package)).DIRECTORY_SEPARATOR;
 	
-	$services_path = $php_path.conf("options/services-folder");
+	$services_path = $php_path.conf("code-generation/services-folder");
 
 	$target = $amfbody->targetURI;
 	

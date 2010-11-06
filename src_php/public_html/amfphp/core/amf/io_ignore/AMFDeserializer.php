@@ -104,8 +104,8 @@ class AMFDeserializer extends AMFBaseDeserializer {
 	public function __construct()
 	{
 		$as3_path = conf("code-generation/as3");
-		$as3_path .= implode("/", explode(".", conf("options/package", false)))."/";
-		$this->models_path = $as3_path.conf("options/models-folder");
+		$as3_path .= implode("/", explode(".", conf("code-generation/package", false)))."/";
+		$this->models_path = $as3_path.conf("code-generation/models-folder");
 	}
 
 	/**

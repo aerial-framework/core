@@ -42,12 +42,12 @@
 			);
 
 			$php_path = conf("code-generation/php");
-			$package = conf("options/package", false);
+			$package = conf("code-generation/package", false);
 
 			if($package)
 				$php_path .= implode(DIRECTORY_SEPARATOR, explode(".", $package)).DIRECTORY_SEPARATOR;
 
-			$models_path = $php_path.conf("options/models-folder");
+			$models_path = $php_path.conf("code-generation/models-folder");
 
 			Doctrine_Core::generateModelsFromYaml(conf("paths/aerial").'schema.yml', $models_path, $options);
 			Doctrine_Core::createTablesFromModels();

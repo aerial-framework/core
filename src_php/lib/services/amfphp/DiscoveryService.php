@@ -13,13 +13,13 @@
 		public function __construct()
 		{
 			$php_path = conf("code-generation/php");
-			$package = conf("options/package", false);
+			$package = conf("code-generation/package", false);
 
 			if($package)
 				$php_path .= implode(DIRECTORY_SEPARATOR, explode(".", $package)).DIRECTORY_SEPARATOR;
 
 			$this->internal_services_path = conf("paths/internal-services", true, false);
-			$this->services_path = $php_path.conf("options/services-folder", true, false);
+			$this->services_path = $php_path.conf("code-generation/services-folder", true, false);
 
 			if(!file_exists($this->services_path))					// if the folder does not exist, create it to avoid errors!
 				mkdir($this->services_path, conf("options/directory-mode", false), true);

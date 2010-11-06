@@ -19,15 +19,8 @@
 
     <!-- package structure to be concatenated when used, e.g. org.aerial.vo or org.aerial.services -->
     <code-generation>
-        <php>src_php/model</php>
+        <php>src_php</php>
         <as3>src_flex</as3>
-    </code-generation>
-
-    <options>
-        <directory-mode>0666</directory-mode>
-        <file-mode>0664</file-mode>
-        <use-arraycollection>true</use-arraycollection>
-        <use-authentication>false</use-authentication>
 
         <package>org.aerial</package>
         <models-folder>vo</models-folder>
@@ -35,6 +28,13 @@
 
         <vo>VO</vo>
         <service>Service</service>
+    </code-generation>
+
+    <options>
+        <directory-mode>0666</directory-mode>
+        <file-mode>0664</file-mode>
+        <use-arraycollection>true</use-arraycollection>
+        <use-authentication>false</use-authentication>
     </options>
 
     <server-url>http://aerial-test/server.php</server-url>

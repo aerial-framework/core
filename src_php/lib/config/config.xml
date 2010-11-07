@@ -28,11 +28,12 @@
 
         <vo>VO</vo>
         <service>Service</service>
+		
+        <directory-mode>0666</directory-mode>
+        <file-mode>0664</file-mode>
     </code-generation>
 
     <options>
-        <directory-mode>0666</directory-mode>
-        <file-mode>0664</file-mode>
         <use-arraycollection>true</use-arraycollection>
         <use-authentication>false</use-authentication>
     </options>

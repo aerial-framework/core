@@ -686,7 +686,7 @@ class AMFSerializer extends AMFBaseSerializer {
 			$this->writeAmf3Undefined();
 			return;
 		}
-		elseif (is_array($d) && !isset($d->_explicitType)) 
+		elseif (is_array($d)) 
 		{ // array
 			$this->writeAmf3Array($d, $useArrayMapping);
 			return;

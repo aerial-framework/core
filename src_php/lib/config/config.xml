@@ -1,60 +1,50 @@
-<?xml version="1.0" encoding="utf-8"?>
 <config>
-    <!--
+  <!--
         If you're in a team environment and want to use your own config file,
         create one in this directory called "config-alt.xml" and override the values
         you need to. Take care not to add this file to your source-control system.
     -->
-
+  <paths>
+    <project>C:/UniServer/www/open-source/aerial-test</project>
+    <aerial>src_php/lib/aerial</aerial>
+    <libs>src_php/lib</libs>
+    <amfphp>src_php/public_html/amfphp/core</amfphp>
+    <doctrine>src_php/lib/doctrine</doctrine>
+    <internal-services>src_php/lib/services</internal-services>
+  </paths>
+  <code-generation>
+    <php>src_php</php>
+    <as3>src_flex</as3>
+    <package>org.aerial</package>
+    <php-models-folder>vo</php-models-folder>
+    <php-services-folder>servicesx</php-services-folder>
+    <as3-models-folder>vox</as3-models-folder>
+    <as3-services-folder>servicesx</as3-services-folder>
+    <vo>VOX</vo>
+    <service>ServiceX</service>
+    <directory-mode>0664</directory-mode>
+    <file-mode>0777</file-mode>
+  </code-generation>
+  <options>
     <debug-mode>true</debug-mode>
-
-    <paths>
-        <project>C:/UniServer/www/open-source/aerial-test</project>
-        <aerial>src_php/lib/aerial</aerial>
-        <libs>src_php/lib</libs>
-        <amfphp>src_php/public_html/amfphp/core</amfphp>
-        <doctrine>src_php/lib/doctrine</doctrine>
-        <internal-services>src_php/lib/services</internal-services>
-    </paths>
-
-    <!-- package structure to be concatenated when used, e.g. org.aerial.vo or org.aerial.services -->
-    <code-generation>
-        <php>src_php</php>
-        <as3>src_flex</as3>
-
-        <package>org.aerial</package>
-        <models-folder>vo</models-folder>
-        <services-folder>services</services-folder>
-
-        <vo>VO</vo>
-        <service>Service</service>
-		
-        <directory-mode>0666</directory-mode>
-        <file-mode>0664</file-mode>
-    </code-generation>
-
-    <options>
-        <use-arraycollection>true</use-arraycollection>
-        <use-authentication>false</use-authentication>
-    </options>
-
     <server-url>http://aerial-test/server.php</server-url>
-
-    <database use="development">
-        <development>
-            <engine>mysql</engine>
-            <host>localhost</host>
-            <database>aerial_forum</database>
-            <username>aerial</username>
-            <password>secret</password>
-        </development>
-
-        <production>
-            <engine>mysql</engine>
-            <host>localhost</host>
-            <database>aerial_forum</database>
-            <username>aerial</username>
-            <password>secret</password>
-        </production>
-    </database>
+    <use-arraycollection>true</use-arraycollection>
+    <use-authentication>false</use-authentication>
+  </options>
+  <database use="development">
+    <development>
+      <engine>mysql</engine>
+      <host>localhost</host>
+      <database>aerial_forum</database>
+      <username>aerial</username>
+      <password>secret</password>
+    </development>
+    <production>
+      <engine>mysql</engine>
+      <host>localhost</host>
+      <database>aerial_forum</database>
+      <username>aerial</username>
+      <password>secret</password>
+    </production>
+  </database>
 </config>

@@ -52,7 +52,7 @@
 			if($package)
 				$php_path .= implode(DIRECTORY_SEPARATOR, explode(".", $package)).DIRECTORY_SEPARATOR;
 
-			$models_path = $php_path.conf("code-generation/models-folder", true, false);
+			$models_path = $php_path.conf("code-generation/php-models-folder", true, false);
 
 			if(!file_exists($models_path))					// if the folder does not exist, create it to avoid errors!
 				mkdir($models_path, conf("options/directory-mode", false), true);

@@ -13,7 +13,7 @@
 	if($package)
 		$php_path .= implode(DIRECTORY_SEPARATOR, explode(".", $package)).DIRECTORY_SEPARATOR;
 
-	$models_path = $php_path.conf("code-generation/models-folder");
+	$models_path = $php_path.conf("code-generation/php-models-folder");
 
 	$voPath = realpath($models_path."/..");  //Needed to make this the "model" directory for AMFPHP.  Rob: 4-16-2010	
 ?>

@@ -1,5 +1,5 @@
 <?php
-	$configPath =	realpath(dirname(__FILE__)."/../lib/");
+	$configPath = realpath(dirname(__FILE__)."/../lib/");
 
 	// Load Aerial's configuration data
 	set_include_path($configPath);

@@ -16,8 +16,8 @@
     <php>src_php</php>
     <as3>src_flex</as3>
     <package>org.aerial</package>
-    <php-models-folder>vo</php-models-folder>
-    <php-services-folder>servicesx</php-services-folder>
+    <php-models-folder>voX</php-models-folder>
+    <php-services-folder>servicesxyz</php-services-folder>
     <as3-models-folder>vox</as3-models-folder>
     <as3-services-folder>servicesx</as3-services-folder>
     <vo>VOX</vo>

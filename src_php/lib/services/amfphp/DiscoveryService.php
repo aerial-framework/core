@@ -22,7 +22,7 @@
 			$this->services_path = $php_path.conf("code-generation/php-services-folder", true, false);
 
 			if(!file_exists($this->services_path))					// if the folder does not exist, create it to avoid errors!
-				mkdir($this->services_path, conf("options/directory-mode", false), true);
+				mkdir($this->services_path, conf("code-generation/directory-mode", false), true);
 		}
 
 		/**

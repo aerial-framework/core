@@ -55,7 +55,7 @@
 			$models_path = $php_path.conf("code-generation/php-models-folder", true, false);
 
 			if(!file_exists($models_path))					// if the folder does not exist, create it to avoid errors!
-				mkdir($models_path, conf("options/directory-mode", false), true);
+				mkdir($models_path, conf("code-generation/directory-mode", false), true);
 
 			Doctrine_Core::loadModels($models_path);
 			

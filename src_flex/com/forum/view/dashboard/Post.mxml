@@ -35,7 +35,7 @@
 			{
 				_currentTopic = topic;
 				if(topic != null){
-					this.postService.findAll({"topicId": this.currentTopic.id});
+					this.postService.find({"topicId": this.currentTopic.id});
 				}else{
 					posts = new ArrayCollection();  //We need to clear out the Posts if no Topic is selected.
 				}
@@ -54,13 +54,13 @@
 						this.posts = event.result as ArrayCollection;
 						break;
 					case "postService.save":
-						this.postService.findAll({"topicId":this.currentTopic.id});
+						this.postService.find({"topicId":this.currentTopic.id});
 						break;
 					case "postService.update":
-						this.postService.findAll({"topicId":this.currentTopic.id});
+						this.postService.find({"topicId":this.currentTopic.id});
 						break;
 					case "postService.drop":
-						this.postService.findAll({"topicId":this.currentTopic.id});
+						this.postService.find({"topicId":this.currentTopic.id});
 						break;
 					case "postService.findAll":
 						this.posts = (event.result as ArrayCollection);

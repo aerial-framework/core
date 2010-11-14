@@ -18,7 +18,7 @@
 			private function login(username:String, password:String):void
 			{
                 this.userService.setCredentials("danny", "1234");
-				this.userService.findAll({username:username, password:password});
+				this.userService.find({username:username, password:password});
 			}
 			
 			private function result(event:ResultEvent):void

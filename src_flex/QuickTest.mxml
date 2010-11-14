@@ -67,10 +67,10 @@
         public function findAll():void
         {
             find = this.topicService
-                    .findAll({userId:9, categoryId:3})
+                    .find({userId:9, categoryId:3})
                     .callback(findResult, findFault)
                     .sortAsc("id")
-                    .relations({Category:"name", Post:"*"});
+					.addRelation("posts(*).comments");
 
             find.execute();
         }

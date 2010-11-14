@@ -3,20 +3,24 @@ package org.aerial.vo
 	import org.aerial.rpc.AbstractVO;
 	import org.aerial.vo.*;
 	import mx.collections.ArrayCollection;
+	import flash.net.registerClassAlias;
 	
-	[Bindable]	
+	[Bindable]
+	[RemoteClass(alias="org.aerial.vo.TopicTag")]	
 	public class TopicTagVO extends AbstractVO
-	{		
+	{
 		public function TopicTagVO()
 		{
-			super("org.aerial.vo.TopicTag", function(field:String):*{return this[field]});
+			super("org.aerial.vo.TopicTag",
+							function(field:String):*{return this[field]},
+							function(field:String, value:*):void{this[field] = value});
 		}
 		
-		private var id:*
-		private var topicId:*
-		private var tagId:*
-		private var Topic:*
-		private var Tag:*
+		private var _id:*
+		private var _topicId:*
+		private var _tagId:*
+		private var _Topic:*
+		private var _Tag:*
 
 		public function get id():int
 		{

@@ -3,23 +3,27 @@ package org.aerial.vo
 	import org.aerial.rpc.AbstractVO;
 	import org.aerial.vo.*;
 	import mx.collections.ArrayCollection;
+	import flash.net.registerClassAlias;
 	
-	[Bindable]	
+	[Bindable]
+	[RemoteClass(alias="org.aerial.vo.Comment")]	
 	public class CommentVO extends AbstractVO
-	{		
+	{
 		public function CommentVO()
 		{
-			super("org.aerial.vo.Comment", function(field:String):*{return this[field]});
+			super("org.aerial.vo.Comment",
+							function(field:String):*{return this[field]},
+							function(field:String, value:*):void{this[field] = value});
 		}
 		
-		private var id:*
-		private var userId:*
-		private var postId:*
-		private var message:*
-		private var createDate:*
-		private var modDate:*
-		private var User:*
-		private var Post:*
+		private var _id:*
+		private var _userId:*
+		private var _postId:*
+		private var _message:*
+		private var _createDate:*
+		private var _modDate:*
+		private var _User:*
+		private var _Post:*
 
 		public function get id():int
 		{

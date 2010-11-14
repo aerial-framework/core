@@ -3,22 +3,26 @@ package org.aerial.vo
 	import org.aerial.rpc.AbstractVO;
 	import org.aerial.vo.*;
 	import mx.collections.ArrayCollection;
+	import flash.net.registerClassAlias;
 	
-	[Bindable]	
+	[Bindable]
+	[RemoteClass(alias="org.aerial.vo.Category")]	
 	public class CategoryVO extends AbstractVO
-	{		
+	{
 		public function CategoryVO()
 		{
-			super("org.aerial.vo.Category", function(field:String):*{return this[field]});
+			super("org.aerial.vo.Category",
+							function(field:String):*{return this[field]},
+							function(field:String, value:*):void{this[field] = value});
 		}
 		
-		private var id:*
-		private var userId:*
-		private var name:*
-		private var createDate:*
-		private var modDate:*
-		private var User:*
-		private var topics:*
+		private var _id:*
+		private var _userId:*
+		private var _name:*
+		private var _createDate:*
+		private var _modDate:*
+		private var _User:*
+		private var _topics:*
 
 		public function get id():int
 		{
@@ -80,12 +84,12 @@ package org.aerial.vo
 			_User = value;
 		}
 
-		public function get topics():TopicVO
+		public function get topics():ArrayCollection
 		{
 			return _topics;
 		}
 		
-		public function set topics(value:TopicVO):void
+		public function set topics(value:ArrayCollection):void
 		{
 			_topics = value;
 		}		

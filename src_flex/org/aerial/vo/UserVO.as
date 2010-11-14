@@ -3,24 +3,28 @@ package org.aerial.vo
 	import org.aerial.rpc.AbstractVO;
 	import org.aerial.vo.*;
 	import mx.collections.ArrayCollection;
+	import flash.net.registerClassAlias;
 	
-	[Bindable]	
+	[Bindable]
+	[RemoteClass(alias="org.aerial.vo.User")]	
 	public class UserVO extends AbstractVO
-	{		
+	{
 		public function UserVO()
 		{
-			super("org.aerial.vo.User", function(field:String):*{return this[field]});
+			super("org.aerial.vo.User",
+							function(field:String):*{return this[field]},
+							function(field:String, value:*):void{this[field] = value});
 		}
 		
-		private var id:*
-		private var username:*
-		private var password:*
-		private var createDate:*
-		private var modDate:*
-		private var posts:*
-		private var comments:*
-		private var categories:*
-		private var topics:*
+		private var _id:*
+		private var _username:*
+		private var _password:*
+		private var _createDate:*
+		private var _modDate:*
+		private var _posts:*
+		private var _comments:*
+		private var _categories:*
+		private var _topics:*
 
 		public function get id():int
 		{
@@ -72,42 +76,42 @@ package org.aerial.vo
 			_modDate = value;
 		}
 
-		public function get posts():PostVO
+		public function get posts():ArrayCollection
 		{
 			return _posts;
 		}
 		
-		public function set posts(value:PostVO):void
+		public function set posts(value:ArrayCollection):void
 		{
 			_posts = value;
 		}
 
-		public function get comments():CommentVO
+		public function get comments():ArrayCollection
 		{
 			return _comments;
 		}
 		
-		public function set comments(value:CommentVO):void
+		public function set comments(value:ArrayCollection):void
 		{
 			_comments = value;
 		}
 
-		public function get categories():CategoryVO
+		public function get categories():ArrayCollection
 		{
 			return _categories;
 		}
 		
-		public function set categories(value:CategoryVO):void
+		public function set categories(value:ArrayCollection):void
 		{
 			_categories = value;
 		}
 
-		public function get topics():TopicVO
+		public function get topics():ArrayCollection
 		{
 			return _topics;
 		}
 		
-		public function set topics(value:TopicVO):void
+		public function set topics(value:ArrayCollection):void
 		{
 			_topics = value;
 		}		

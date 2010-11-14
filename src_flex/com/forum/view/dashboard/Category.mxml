@@ -1,14 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:Panel xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="100%" minWidth="210" height="316" borderStyle="solid" creationComplete="init()"
 		  title="Categories({this.categories.length})"
-		  xmlns:service="model.services.*"
+		  xmlns:service="model.services.*" xmlns:services="org.aerial.services.*"
 		  >
 	
 	<mx:Script>
-		<![CDATA[
-			import model.vo.CategoryVO;
-			import model.vo.UserVO;
-			
+		<![CDATA[			
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
 			import mx.events.ItemClickEvent;
@@ -16,6 +13,8 @@
 			import mx.messaging.messages.RemotingMessage;
 			import mx.rpc.events.FaultEvent;
 			import mx.rpc.events.ResultEvent;
+			
+			import org.aerial.vo.*;
 			
 			[Bindable]
 			public var user:UserVO;
@@ -114,7 +113,7 @@
 		]]>
 	</mx:Script>
 	
-	<service:CategoryService id="categoryService" result="resultHandler(event)" fault="faultHandler(event)"/>
+	<services:CategoryService id="categoryService" result="resultHandler(event)" fault="faultHandler(event)"/>
 	<mx:List id="categoryList" dataProvider="{this.categories}" labelField="name" top="0" bottom="0" left="0" right="0" change="clickCategoryItem(event)" borderStyle="none"/>
 	
 	<mx:ControlBar>

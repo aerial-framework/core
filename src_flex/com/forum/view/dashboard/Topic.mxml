@@ -1,16 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:Panel xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="100%" height="35%" 
-		  title="Topics ({this.topics.length})"
-		  xmlns:service="model.services.*"
+		  title="Topics ({this.topics.length})" xmlns:services="org.aerial.services.*"
 		  >
 	
 	
 	<mx:Script>
 		<![CDATA[
-			import model.vo.CategoryVO;
-			import model.vo.TopicVO;
-			import model.vo.UserVO;
-			
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
 			import mx.events.ItemClickEvent;
@@ -18,6 +13,8 @@
 			import mx.messaging.messages.RemotingMessage;
 			import mx.rpc.events.FaultEvent;
 			import mx.rpc.events.ResultEvent;
+			
+			import org.aerial.vo.*;
 			
 			[Bindable]
 			public var topics:ArrayCollection;
@@ -121,7 +118,7 @@
 		]]>
 	</mx:Script>
 	
-	<service:TopicService id="topicService" result="resultHandler(event)" fault="faultHandler(event)"/>
+	<services:TopicService id="topicService" result="resultHandler(event)" fault="faultHandler(event)"/>
 	
 	<mx:DataGrid id="topicList" left="0" right="0" top="0" bottom="0" dataProvider="{this.topics}" change="clickTopicItem(event)">
 		<mx:columns>

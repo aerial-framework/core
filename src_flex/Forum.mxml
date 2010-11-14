@@ -15,14 +15,13 @@
 		<![CDATA[
 			import com.forum.event.LoginEvent;
 			
-			//import model.services.UserSpecialtyService;
-			import model.vo.*;
-			
 			import mx.controls.Alert;
 			import mx.core.Container;
 			import mx.messaging.messages.RemotingMessage;
 			import mx.rpc.events.FaultEvent;
 			import mx.rpc.events.ResultEvent;
+			
+			import org.aerial.vo.UserVO;
 			
 			private function init():void
 			{

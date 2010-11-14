@@ -67,4 +67,8 @@ abstract class BaseTopicTag extends Aerial_Record
              'local' => 'tagId',
              'foreign' => 'id'));
     }
+    public function construct()
+    {
+        $this->mapValue('_explicitType', 'org.aerial.vo.TopicTag');
+    }
 }

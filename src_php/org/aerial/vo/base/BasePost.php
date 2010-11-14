@@ -99,4 +99,8 @@ abstract class BasePost extends Aerial_Record
              'local' => 'id',
              'foreign' => 'postId'));
     }
+    public function construct()
+    {
+        $this->mapValue('_explicitType', 'org.aerial.vo.Post');
+    }
 }

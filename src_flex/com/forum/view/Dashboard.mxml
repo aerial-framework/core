@@ -7,9 +7,9 @@
 	
 	<mx:Script>
 		<![CDATA[
-			
 			import com.forum.event.LoginEvent;
-			import model.vo.UserVO;
+			
+			import org.aerial.vo.*;
 
 			
 			[Bindable]

@@ -1,21 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:Panel xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="100%" height="100%"
-		  title="Posts ({this.posts.length})"
-		  xmlns:service="model.services.*"
+		  title="Posts ({this.posts.length})" xmlns:services="org.aerial.services.*"
 		  >
 	
 	<mx:Script>
-		<![CDATA[
-			import model.vo.PostVO;
-			import model.vo.TopicVO;
-			import model.vo.UserVO;
-			
+		<![CDATA[			
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
 			import mx.events.ListEvent;
 			import mx.messaging.messages.RemotingMessage;
 			import mx.rpc.events.FaultEvent;
 			import mx.rpc.events.ResultEvent;
+			
+			import org.aerial.vo.*;
 			
 			[Bindable]
 			public var user:UserVO;
@@ -101,7 +98,7 @@
 		]]>
 	</mx:Script>
 	
-	<service:PostService id="postService" result="resultHandler(event)" fault="faultHandler(event)" />
+	<services:PostService id="postService" result="resultHandler(event)" fault="faultHandler(event)" />
 	
 	<mx:List id="postList" dataProvider="{this.posts}" width="100%" change="clickPostItem(event)">
 		<mx:itemRenderer>

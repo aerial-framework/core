@@ -2,7 +2,7 @@
 <s:WindowedApplication xmlns:fx="http://ns.adobe.com/mxml/2009" 
 					   xmlns:s="library://ns.adobe.com/flex/spark" 
 					   xmlns:mx="library://ns.adobe.com/flex/mx"
-					   xmlns:services="model.services.*" applicationComplete="init()"
+					   applicationComplete="init()" xmlns:services="org.aerial.services.*"
 					   >
 	<fx:Declarations>
 		<services:UserService id="userService" result="resultHandler(event)" fault="faultHandler(event)" />
@@ -12,23 +12,23 @@
 	
 	<fx:Script>
 		<![CDATA[
-        import flash.net.registerClassAlias;
-
-        import flashx.textLayout.formats.Category;
-
-        import model.vo.*;
-
-        import mx.collections.ArrayCollection;
-        import mx.collections.ICollectionView;
-        import mx.collections.IList;
-        import mx.collections.ListCollectionView;
-        import mx.controls.Alert;
-        import mx.messaging.messages.RemotingMessage;
-        import mx.rpc.events.FaultEvent;
-        import mx.rpc.events.ResultEvent;
-
-        import org.aerial.rpc.messages.AerialErrorMessage;
-        import org.aerial.rpc.operation.Operation;
+		import flash.net.registerClassAlias;
+		
+		import flashx.textLayout.formats.Category;
+		
+		import mx.collections.ArrayCollection;
+		import mx.collections.ICollectionView;
+		import mx.collections.IList;
+		import mx.collections.ListCollectionView;
+		import mx.controls.Alert;
+		import mx.messaging.messages.RemotingMessage;
+		import mx.rpc.events.FaultEvent;
+		import mx.rpc.events.ResultEvent;
+		
+		import org.aerial.rpc.messages.AerialErrorMessage;
+		import org.aerial.rpc.operation.Operation;
+		import org.aerial.vo.*;
+		import org.aerial.vo.CommentVO; CommentVO;
 
         public var find:Operation;
 
@@ -67,7 +67,7 @@
         public function findAll():void
         {
             find = this.topicService
-                    .find({userId:9, categoryId:3})
+                    .find({userId:1})
                     .callback(findResult, findFault)
                     .sortAsc("id")
 					.addRelation("posts(*).comments");

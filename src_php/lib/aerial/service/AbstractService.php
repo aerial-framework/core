@@ -94,7 +94,7 @@ abstract class AbstractService
 		$q->setHydrationMode(Aerial_Core::HYDRATE_AMF_COLLECTION);
 		$results = $q->execute();
 
-		return $results;
+		return $results[0];
 
 	}
 

@@ -85,4 +85,8 @@ abstract class BaseComment extends Aerial_Record
              'onDelete' => 'cascade',
              'onUpdate' => 'cascade'));
     }
+    public function construct()
+    {
+        $this->mapValue('_explicitType', 'org.aerial.vo.Comment');
+    }
 }

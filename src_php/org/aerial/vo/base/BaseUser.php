@@ -72,4 +72,8 @@ abstract class BaseUser extends Aerial_Record
              'local' => 'id',
              'foreign' => 'userId'));
     }
+    public function construct()
+    {
+        $this->mapValue('_explicitType', 'org.aerial.vo.User');
+    }
 }

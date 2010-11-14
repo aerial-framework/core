@@ -70,4 +70,8 @@ abstract class BaseCategory extends Aerial_Record
              'local' => 'id',
              'foreign' => 'categoryId'));
     }
+    public function construct()
+    {
+        $this->mapValue('_explicitType', 'org.aerial.vo.Category');
+    }
 }

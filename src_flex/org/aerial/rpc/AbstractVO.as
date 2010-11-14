@@ -20,12 +20,6 @@ package org.aerial.rpc
 		{
 			getPrivateProperty = getProp;
 			setPrivateProperty = setProp;
-			
-			var voType:String = getQualifiedClassName(this).replace("::",".");
-			var voClass:Class = getDefinitionByName(voType) as Class;
-			
-			registerClassAlias(aliasName, voClass);
-            //_nulled = [];
 		}
 		
 		public function isUndefined(property:String):Boolean

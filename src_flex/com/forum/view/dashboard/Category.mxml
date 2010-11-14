@@ -25,7 +25,7 @@
 			
 			public function init():void
 			{
-				this.categoryService.findAll();
+				this.categoryService.find();
 			}
 			
 			public function get categories():ArrayCollection
@@ -94,13 +94,13 @@
 						this.categories = event.result as ArrayCollection;
 						break;
 					case "categoryService.save":
-						this.categoryService.findAll();
+						this.categoryService.find();
 						break;
 					case "categoryService.update":
-						this.categoryService.findAll();
+						this.categoryService.find();
 						break;
 					case "categoryService.drop":
-						this.categoryService.findAll();
+						this.categoryService.find();
 						break;
 				}
 			}

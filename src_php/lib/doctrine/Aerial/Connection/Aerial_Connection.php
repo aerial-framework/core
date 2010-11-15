@@ -115,6 +115,16 @@
 		}
 
 		/**
+		 * returns the name of the connected database
+		 *
+		 * @return string
+		 */
+		public function getDatabaseName()
+		{
+			return $this->fetchOne('SELECT DATABASE()');
+		}
+
+		/**
 		 * rethrowException
 		 *
 		 * @throws Doctrine_Connection_Exception

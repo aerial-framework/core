@@ -509,7 +509,7 @@ class Doctrine_Import_Builder extends Doctrine_Builder
 	public function buildClassMapping($definition)
 	{
 		$voPath = conf("code-generation/package",false,false).".".conf("code-generation/php-models-folder",false,false);
-		$voPath .= ".".$definition["tableName"];
+		$voPath .= ".".$definition["topLevelClassName"];
 
         $build = "\$this->mapValue('_explicitType', '$voPath');" . PHP_EOL;
 		return '    public function construct()' . PHP_EOL . '    {' . PHP_EOL . '        ' . $build . '    }';

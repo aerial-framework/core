@@ -31,10 +31,13 @@
 			return $constants['user'];
 		}
 	
-		public function generate()
+		public function generate($fromYAML=true, $regenDB=false)
 		{
-			Doctrine_Core::dropDatabases();
-			Doctrine_Core::createDatabases();
+			if($regenDB)
+			{
+				Doctrine_Core::dropDatabases();
+				Doctrine_Core::createDatabases();
+			}
 
 			$options = array(
 				"baseClassName" => "Aerial_Record",
@@ -49,8 +52,18 @@
 
 			$models_path = $php_path.conf("code-generation/php-models-folder");
 
-			Doctrine_Core::generateModelsFromYaml(conf("paths/aerial").'schema.yml', $models_path, $options);
-			Doctrine_Core::createTablesFromModels();
+			if($fromYAML)
+				Doctrine_Core::generateModelsFromYaml(conf("paths/aerial").'schema.yml', $models_path, $options);
+			else
+			{
+				if(!file_exists($models_path))					// if the folder does not exist, create it to avoid errors!
+					mkdir($models_path, conf("code-generation/directory-mode", false), true);
+
+				Doctrine_Core::generateModelsFromDb($models_path, array("doctrine"), $options);
+			}
+
+			if($regenDB)
+				Doctrine_Core::createTablesFromModels();
 			//self::generateModelsAndServices();
 		}
 

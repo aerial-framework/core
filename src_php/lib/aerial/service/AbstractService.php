@@ -60,13 +60,13 @@ abstract class AbstractService
 				$path = str_replace(' ','', $path); //Remove white space
 				list($dirty_key) = explode(".", $path, 2);
 				if(Aerial_Relationship::key($dirty_key) <> $this->modelName) $path = $this->modelName . "." . $path;
-				$mergedRelations = Aerial_Relationship::merge($mergedRelations, $path);
+					$mergedRelations = Aerial_Relationship::merge($mergedRelations, $path);
 			}
 
 			//Build the DQL 'leftJoin' and 'Select' parts.
 			$relationParts = Aerial_Relationship::relationParts($mergedRelations);
 			foreach($relationParts["joins"] as $join)
-			$q->leftJoin($join);
+				$q->leftJoin($join);
 
 			$q->select($relationParts["selects"]);
 		}
@@ -75,8 +75,10 @@ abstract class AbstractService
 		if($criteria)
 		{
 			foreach($criteria as $key=>$value)
-			$q->addWhere("r.$key =?", $value);
+				$q->addWhere("r.$key =?", $value);
 		}
+		else
+			$q->select("*");
 
 		//============================   Order  ===============================
 		if($sort){
@@ -94,7 +96,7 @@ abstract class AbstractService
 		$q->setHydrationMode(Aerial_Core::HYDRATE_AMF_COLLECTION);
 		$results = $q->execute();
 
-		return $results[0];
+		return $results;
 
 	}
 

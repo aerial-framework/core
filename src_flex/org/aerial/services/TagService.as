@@ -4,13 +4,12 @@ package org.aerial.services
 	import org.aerial.system.IConfig;
 	
 	import org.aerial.vo.TagVO;
-	import org.aerial.config.Config;
 
 	public class TagService extends AbstractService
 	{
 		public function TagService()
 		{
-			super("TagService", Config.SERVER_URL, TagVO);
+			super("TagService", "http://aerial-test/server.php", TagVO);
 		}
 	}
 }

@@ -4,13 +4,12 @@ package org.aerial.services
 	import org.aerial.system.IConfig;
 	
 	import org.aerial.vo.TopicVO;
-	import org.aerial.config.Config;
 
 	public class TopicService extends AbstractService
 	{
 		public function TopicService()
 		{
-			super("TopicService", Config.SERVER_URL, TopicVO);
+			super("TopicService", "http://aerial-test/server.php", TopicVO);
 		}
 	}
 }

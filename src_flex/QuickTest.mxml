@@ -14,8 +14,6 @@
 		<![CDATA[
 		import flash.net.registerClassAlias;
 		
-		import flashx.textLayout.formats.Category;
-		
 		import mx.collections.ArrayCollection;
 		import mx.collections.ICollectionView;
 		import mx.collections.IList;

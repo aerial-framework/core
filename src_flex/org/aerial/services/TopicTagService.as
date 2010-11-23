@@ -4,13 +4,12 @@ package org.aerial.services
 	import org.aerial.system.IConfig;
 	
 	import org.aerial.vo.TopicTagVO;
-	import org.aerial.config.Config;
 
 	public class TopicTagService extends AbstractService
 	{
 		public function TopicTagService()
 		{
-			super("TopicTagService", Config.SERVER_URL, TopicTagVO);
+			super("TopicTagService", "http://aerial-test/server.php", TopicTagVO);
 		}
 	}
 }

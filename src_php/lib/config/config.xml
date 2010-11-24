@@ -16,6 +16,8 @@
     <php>src_php</php>
     <as3>src_flex</as3>
     <package>org.aerial</package>
+    <bootstrap-package>org.aerial.bootstrap</bootstrap-package>
+    <bootstrap-filename>Aerial</bootstrap-filename>
     <php-models-folder>vo</php-models-folder>
     <php-services-folder>services</php-services-folder>
     <as3-models-folder>vo</as3-models-folder>
@@ -26,8 +28,8 @@
     <file-mode>0777</file-mode>
   </code-generation>
   <options>
-    <debug-mode>true</debug-mode>
-    <server-url>http://aerial-test/server.php</server-url>
+    <debug-mode include-in-bootstrap="true">false</debug-mode>
+    <server-url include-in-bootstrap="true">http://aerial-test/server.php</server-url>
     <use-arraycollection>true</use-arraycollection>
     <use-authentication>false</use-authentication>
   </options>

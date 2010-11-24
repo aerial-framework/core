@@ -1,15 +1,16 @@
 package org.aerial.services
 {
 	import org.aerial.rpc.AbstractService;
-	import org.aerial.system.IConfig;
 	
 	import org.aerial.vo.TopicVO;
+	import org.aerial.config.Config;
+	import org.aerial.bootstrap.Aerial;
 
 	public class TopicService extends AbstractService
 	{
 		public function TopicService()
 		{
-			super("TopicService", "http://aerial-test/server.php", TopicVO);
+			super("TopicService", Aerial.SERVER_URL, TopicVO);
 		}
 	}
 }

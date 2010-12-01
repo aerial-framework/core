@@ -41,8 +41,9 @@
 			$connectionString = conf("database", false, false, "engine")."://".
 							conf("database", false, false, "username").":".
 							conf("database", false, false, "password").
-							"@".conf("database", false, false, "host")."/".
-							conf("database", false, false, "database");
+							"@".conf("database", false, false, "host").
+							":".conf("database", false, false, "port").
+							"/".conf("database", false, false, "database");
 								
 			self::$_instance->conn = Doctrine_Manager::connection($connectionString, "doctrine");
 

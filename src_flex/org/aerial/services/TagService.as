@@ -3,7 +3,6 @@ package org.aerial.services
 	import org.aerial.rpc.AbstractService;
 	
 	import org.aerial.vo.TagVO;
-	import org.aerial.config.Config;
 	import org.aerial.bootstrap.Aerial;
 
 	public class TagService extends AbstractService

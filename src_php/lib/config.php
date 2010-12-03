@@ -2,7 +2,7 @@
 	// path constants
 	date_default_timezone_set('America/New_York');						// Required for PHP >= 5.3
 
-	$_configPath = realpath(dirname(__FILE__)."/config");
+	$_configPath = realpath(dirname(__FILE__)."/../config");
 	$_config = simplexml_load_file($_configPath."/config.xml");
 	$_config_alt = @simplexml_load_file($_configPath."/config-alt.xml");
 

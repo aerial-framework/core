@@ -2,7 +2,15 @@
 	// path constants
 	date_default_timezone_set('America/New_York');						// Required for PHP >= 5.3
 
-	$_configPath = realpath(dirname(__FILE__)."/../config");
+	$projectXML = simplexml_load_file(dirname(__FILE__)."../../../project.xml");
+	$_configPath = realpath(dirname(__FILE__)."../../../".((string) $projectXML->{"config-path"}));
+
+	if(!file_exists($_configPath))
+	{
+		trigger_error("The configuration file could not be found under ".((string) $projectXML->{"config-path"}));
+		die();
+	}
+
 	$_config = simplexml_load_file($_configPath."/config.xml");
 	$_config_alt = @simplexml_load_file($_configPath."/config-alt.xml");
 

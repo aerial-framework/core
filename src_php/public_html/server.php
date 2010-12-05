@@ -1,9 +1,12 @@
 <?php
-	$configPath = realpath(dirname(__FILE__)."/../lib/");
+	if(!file_exists("../../project.xml"))
+	{
+		trigger_error("project.xml file not present.");
+		die();
+	}
 
 	// Load Aerial's configuration data
-	set_include_path($configPath);
-	include($configPath."/config.php");
+	include("/../lib/config.php");
 
 	// define AMFPHP base path for AMFPHP's usage
 	define("AMFPHP_BASE", conf("paths/amfphp"));

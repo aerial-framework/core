@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <aerial>
+    <!-- The version of Aerial -->
     <version>1.0alpha</version>
+
+    <!-- The location of the config.xml and config-alt.xml files, relative to the project root -->
+    <config-path>src_php/config</config-path>
 </aerial>

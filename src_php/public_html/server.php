@@ -6,7 +6,7 @@
 	}
 
 	// Load Aerial's configuration data
-	include("/../lib/config.php");
+	include("../lib/config.php");
 
 	// define AMFPHP base path for AMFPHP's usage
 	define("AMFPHP_BASE", conf("paths/amfphp"));

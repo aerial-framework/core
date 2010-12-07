@@ -30,9 +30,18 @@
 			$constants = get_defined_constants(true);
 			return $constants['user'];
 		}
+		
+		private function hasTables()
+		{
+			$conn = Doctrine_Manager::getInstance()->getConnection("doctrine");
+			$query = $conn->execute("SHOW TABLES");
+			$results = $query->fetchAll();
+			
+			return count($results) != 0;
+		}
 	
 		public function generate($fromYAML=true, $regenDB=false)
-		{
+		{					
 			if($regenDB)
 			{
 				Doctrine_Core::dropDatabases();
@@ -62,7 +71,7 @@
 				Doctrine_Core::generateModelsFromDb($models_path, array("doctrine"), $options);
 			}
 
-			if($regenDB)
+			if($regenDB || !$this->hasTables())
 				Doctrine_Core::createTablesFromModels();
 			//self::generateModelsAndServices();
 		}

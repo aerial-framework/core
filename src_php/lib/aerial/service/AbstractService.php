@@ -77,8 +77,6 @@ abstract class AbstractService
 			foreach($criteria as $key=>$value)
 				$q->addWhere("r.$key =?", $value);
 		}
-		else
-			$q->select("*");
 
 		//============================   Order  ===============================
 		if($sort){

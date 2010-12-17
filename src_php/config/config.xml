@@ -5,7 +5,7 @@
         you need to. Take care not to add this file to your source-control system.
     -->
   <paths>
-    <project>C:/UniServer/www/open-source/aerial-test</project>
+    <project></project>
     <aerial>src_php/lib/aerial</aerial>
     <libs>src_php/lib</libs>
     <amfphp>src_php/public_html/amfphp/core</amfphp>
@@ -28,8 +28,8 @@
     <file-mode>0777</file-mode>
   </code-generation>
   <options>
-    <debug-mode include-in-bootstrap="true">false</debug-mode>
-    <server-url include-in-bootstrap="true">http://aerial-test/server.php</server-url>
+    <debug-mode include-in-bootstrap="true">true</debug-mode>
+    <server-url include-in-bootstrap="true"></server-url>
     <use-arraycollection>true</use-arraycollection>
     <use-authentication>false</use-authentication>
   </options>
@@ -37,18 +37,10 @@
     <development>
       <engine>mysql</engine>
       <host>localhost</host>
-      <database>aerial_forum</database>
-      <username>aerial</username>
-      <password>secret</password>
+      <database></database>
+      <username></username>
+      <password></password>
       <port>3306</port>
     </development>
-    <production>
-      <engine>mysql</engine>
-      <host>localhost</host>
-      <database>aerial_forum</database>
-      <username>aerial</username>
-      <password>secret</password>
-      <port>3306</port>
-    </production>
   </database>
 </config>

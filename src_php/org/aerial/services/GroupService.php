@@ -1,8 +1,8 @@
 <?php
 	require_once(conf("paths/aerial")."service/AbstractService.php");
 
-	class TopicService extends AbstractService
+	class GroupService extends AbstractService
 	{
-		public $modelName = "Topic";
+		public $modelName = "Group";
 	}
 ?>

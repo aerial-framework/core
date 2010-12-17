@@ -5,6 +5,9 @@
 
 		public static function mapToModel($class, $data, $assignIdentifier=false)
 		{
+			if(is_undefined($data))
+				return null;
+			
 			$instance = new $class();
 			$primaryKeys = $instance->table->getIdentifierColumnNames();
 			
@@ -61,25 +64,19 @@
 			if(is_array($relations) || is_object($relations))
 				foreach($relations as $relation)
 				{
-					$alias = $relation->getAlias();	
-					/*echo $alias.">>".$relation->getClass()." [$class]\n";
-					
-					if(!is_undefined($data[$alias]) && is_object($data[$alias]))
-					{
-						echo "\n-------------------------\n";
-						var_dump($data[$alias]->toArray());
-						echo "\n-------------------------\n";
-					}*/
+					$alias = $relation->getAlias();
 					
 					if(!is_undefined($data[$alias]) && $data[$alias] != null)
 					{
+						$relClass = $relation->getClass();
+						$parentRel = self::hasParentRelationOfType(new $relClass, $class);
+						
 						if($relation->getType() == Doctrine_Relation::MANY)
 						{
+							//echo "Many: $alias\n";
 							$collection = new Doctrine_Collection($relation->getClass());
-							
-							$relClass = $relation->getClass();
-							$parentRel = self::hasParentRelationOfType(new $relClass, $class);
 
+							//print_r($data[$alias]);
 							if($data[$alias] instanceof Aerial_ArrayCollection)
 							{
 								foreach($data[$alias]->source as $element)
@@ -102,12 +99,17 @@
 									$collection->add($childObj);
 								}
 							}
-	
-							$instance[$alias] = $collection;
+								
+							$instance->$alias = $collection;
 						}
 						else
 						{
-							$instance[$alias] = self::mapToModel($relation->getClass(), $data[$alias], true);
+							$childObj = self::mapToModel($relation->getClass(), $data[$alias], true);
+							
+							if($parentRel)
+								$childObj->$parentRel = $instance;
+								
+							$instance->$alias = $childObj;
 						}
 					}
 				}
@@ -123,9 +125,11 @@
 			
 			foreach($relations as $name => $relation)
 			{
-				if($relation->getClass() == $class)
-					return $name;
+				if($relation->getClass() == $class && $relation->getType() != Doctrine_Relation::MANY)
+					return $relation->getAlias();
 			}
+			
+			return false;
 		}
 
 		private static function checkLookup($object)

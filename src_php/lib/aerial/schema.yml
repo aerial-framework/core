@@ -1,258 +1,86 @@
----
-#detect_relations: true
 options:
   collate: utf8_general_ci
   charset: utf8
   type: InnoDB
-
+  
 User:
-  mapClass: model.vo.User
-  tableName: User
   columns:
     id:
       type: integer(4)
       primary: true
-      notnull: true
       autoincrement: true
     username:
-      type: string(45)
-      unique: true
+      type: string(255)
     password:
-      type: string(45)
-    createDate:
-      type: timestamp
-    modDate:
-      type: timestamp
-      notnull: true
+      type: string(255)
+  attributes:
+    export: all
+    validate: true
 
-Post:
-  mapClass: model.vo.Post
-  tableName: Post
+Group:
+  tableName: group_table
   columns:
     id:
       type: integer(4)
-      primary: true
-      notnull: true
       autoincrement: true
-    userId:
-      type: integer(4)
-      notnull: true
-    topicId:
-      type: integer(4)
-      notnull: true
-    title:
-      type: string(45)
-      notnull: true
-    message:
-      type: clob(65535)
-    createDate:
-      type: timestamp
-    modDate:
-      type: timestamp
-      notnull: true
-  relations:
-    User:
-      class: User
-      local: userId
-      foreign: id
-      foreignAlias: posts
-      onDelete: cascade
-      onUpdate: cascade
-    Topic:
-      class: Topic
-      local: topicId
-      foreign: id
-      foreignAlias: posts
-  indexes:
-    fk_Post_User1:
-      fields: [userId]
-    fk_Post_Topic1:
-      fields: [topicId]
-
-Comment:
-  mapClass: model.vo.Comment
-  tableName: Comment
-  columns:
-    id:
-      type: integer(4)
       primary: true
-      notnull: true
-      autoincrement: true
-    userId:
-      type: integer(4)
-      notnull: true
-    postId:
-      type: integer(4)
-      notnull: true
-    message:
-      type: clob(65535)
-    createDate:
-      type: timestamp
-    modDate:
-      type: timestamp
-      notnull: true
-  relations:
-    User:
-      class: User
-      local: userId
-      foreign: id
-      foreignAlias: comments
-      onDelete: cascade
-      onUpdate: cascade
-    Post:
-      class: Post
-      local: postId
-      foreign: id
-      foreignAlias: comments
-      onDelete: cascade
-      onUpdate: cascade
-  indexes:
-    fk_Comment_User:
-      fields: [userId]
-    fk_Comment_Post1:
-      fields: [postId]
-
-Category:
-  mapClass: model.vo.Category
-  tableName: Category
-  columns:
-    id:
-      type: integer(4)
-      primary: true
-      notnull: true
-      autoincrement: true
-    userId:
-      type: integer(4)
-      notnull: true
     name:
-      type: string(45)
-      notnull: true
-    createDate:
-      type: timestamp
-    modDate:
-      type: timestamp
-      notnull: true
+      type: string(255)
   relations:
-    User:
+    Users:
+      foreignAlias: Groups
       class: User
-      local: userId
-      foreign: id
-      foreignAlias: categories
-  indexes:
-    fk_Category_User1:
-      fields: [userId]
+      refClass: GroupUser
 
-Topic:
-  mapClass: model.vo.Topic
-  tableName: Topic
+GroupUser:
   columns:
     id:
       type: integer(4)
       primary: true
-      notnull: true
       autoincrement: true
-    userId:
+    group_id:
       type: integer(4)
-      notnull: true
-    categoryId:
+      primary: true
+    user_id:
       type: integer(4)
-    name:
-      type: string(45)
-      unique: true
-      notnull: true
-    description:
-      type: clob(65535)
-    createDate:
-      type: timestamp
-    modDate:
-      type: timestamp
-      notnull: true
+      primary: true
   relations:
-    Category:
-      class: Category
-      local: categoryId
-      foreign: id
-      foreignAlias: topics
-      onDelete: set null
-      onUpdate: set null
+    Group:
+      foreignAlias: GroupUsers
     User:
-      class: User
-      local: userId
-      foreign: id
-      foreignAlias: topics
-  indexes:
-    fk_Topic_Category1:
-      fields: [categoryId]
-    fk_Topic_User1:
-      fields: [userId]
+      foreignAlias: GroupUsers
 
-Tag:
-  mapClass: model.vo.Tag
-  tableName: Tag
+Contact:
   columns:
     id:
       type: integer(4)
       primary: true
-      notnull: true
       autoincrement: true
     name:
-      type: string(100)
-
-TopicTag:
-  mapClass: model.vo.TopicTag
-  tableName: TopicTag
+      type: string(255)
+    user_id:
+      type: integer(4)
+  relations:
+    User:
+      local: user_id
+      foreign: id
+      class: User
+      foreignType: one
+      
+Phonenumber:
   columns:
     id:
       type: integer(4)
       primary: true
-      notnull: true
       autoincrement: true
-    topicId:
+    name:
+      type: string(255)
+    user_id:
       type: integer(4)
-      notnull: true
-    tagId:
-      type: integer(4)
-      notnull: true
   relations:
-    Topic:
-      class: Topic
-      local: topicId
+    User:
+      local: user_id
       foreign: id
-      foreignAlias: topicTags
-    Tag:
-      class: Tag
-      local: tagId
-      foreign: id
-      foreignAlias: topicTags
-  indexes:
-    fk_TopicTag_Topic1:
-      fields: [topicId]
-    fk_TopicTag_Tag1:
-      fields: [tagId]
-
-PostTag:
-  mapClass: model.vo.PostTag
-  tableName: PostTag
-  columns:
-    postId:
-      type: integer(4)
-      primary: true
-      notnull: true
-    tagId:
-      type: integer(4)
-      primary: true
-      notnull: true
-  relations:
-    Post:
-      class: Post
-      local: postId
-      foreign: id
-      foreignAlias: postTags
-    Tag:
-      class: Tag
-      local: tagId
-      foreign: id
-      foreignAlias: postTags
-  indexes:
-    fk_Post_has_Tag_Tag1:
-      fields: [tagId]
+      class: User
+      foreignType: many
+      foreignAlias: Phonenumbers

@@ -8,12 +8,10 @@
  * @property integer $id
  * @property string $username
  * @property string $password
- * @property timestamp $createDate
- * @property timestamp $modDate
- * @property Doctrine_Collection $posts
- * @property Doctrine_Collection $comments
- * @property Doctrine_Collection $categories
- * @property Doctrine_Collection $topics
+ * @property Doctrine_Collection $Groups
+ * @property Doctrine_Collection $GroupUsers
+ * @property Contact $Contact
+ * @property Doctrine_Collection $Phonenumbers
  * 
  * @package    ##PACKAGE##
  * @subpackage ##SUBPACKAGE##
@@ -24,29 +22,25 @@ abstract class BaseUser extends Aerial_Record
 {
     public function setTableDefinition()
     {
-        $this->setTableName('User');
+        $this->setTableName('user');
         $this->hasColumn('id', 'integer', 4, array(
              'type' => 'integer',
              'primary' => true,
              'autoincrement' => true,
              'length' => '4',
              ));
-        $this->hasColumn('username', 'string', 45, array(
+        $this->hasColumn('username', 'string', 255, array(
              'type' => 'string',
-             'unique' => true,
-             'length' => '45',
+             'length' => '255',
              ));
-        $this->hasColumn('password', 'string', 45, array(
+        $this->hasColumn('password', 'string', 255, array(
              'type' => 'string',
-             'length' => '45',
+             'length' => '255',
              ));
-        $this->hasColumn('createDate', 'timestamp', null, array(
-             'type' => 'timestamp',
-             ));
-        $this->hasColumn('modDate', 'timestamp', null, array(
-             'type' => 'timestamp',
-             'notnull' => true,
-             ));
+
+
+        $this->setAttribute(Doctrine_Core::ATTR_EXPORT, Doctrine_Core::EXPORT_ALL);
+        $this->setAttribute(Doctrine_Core::ATTR_VALIDATE, true);
 
         $this->option('collate', 'utf8_general_ci');
         $this->option('charset', 'utf8');
@@ -56,21 +50,22 @@ abstract class BaseUser extends Aerial_Record
     public function setUp()
     {
         parent::setUp();
-        $this->hasMany('Post as posts', array(
-             'local' => 'id',
-             'foreign' => 'userId'));
+        $this->hasMany('Group as Groups', array(
+             'refClass' => 'GroupUser',
+             'local' => 'user_id',
+             'foreign' => 'group_id'));
 
-        $this->hasMany('Comment as comments', array(
+        $this->hasMany('GroupUser as GroupUsers', array(
              'local' => 'id',
-             'foreign' => 'userId'));
+             'foreign' => 'user_id'));
 
-        $this->hasMany('Category as categories', array(
+        $this->hasOne('Contact', array(
              'local' => 'id',
-             'foreign' => 'userId'));
+             'foreign' => 'user_id'));
 
-        $this->hasMany('Topic as topics', array(
+        $this->hasMany('Phonenumber as Phonenumbers', array(
              'local' => 'id',
-             'foreign' => 'userId'));
+             'foreign' => 'user_id'));
     }
     public function construct()
     {

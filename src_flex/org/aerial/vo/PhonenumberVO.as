@@ -6,20 +6,20 @@ package org.aerial.vo
 	import flash.net.registerClassAlias;
 	
 	[Bindable]
-	[RemoteClass(alias="org.aerial.vo.Tag")]	
-	public class TagVO extends AbstractVO
+	[RemoteClass(alias="org.aerial.vo.Phonenumber")]	
+	public class PhonenumberVO extends AbstractVO
 	{
-		public function TagVO()
+		public function PhonenumberVO()
 		{
-			super("org.aerial.vo.Tag",
+			super("org.aerial.vo.Phonenumber",
 							function(field:String):*{return this[field]},
 							function(field:String, value:*):void{this[field] = value});
 		}
 		
 		private var _id:*
 		private var _name:*
-		private var _topicTags:*
-		private var _postTags:*
+		private var _user_id:*
+		private var _User:*
 
 		public function get id():int
 		{
@@ -41,24 +41,24 @@ package org.aerial.vo
 			_name = value;
 		}
 
-		public function get topicTags():ArrayCollection
+		public function get user_id():int
 		{
-			return _topicTags;
+			return _user_id;
 		}
 		
-		public function set topicTags(value:ArrayCollection):void
+		public function set user_id(value:int):void
 		{
-			_topicTags = value;
+			_user_id = value;
 		}
 
-		public function get postTags():ArrayCollection
+		public function get User():UserVO
 		{
-			return _postTags;
+			return _User;
 		}
 		
-		public function set postTags(value:ArrayCollection):void
+		public function set User(value:UserVO):void
 		{
-			_postTags = value;
+			_User = value;
 		}		
 	}
 }

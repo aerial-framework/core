@@ -19,12 +19,10 @@ package org.aerial.vo
 		private var _id:*
 		private var _username:*
 		private var _password:*
-		private var _createDate:*
-		private var _modDate:*
-		private var _posts:*
-		private var _comments:*
-		private var _categories:*
-		private var _topics:*
+		private var _Groups:*
+		private var _GroupUsers:*
+		private var _Contact:*
+		private var _Phonenumbers:*
 
 		public function get id():int
 		{
@@ -56,64 +54,44 @@ package org.aerial.vo
 			_password = value;
 		}
 
-		public function get createDate():String
+		public function get Groups():ArrayCollection
 		{
-			return _createDate;
+			return _Groups;
 		}
 		
-		public function set createDate(value:String):void
+		public function set Groups(value:ArrayCollection):void
 		{
-			_createDate = value;
+			_Groups = value;
 		}
 
-		public function get modDate():String
+		public function get GroupUsers():ArrayCollection
 		{
-			return _modDate;
+			return _GroupUsers;
 		}
 		
-		public function set modDate(value:String):void
+		public function set GroupUsers(value:ArrayCollection):void
 		{
-			_modDate = value;
+			_GroupUsers = value;
 		}
 
-		public function get posts():ArrayCollection
+		public function get Contact():ContactVO
 		{
-			return _posts;
+			return _Contact;
 		}
 		
-		public function set posts(value:ArrayCollection):void
+		public function set Contact(value:ContactVO):void
 		{
-			_posts = value;
+			_Contact = value;
 		}
 
-		public function get comments():ArrayCollection
+		public function get Phonenumbers():ArrayCollection
 		{
-			return _comments;
+			return _Phonenumbers;
 		}
 		
-		public function set comments(value:ArrayCollection):void
+		public function set Phonenumbers(value:ArrayCollection):void
 		{
-			_comments = value;
-		}
-
-		public function get categories():ArrayCollection
-		{
-			return _categories;
-		}
-		
-		public function set categories(value:ArrayCollection):void
-		{
-			_categories = value;
-		}
-
-		public function get topics():ArrayCollection
-		{
-			return _topics;
-		}
-		
-		public function set topics(value:ArrayCollection):void
-		{
-			_topics = value;
+			_Phonenumbers = value;
 		}		
 	}
 }

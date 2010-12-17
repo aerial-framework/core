@@ -2,194 +2,63 @@
 <s:WindowedApplication xmlns:fx="http://ns.adobe.com/mxml/2009" 
 					   xmlns:s="library://ns.adobe.com/flex/spark" 
 					   xmlns:mx="library://ns.adobe.com/flex/mx"
-					   applicationComplete="init()" xmlns:services="org.aerial.services.*"
-					   >
+					   xmlns:services="org.aerial.services.*">
+	
 	<fx:Declarations>
-		<services:UserService id="userService" result="resultHandler(event)" fault="faultHandler(event)" />
-		<services:TopicService id="topicService" result="result(event)" fault="fault(event)" />
-        <services:PostService id="postService" result="result(event)" fault="fault(event)" />
+		<services:UserService id="userService" result="result(event)" fault="fault(event)"/>
 	</fx:Declarations>
+	
+	<s:Button label="Save!" click="save()"/>
 	
 	<fx:Script>
 		<![CDATA[
-		import flash.net.registerClassAlias;
-		
-		import mx.collections.ArrayCollection;
-		import mx.collections.ICollectionView;
-		import mx.collections.IList;
-		import mx.collections.ListCollectionView;
-		import mx.controls.Alert;
-		import mx.messaging.messages.RemotingMessage;
-		import mx.rpc.events.FaultEvent;
-		import mx.rpc.events.ResultEvent;
-		
-		import org.aerial.rpc.messages.AerialErrorMessage;
-		import org.aerial.rpc.operation.Operation;
-		import org.aerial.vo.*;
-		import org.aerial.vo.CommentVO; CommentVO;
-
-        public var find:Operation;
-
-
-        public function init():void
-        {
-            WindowStuff();
-        }
-
-
-        public function testMethod():void
-        {
-            var post:PostVO = new PostVO();
-            post.title = "My New Posty";
-			post.setNull("message");
-			post.setNull("userId");
-
-            var user:UserVO = new UserVO();
-            user.username = "danny";
-            user.password = "12345";
-
-            var topic:TopicVO = new TopicVO();
-            topic.name = "topic";
-
-            post.Topic = topic;
-
-            topic.User = user;
-            post.User = user;
+			import mx.collections.ArrayCollection;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
 			
-            postService.save(post).execute();
-            //postService.findRelated("tags", 1).execute();
-        }
-
-        // Optimistic -  will return all properties in each object.
-        // Use (-) in front of property name to remove.
-        public function findAll():void
-        {
-            find = this.topicService
-                    .find({userId:1})
-                    .callback(findResult, findFault)
-                    .sortAsc("id")
-					.addRelation("posts(*).comments");
-
-            find.execute();
-        }
-
-        public function findResult(event:ResultEvent):void
-        {
-            if ((event.result is IList || event.result is ICollectionView))
-            {
-                if (event.result.length > 0)
-                {
-                    for each (var result:Object in event.result)
-                    {
-                        trace(result.id);
-                    }
-                }
-                else
-                {
-                    trace("no records");
-                }
-            }
-            else
-            {
-                trace(event.result);
-            }
-        }
-
-        public function findFault(event:FaultEvent):void
-        {
-            trace("custom fault event");
-        }
-
-        public function findNext():void
-        {
-            find.nextPage();
-
-        }
-
-        public function findPrevious():void
-        {
-            find.previousPage();
-        }
-
-
-        public function testCallbacks():void
-        {
-            /* 	this.test2Service.findAll().callback(myCallBack).execute();
-             this.test2Service.findAll().execute();
-             this.test2Service.findAll().callback(myCallBack).execute(); */
-        }
-
-
-        public function WindowStuff():void
-        {
-            nativeWindow.x = Screen.mainScreen.bounds.width - width - 50;
-            nativeWindow.y = Screen.mainScreen.bounds.height - height - 150;
-
-            nativeWindow.alwaysInFront = false;
-            nativeWindow.orderToFront();
-        }
-
-        protected function resultHandler(event:ResultEvent):void
-        {
-            var message:RemotingMessage = event.token.message as RemotingMessage;
-            var operation:String = message.source + "." + message.operation;
-
-            switch (operation)
-            {
-
-            case "UserService.get":
-
-                break;
-            case "UserService.getAll":
-
-                break;
-            case "UserService.getRelated":
-                if (message.body[0] == "inputLookups")
-                {
-
-                }
-                break;
-            case "UserService.update":
-
-                break;
-            case "UserService.save":
-
-                break;
-            }
-        }
-
-
-        protected function faultHandler(event:FaultEvent):void
-        {
-            Alert.show(event.fault.faultString);
-        }
-
-
-        public function myCallBack(event:ResultEvent):void
-        {
-            trace("CALLBACK_1:" + event.result.toString());
-        }
-
-
-        protected function result(event:ResultEvent):void
-        {
-            trace("DEFAULT RESULT: " + event.result.toString());
-        }
-
-
-        protected function fault(event:FaultEvent):void
-        {
-            trace("test fault");
-        }
+			import org.aerial.vo.ContactVO;
+			import org.aerial.vo.GroupVO;
+			import org.aerial.vo.PhonenumberVO;
+			import org.aerial.vo.UserVO;
 			
+			private function save():void
+			{
+				var u:UserVO = new UserVO();
+				u.username = "danny";
+				u.password = "12345";
+				
+				var contact:ContactVO = new ContactVO();
+				contact.name = "My Contact";
+				
+				u.Contact = contact;
+				
+				var p:PhonenumberVO = new PhonenumberVO();
+				p.name = "Nadya";
+				
+				p.User = u;
+				
+				u.Phonenumbers = new ArrayCollection([p]);
+				
+				var g:GroupVO = new GroupVO();
+				g.name = "my group 1";
+				
+				var g2:GroupVO = new GroupVO();
+				g2.name = "my group 2";
+				
+				u.Groups = new ArrayCollection([g, g2]);
+				
+				userService.save(u).execute();
+			}
 			
+			private function result(event:ResultEvent):void
+			{
+				
+			}			
 			
+			private function fault(event:FaultEvent):void
+			{
+				
+			}
 		]]>
 	</fx:Script>
-	<s:Button x="95" y="82" label="previousPage()" id="previous" click="this.findPrevious()"/>
-	<s:Button x="228" y="67" label="Find.execute()" click="this.findAll()" height="50"/>
-	<s:Button x="228" y="163" label="Insert.execute()" click="this.testMethod()" height="50"/>
-	<s:Button x="372" y="83" label="nextPage()" id="next" click="this.findNext()"/>
-	
-	
 </s:WindowedApplication>

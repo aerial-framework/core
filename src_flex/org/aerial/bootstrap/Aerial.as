@@ -1,5 +1,7 @@
 package org.aerial.bootstrap
 {
+	import org.aerial.rpc.messages.AerialErrorMessage;		AerialErrorMessage;
+
 	public class Aerial
 	{
 		public static const DEBUG_MODE:Boolean = false;

@@ -10,14 +10,53 @@ class Aerial_Hydrator_CollectionDriver  extends Doctrine_Hydrator_Graph
 	public function getElement(array $data, $component)
 	{
 		$component = $this->_getClassNameToReturn($data, $component);
-		$this->_tables[$component]->setData($data);
-		$record = $this->_tables[$component]->getRecord();
+		$table = $this->_tables[$component];
+		
+		$table->setData($data);
+		$record = $table->getRecord();
 		$type = $record->get("_explicitType");
 		
 		$amfRecord = new Aerial_AmfRecord($type);
+		$amfRecord->setType($component);
 		
-		foreach($data as $key=>$value)
+		foreach($data as $key => $value)
+		{
+			$columnName = $table->getColumnName($key);
+			$definition = $table->getColumnDefinition($columnName);
+			
+			switch($definition["type"])
+			{
+				case "blob":
+						$value = new ByteArray($value);						
+					break;
+				case "date":
+				case "datetime":
+				case "timestamp":
+				case "time":							
+					try
+					{
+						$unix = strtotime($value);
+					}
+					catch(Exception $e)
+					{
+						$unix = false;
+					}
+					
+					if($unix === false)
+					{
+						$unix = strtotime("1 January 1970");
+					}
+						
+					$date = new Date();
+					$date->time = $unix;
+					
+					$value = $date;
+											
+					break;
+			}
+		
 			$amfRecord->$key = $value;
+		}
 
 		return $amfRecord;
 	}

@@ -11,7 +11,7 @@ abstract class AbstractService
 
 		// try connect when create so that any connection errors can be detected early
 		if(!$this->connection->isConnected())
-		$this->connection->connect();
+			$this->connection->connect();
 
 		$this->table = $this->connection->getTable($this->modelName);
 	}
@@ -25,16 +25,25 @@ abstract class AbstractService
 		?   $object->getIdentifier()
 		:   $object->save();
 	}
+	
+	/**
+	 * Alias of "save" function
+	 * @param $object
+	 */
+	public function update($object)
+	{
+		return self::save($object);
+	}
 
 	public function insert($object)
 	{
 		$object = ModelMapper::mapToModel($this->modelName, $object);
-
+		
 		// unset the primary key values if one is set to insert a new record
 		foreach($object->table->getIdentifierColumnNames() as $primaryKey)
-		unset($object->$primaryKey);
-
-		$result = $object->trySave();
+			unset($object->$primaryKey);
+			
+		$result = $object->trySave();		
 		return ($result === true)
 		?   $object->getIdentifier()
 		:   $object->save();
@@ -43,6 +52,8 @@ abstract class AbstractService
 	public function drop($object)
 	{
 		$object = ModelMapper::mapToModel($this->modelName, $object, true);
+		$object = ModelMapper::processSpecialTypes($this->modelName, $object);
+		
 		return $object->delete();
 	}
 
@@ -77,8 +88,6 @@ abstract class AbstractService
 			foreach($criteria as $key=>$value)
 				$q->addWhere("r.$key =?", $value);
 		}
-		else
-			$q->select("*");
 
 		//============================   Order  ===============================
 		if($sort){
@@ -92,10 +101,9 @@ abstract class AbstractService
 		if($limit) $q->limit($limit);
 		if($offset) $q->offset($offset);
 
-
 		$q->setHydrationMode(Aerial_Core::HYDRATE_AMF_COLLECTION);
 		$results = $q->execute();
-
+		
 		return $results;
 
 	}

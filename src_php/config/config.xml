@@ -32,6 +32,7 @@
     <server-url include-in-bootstrap="true"></server-url>
     <use-arraycollection>true</use-arraycollection>
     <use-authentication>false</use-authentication>
+    <timezone>UTC</timezone>
   </options>
   <database use="development">
     <development>

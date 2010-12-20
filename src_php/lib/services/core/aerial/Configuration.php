@@ -157,13 +157,16 @@
                 case 'object':
                 	$as3type = "Object";
                 	break;
+                case 'time':
+                case 'timestamp':
+                case 'date':
+				case 'datetime':
+					$as3type = "Date";
+					break;
                 case 'enum':
                 case 'gzip':
                 case 'string':
                 case 'clob':
-                case 'time':
-                case 'timestamp':
-                case 'date':
                 default:
                 	$as3type = "String";
                 	break;

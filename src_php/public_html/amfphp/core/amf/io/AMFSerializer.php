@@ -91,14 +91,13 @@ class AMFSerializer extends AMFBaseSerializer {
 	 * @param date $d The date value
 	 */
 	function writeDate($d) {
-		$this->writeByte(11); // write  date code
-		$this->writeDouble($d); //  write date (milliseconds from 1970)
-		/**
-		 * write timezone
-		 * ?? this is wierd -- put what you like and it pumps it back into flash at the current GMT ??
-		 * have a look at the amf it creates...
-		 */
-		$this->writeInt(0);
+		$this->writeByte(8); // write  date code
+		$this->writeAmf3Int(1);
+		
+		$d->time = floatval($d->time) * 1000;
+		$this->writeDouble($d->time); //  write date (milliseconds from 1970)
+		
+		//$this->writeInt(0);
 	}
 
 	/**
@@ -722,6 +721,11 @@ class AMFSerializer extends AMFBaseSerializer {
 			elseif($className == 'bytearray')
 			{
 				$this->writeAmf3ByteArray($d->data);
+				return;
+			}
+			elseif($className == 'date')
+			{
+				$this->writeDate($d);
 				return;
 			}
 			// Fix for PHP5 overriden ArrayAccess and ArrayObjects with an explcit type

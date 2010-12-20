@@ -3,6 +3,7 @@
 	require_once(conf("paths/libs")."config/Authentication.php");
 	require_once(conf("paths/doctrine").'Aerial.php');
 	require_once(conf("paths/aerial")."utils/ModelMapper.php");
+	require_once(conf("paths/aerial")."utils/Date.php");
 
 	class Bootstrapper
 	{

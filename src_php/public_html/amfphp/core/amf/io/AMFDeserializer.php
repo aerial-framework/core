@@ -407,13 +407,16 @@ class AMFDeserializer extends AMFBaseDeserializer {
             }
             return $this->storedObjects[$dateref];
         }
-        //$timeOffset = ($dateref >> 1) * 6000 * -1;
-        $ms = $this->readDouble();
-
-        //$date = $ms-$timeOffset;
-        $date = $ms;
         
-        $this->storedObjects[] = & $date;
+        $ms = $this->readDouble();;
+        $date = date("Y-m-d H:i:s", floor($ms / 1000));
+
+        /*$timezoneOffset = date("Z");
+        $strDate = date("Y-m-d H:i:s", $date);
+        
+        die($date.":".$strDate.":".(date("Y-m-d H:i:s", $date + $timezoneOffset)));*/
+        
+        $this->storedObjects[] = &$date;
         return $date;
     }
 

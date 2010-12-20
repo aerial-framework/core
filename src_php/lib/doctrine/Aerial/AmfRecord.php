@@ -2,6 +2,8 @@
 
 class Aerial_AmfRecord implements ArrayAccess, Countable
 {
+	private $_type;
+	
 	function Aerial_AmfRecord($_explicitType = null){
 		if($_explicitType) $this->_explicitType = $_explicitType;
 	}
@@ -25,6 +27,16 @@ class Aerial_AmfRecord implements ArrayAccess, Countable
     
     public function offsetUnset($offset) {
         unset($this->$offset);
+    }
+    
+    public function setType($type)
+    {
+    	$this->_type = $type;
+    }
+    
+    public function getType()
+    {
+    	return $this->_type;
     }
     
     //Countable Implemenation

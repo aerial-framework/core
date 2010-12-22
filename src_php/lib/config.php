@@ -1,9 +1,7 @@
 <?php
-	// path constants
-	date_default_timezone_set('America/New_York');						// Required for PHP >= 5.3
 
-	$projectXML = simplexml_load_file(dirname(__FILE__)."../../../project.xml");
-	$_configPath = realpath(dirname(__FILE__)."../../../".((string) $projectXML->{"config-path"}));
+	$projectXML = simplexml_load_file(dirname(__FILE__)."/../../project.xml");
+	$_configPath = realpath(dirname(__FILE__)."/../../".((string) $projectXML->{"config-path"}));
 
 	if(!file_exists($_configPath))
 	{
@@ -21,6 +19,8 @@
 		throw new Exception("Project root directory is invalid [$_base]");
 
 	$_base = realpath($_base);
+	
+	date_default_timezone_set(conf("options/timezone", false, false));						// Required for PHP >= 5.3
 
 	/**
 	 * @throws Exception

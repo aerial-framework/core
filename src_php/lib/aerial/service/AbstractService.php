@@ -52,7 +52,6 @@ abstract class AbstractService
 	public function drop($object)
 	{
 		$object = ModelMapper::mapToModel($this->modelName, $object, true);
-		$object = ModelMapper::processSpecialTypes($this->modelName, $object);
 		
 		return $object->delete();
 	}

@@ -1,5 +1,4 @@
 <?php
-
 	$projectXML = simplexml_load_file(dirname(__FILE__)."/../../project.xml");
 	$_configPath = realpath(dirname(__FILE__)."/../../".((string) $projectXML->{"config-path"}));
 
@@ -11,6 +10,9 @@
 
 	$_config = simplexml_load_file($_configPath."/config.xml");
 	$_config_alt = @simplexml_load_file($_configPath."/config-alt.xml");
+
+    // add config path to config XML dynamically
+    $_config->options->{"config-path"} = $_configPath;
 
 	// Get the base path
 	$_base = conf("paths/project");

@@ -16,7 +16,10 @@
 		
 		private static function init()
 		{
-			$file = dirname(__FILE__)."/authentication.xml";
+			$file = conf("options/config-path")."authentication.xml";
+            if(!$file)
+                return;
+
 			$f = fopen($file, "r+");
 			$contents = fread($f, filesize($file));
 			fclose($f);

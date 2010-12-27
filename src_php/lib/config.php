@@ -68,6 +68,29 @@
 			}
 
 			$value = $nodeToUse->xpath($subnode);
+			
+			// if value is empty and config-alt.xml exists, try find value in main config
+			if(!$value)
+			{
+				if($_config_alt)
+				{
+					$nodes = $_config->xpath($path);
+					$nodes = $nodes[0];
+					
+					$nodeToUse = $nodes->$use;
+					
+					if(!$nodeToUse)			// if no "use" attribute is found, use the first node by default
+					{
+						$nodeToUse = $nodes->children();
+						$nodeToUse = $nodeToUse[0];
+					}
+					
+					$value = $nodeToUse->xpath($subnode);
+				}
+				else
+					trigger_error("$subnode node is missing in the database configuration");
+			}
+			
 			$value = (string) $value[0];
 			return $value;
 		}

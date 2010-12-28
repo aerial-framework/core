@@ -20,7 +20,7 @@
             if(!$file)
                 return;
 
-			$f = fopen($file, "r+");
+			$f = fopen($file, "r");
 			$contents = fread($f, filesize($file));
 			fclose($f);
 			

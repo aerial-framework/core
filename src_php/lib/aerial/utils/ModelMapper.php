@@ -9,6 +9,15 @@
 				return null;
 			
 			$instance = new $class();
+
+			// Since we're instantiating a new model and then mapping the values, we need to clear out default column values.
+			// Otherwise, Doctrine will assign the default values to "_oldValues" before we finish mapping.
+			foreach($instance->_data as $field=>$value)
+			{
+				if(! $value instanceof  Doctrine_Null)
+					$instance->$field = new Doctrine_Null();
+			}
+
 			$primaryKeys = $instance->table->getIdentifierColumnNames();
 			
 			if($assignIdentifier)

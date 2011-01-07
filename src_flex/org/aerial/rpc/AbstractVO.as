@@ -13,8 +13,6 @@ package org.aerial.rpc
 	{
 		private var getPrivateProperty:Function;
 		private var setPrivateProperty:Function;
-
-       //private var _nulled:Array = [];
 		
 		public function AbstractVO(aliasName:String, getProp:Function, setProp:Function)
 		{
@@ -52,8 +50,6 @@ package org.aerial.rpc
             }
 			
 			setPrivateProperty("_" + property, null);
-
-           // _nulled.push(property);
         }
 		
 		public function readExternal(input:IDataInput):void
@@ -81,9 +77,6 @@ package org.aerial.rpc
 				voOutput[propName] = propValue;				
 			}
 
-           // if(_nulled.length > 0)
-             //   voOutput["_nulled"] = _nulled;
-            
 			output.writeObject(voOutput);
 		}
 	}

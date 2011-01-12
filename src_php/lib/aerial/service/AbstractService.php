@@ -92,7 +92,7 @@ abstract class AbstractService
 		if($sort){
 			foreach($sort as $key=>$value)
 			{
-				$q->orderBy("$key $value");
+				$q->addOrderBy("$key $value");
 			}
 		}
 

@@ -62,13 +62,17 @@
 			$models_path = $php_path.conf("code-generation/php-models-folder");
 
 			if($fromYAML)
-				Doctrine_Core::generateModelsFromYaml(conf("options/config-path").'schema.yml', $models_path, $options);
+				Aerial_Core::generateModelsFromYaml(conf("options/config-path").'schema.yml', $models_path, $options);
 			else
 			{
 				if(!file_exists($models_path))					// if the folder does not exist, create it to avoid errors!
-					mkdir($models_path, conf("code-generation/directory-mode", false), true);
+					@mkdir($models_path, conf("code-generation/directory-mode", false), true);
 
-				Doctrine_Core::generateModelsFromDb($models_path, array("doctrine"), $options);
+                // if file STILL does not exist, throw an error
+                if(!file_exists($models_path))
+                    trigger_error("Cannot create folder: ".$models_path);
+
+				Aerial_Core::generateModelsFromDb($models_path, array("doctrine"), $options);
 			}
 
 			if($regenDB || !$this->hasTables())

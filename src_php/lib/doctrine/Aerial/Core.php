@@ -1,7 +1,7 @@
 <?php
 
-class Aerial_Core{
-
+class Aerial_Core
+{
 	//Hydrators
 	const HYDRATE_AMF_ARRAY = "Aerial_Hydrator_ArrayDriver";
 	const HYDRATE_AMF_COLLECTION = "Aerial_Hydrator_CollectionDriver";
@@ -34,4 +34,15 @@ class Aerial_Core{
 		return self::$_path;
 	}
 
+    public static function generateModelsFromDb($directory, array $databases = array(), array $options = array())
+    {
+        trigger_error("FUCK A");
+        return Doctrine_Core::generateModelsFromDb($directory, $databases, $options);
+    }
+
+    public static function generateModelsFromYaml($yamlPath, $directory, $options = array())
+    {
+        trigger_error("FUCK B");
+        return Doctrine_Core::generateModelsFromYaml($yamlPath, $directory, $options);
+    }
 }

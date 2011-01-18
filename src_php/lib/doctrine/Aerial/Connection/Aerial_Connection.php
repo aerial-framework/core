@@ -209,7 +209,7 @@
 						$this->modules[$name] = new Doctrine_Formatter($this);
 						break;
 					default:
-						$class = 'Doctrine_' . ucwords($name) . '_' . $this->getDriverName();
+						$class = 'Doctrine_' . ucwords($name) . '_' . ucwords($this->getDriverName());
 						$this->modules[$name] = new $class($this);
 					}
 			}

@@ -254,7 +254,7 @@ class Doctrine_Import_Schema
     /**
      * importSchema
      *
-     * A method to import a Schema and translate it into a Doctrine_Record object
+     * A method to import a Schema and translate it into a Doctrine_Record object (overriden by Aerial)
      *
      * @param  string $schema       The file containing the XML schema
      * @param  string $format       Format of the schema file

@@ -34,15 +34,26 @@ class Aerial_Core
 		return self::$_path;
 	}
 
+    /**
+     * Intercept Doctrines
+     *
+     * @static
+     * @param  $directory
+     * @param array $databases
+     * @param array $options
+     * @return void
+     */
     public static function generateModelsFromDb($directory, array $databases = array(), array $options = array())
     {
-        trigger_error("FUCK A");
-        return Doctrine_Core::generateModelsFromDb($directory, $databases, $options);
+        $import = new Aerial_Import();
+        NetDebug::printr($import->importSchema($directory, $databases, $options));
     }
 
     public static function generateModelsFromYaml($yamlPath, $directory, $options = array())
     {
-        trigger_error("FUCK B");
-        return Doctrine_Core::generateModelsFromYaml($yamlPath, $directory, $options);
+        $import = new Aerial_Import_Schema();
+        $import->setOptions($options);
+
+        NetDebug::printr($import->importSchema($yamlPath, 'yml', $directory));
     }
 }

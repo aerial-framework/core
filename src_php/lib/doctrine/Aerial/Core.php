@@ -46,7 +46,7 @@ class Aerial_Core
     public static function generateModelsFromDb($directory, array $databases = array(), array $options = array())
     {
         $import = new Aerial_Import();
-        NetDebug::printr($import->importSchema($directory, $databases, $options));
+        return $import->importSchema($directory, $databases, $options);
     }
 
     public static function generateModelsFromYaml($yamlPath, $directory, $options = array())
@@ -54,6 +54,6 @@ class Aerial_Core
         $import = new Aerial_Import_Schema();
         $import->setOptions($options);
 
-        NetDebug::printr($import->importSchema($yamlPath, 'yml', $directory));
+        return $import->importSchema($yamlPath, 'yml', $directory);
     }
 }

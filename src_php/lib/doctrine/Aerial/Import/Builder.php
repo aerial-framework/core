@@ -91,8 +91,7 @@ class Aerial_Import_Builder extends Doctrine_Import_Builder
         }
 
         return array("baseClass" => $baseClassToWrite,
-                        "packageLevel" => $packageLevelToWrite,
-                        "topLevel" => $topLevelToWrite);
+                        "topLevelClass" => $topLevelToWrite);
     }
     
     /**
@@ -200,7 +199,7 @@ class Aerial_Import_Builder extends Doctrine_Import_Builder
 
         $code .= PHP_EOL . $definitionCode;
 
-        return array("path" => realpath($writePath), "file" => $code);
+        return array("path" => $writePath, "file" => $code);
     }
 
     /*

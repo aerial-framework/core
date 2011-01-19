@@ -26,6 +26,10 @@ class Aerial_Import_Schema extends Doctrine_Import_Schema
         $schema = (array) $schema;
         $definitions = array();
 
+        $builder = new Aerial_Import_Builder();
+        $builder->setTargetPath($directory);
+        $builder->setOptions($this->getOptions());
+
         $array = $this->buildSchema($schema, $format);
 
         if (count($array) == 0) {
@@ -39,7 +43,7 @@ class Aerial_Import_Schema extends Doctrine_Import_Schema
                 continue;
             }
 
-            $definitions[] = $definition;
+            $definitions[] = $builder->buildRecord($definition);
         }
 
         return $definitions;

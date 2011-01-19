@@ -33,6 +33,10 @@ class Aerial_Import extends Doctrine_Import
             continue;
             }
 
+            $builder = new Aerial_Import_Builder();
+            $builder->setTargetPath($directory);
+            $builder->setOptions($options);
+
             $definitions = array();
 
             foreach ($connection->import->listTables() as $table) {
@@ -90,7 +94,9 @@ class Aerial_Import extends Doctrine_Import
               }
             }
 
-            $defs[] = $definition;
+            foreach ($definitions as $definition) {
+              $defs[] = $builder->buildRecord($definition);
+            }
         }
 
         return $defs;

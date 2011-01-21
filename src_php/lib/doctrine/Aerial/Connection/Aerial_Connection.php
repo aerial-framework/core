@@ -135,7 +135,7 @@
 
 			$this->getListener()->preError($event);
 
-			$name = 'Doctrine_Connection_' . $this->driverName . '_Exception';
+			$name = 'Doctrine_Connection_' . ucwords($this->driverName) . '_Exception';
 
 			$message = $e->getMessage();
 			if ($query) {

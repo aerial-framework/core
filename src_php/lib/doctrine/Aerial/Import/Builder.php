@@ -180,13 +180,9 @@ class Aerial_Import_Builder extends Doctrine_Import_Builder
 
         // If we have a writePath from the if else conditionals above then use it
         if (isset($writePath)) {
-            Doctrine_Lib::makeDirectories($writePath);
-
             $writePath .= DIRECTORY_SEPARATOR . $fileName;
         // Otherwise none of the conditions were met and we aren't generating base classes
         } else {
-            Doctrine_Lib::makeDirectories($this->_path);
-
             $writePath = $this->_path . DIRECTORY_SEPARATOR . $fileName;
         }
 

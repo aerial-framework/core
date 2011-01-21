@@ -62,7 +62,7 @@
 			$models_path = $php_path.conf("code-generation/php-models-folder");
 
 			if($fromYAML)
-				Doctrine_Core::generateModelsFromYaml(conf("options/config-path").'schema.yml', $models_path, $options);
+				$dataToWrite = Aerial_Core::generateModelsFromYaml(conf("options/config-path").'schema.yml', $models_path, $options);
 			else
 			{
 				if(!file_exists($models_path))					// if the folder does not exist, create it to avoid errors!
@@ -72,12 +72,16 @@
                 if(!file_exists($models_path))
                     trigger_error("Cannot create folder: ".$models_path);
 
-				Doctrine_Core::generateModelsFromDb($models_path, array("doctrine"), $options);
+				$dataToWrite = Aerial_Core::generateModelsFromDb($models_path, array("doctrine"), $options);
 			}
 
+            /**
+             * this might need to be re-thought since the models won't exist yet... perhaps a post-write callback?
+             */
 			if($regenDB || !$this->hasTables())
 				Doctrine_Core::createTablesFromModels();
-			//self::generateModelsAndServices();
+
+            return $dataToWrite;
 		}
 
 		public function getModels()

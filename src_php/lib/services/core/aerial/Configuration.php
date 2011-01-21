@@ -75,14 +75,29 @@
 				$dataToWrite = Aerial_Core::generateModelsFromDb($models_path, array("doctrine"), $options);
 			}
 
-            /**
-             * this might need to be re-thought since the models won't exist yet... perhaps a post-write callback?
-             */
-			if($regenDB || !$this->hasTables())
-				Doctrine_Core::createTablesFromModels();
-
             return $dataToWrite;
 		}
+
+        public function regenerateFromModels($regenDB=false)
+        {
+			if($regenDB)
+			{
+				Doctrine_Core::dropDatabases();
+				Doctrine_Core::createDatabases();
+			}
+            
+			$models = Doctrine_Core::getLoadedModels();
+            if(count($models) == 0)
+            {
+                trigger_error("No models found.");
+                return;
+            }
+            else
+            {
+                Doctrine_Core::createTablesFromModels();
+                return count($models);;
+            }
+        }
 
 		public function getModels()
 		{

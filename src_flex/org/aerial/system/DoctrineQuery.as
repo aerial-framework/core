@@ -1,9 +1,8 @@
 /**
  * Created by IntelliJ IDEA.
- * User: danny
+ * User: Danny Kopping
  * Date: 2011/01/20
  * Time: 1:38 AM
- * To change this template use File | Settings | File Templates.
  */
 package org.aerial.system
 {
@@ -16,7 +15,7 @@ package org.aerial.system
             _properties = [];
         }
 
-        private function setProperty(functionName:String, data:*):void
+        private function setProperty(functionName:String=null, data:*=undefined):void
         {
             _properties.push({key:functionName, value:data});
         }
@@ -28,7 +27,7 @@ package org.aerial.system
 
         /**
          * Resets the query to the state just after it has been instantiated..
-         * 
+         *
          * @return
          */
 		public function reset():DoctrineQuery
@@ -55,7 +54,7 @@ package org.aerial.system
          * @param joinCondition
          * @return
          */
-		public function addPendingJoinCondition(componentAlias:String, joinCondition:String):DoctrineQuery
+		public function addPendingJoinCondition(componentAlias:String=null, joinCondition:String=null):DoctrineQuery
 		{
             setProperty("addPendingJoinCondition", [componentAlias, joinCondition]);
             return this;
@@ -67,7 +66,7 @@ package org.aerial.system
          * @param index
          * @return
          */
-		public function adjustProcessedParam(index:Number):DoctrineQuery
+		public function adjustProcessedParam(index:*):DoctrineQuery
 		{
             setProperty("adjustProcessedParam", [index]);
             return this;
@@ -80,7 +79,7 @@ package org.aerial.system
          * @param value
          * @return
          */
-		public function setOption(name:String, value:String):DoctrineQuery
+		public function setOption(name:String=null, value:String=null):DoctrineQuery
 		{
             setProperty("setOption", [name, value]);
             return this;
@@ -112,13 +111,13 @@ package org.aerial.system
 
         /**
          * addSqlTableAlias adds an SQL table alias and associates it a component alias.
-         * 
+         *
          * @param sqlTableAlias
          * @param componentAlias
          * @param tableAlias
          * @return
          */
-		public function addSqlTableAlias(sqlTableAlias:*, componentAlias:String, tableAlias:String):DoctrineQuery
+		public function addSqlTableAlias(sqlTableAlias:*=undefined, componentAlias:String=null, tableAlias:String=null):DoctrineQuery
 		{
             setProperty("addSqlTableAlias", [sqlTableAlias, componentAlias, tableAlias]);
             return this;
@@ -144,20 +143,20 @@ package org.aerial.system
          * @param params
          * @return
          */
-		public function addWhere(where:String, params:*):DoctrineQuery
+		public function addWhere(where:String=null, params:*=undefined):DoctrineQuery
 		{
             setProperty("addWhere", [where, params]);
             return this;
 		}
 
         /**
-         * Adds conditions to the WHERE part of the query. 
+         * Adds conditions to the WHERE part of the query.
          *
          * @param where
          * @param params
          * @return
          */
-		public function andWhere(where:String, params:*):DoctrineQuery
+		public function andWhere(where:String=null, params:*=undefined):DoctrineQuery
 		{
             setProperty("andWhere", [where, params]);
             return this;
@@ -170,7 +169,7 @@ package org.aerial.system
          * @param params
          * @return
          */
-		public function orWhere(where:String, params:*):DoctrineQuery
+		public function orWhere(where:String=null, params:*=undefined):DoctrineQuery
 		{
             setProperty("orWhere", [where, params]);
             return this;
@@ -181,10 +180,10 @@ package org.aerial.system
          *
          * @param expr
          * @param params
-         * @param not
+         * @param Boolean not
          * @return
          */
-		public function whereIn(expr:String, params:*, not:Boolean):DoctrineQuery
+		public function whereIn(expr:String=null, params:*=undefined, not:*=undefined):DoctrineQuery
 		{
             setProperty("whereIn", [expr, params, not]);
             return this;
@@ -195,10 +194,10 @@ package org.aerial.system
          *
          * @param expr
          * @param params
-         * @param not
+         * @param Boolean not
          * @return
          */
-		public function andWhereIn(expr:String, params:*, not:Boolean):DoctrineQuery
+		public function andWhereIn(expr:String=null, params:*=undefined, not:*=undefined):DoctrineQuery
 		{
             setProperty("andWhereIn", [expr, params, not]);
             return this;
@@ -211,10 +210,10 @@ package org.aerial.system
          *
          * @param expr
          * @param params
-         * @param not
+         * @param Boolean not
          * @return
          */
-		public function orWhereIn(expr:String, params:*, not:Boolean):DoctrineQuery
+		public function orWhereIn(expr:String=null, params:*=undefined, not:*=undefined):DoctrineQuery
 		{
             setProperty("orWhereIn", [expr, params, not]);
             return this;
@@ -228,7 +227,7 @@ package org.aerial.system
          * @param params
          * @return
          */
-		public function whereNotIn(expr:String, params:*):DoctrineQuery
+		public function whereNotIn(expr:String=null, params:*=undefined):DoctrineQuery
 		{
             setProperty("whereNotIn", [expr, params]);
             return this;
@@ -242,7 +241,7 @@ package org.aerial.system
          * @param params
          * @return
          */
-		public function andWhereNotIn(expr:String, params:*):DoctrineQuery
+		public function andWhereNotIn(expr:String=null, params:*=undefined):DoctrineQuery
 		{
             setProperty("andWhereNotIn", [expr, params]);
             return this;
@@ -255,7 +254,7 @@ package org.aerial.system
          * @param params
          * @return
          */
-		public function orWhereNotIn(expr:String, params:*):DoctrineQuery
+		public function orWhereNotIn(expr:String=null, params:*=undefined):DoctrineQuery
 		{
             setProperty("orWhereNotIn", [expr, params]);
             return this;
@@ -282,7 +281,7 @@ package org.aerial.system
          * @param params
          * @return
          */
-		public function addHaving(having:String, params:*):DoctrineQuery
+		public function addHaving(having:String=null, params:*=undefined):DoctrineQuery
 		{
             setProperty("addHaving", [having, params]);
             return this;
@@ -345,7 +344,7 @@ package org.aerial.system
          */
 		public function deleteFrom(from:String):DoctrineQuery
 		{
-            setProperty("deleteFrom", [from]);
+            setProperty("delete", [from]);
             return this;
 		}
 
@@ -356,7 +355,7 @@ package org.aerial.system
          * @param update
          * @return
          */
-		public function update(from:*, update:String):DoctrineQuery
+		public function update(from:*=undefined, update:String=null):DoctrineQuery
 		{
             setProperty("update", [from, update]);
             return this;
@@ -372,9 +371,9 @@ package org.aerial.system
          * @param update
          * @return
          */
-		public function setSet(key:*, value:*, params:*, update:String):DoctrineQuery
+		public function setSet(key:*=undefined, value:*=undefined, params:*=undefined, update:String=null):DoctrineQuery
 		{
-            setProperty("setSet", [key, value, params, update]);
+            setProperty("set", [key, value, params, update]);
             return this;
 		}
 
@@ -397,13 +396,13 @@ package org.aerial.system
          * @param params
          * @return
          */
-		public function innerJoin(join:String, params:*):DoctrineQuery
+		public function innerJoin(join:String=null, params:*=undefined):DoctrineQuery
 		{
             setProperty("innerJoin", [join, params]);
             return this;
 		}
 
-		public function leftJoin(join:String, params:*):DoctrineQuery
+		public function leftJoin(join:String=null, params:*=undefined):DoctrineQuery
 		{
             setProperty("leftJoin", [join, params]);
             return this;
@@ -429,7 +428,7 @@ package org.aerial.system
          * @param join
          * @return
          */
-		public function where(where:*, params:*, join:String):DoctrineQuery
+		public function where(where:*=undefined, params:*=undefined, join:String=null):DoctrineQuery
 		{
             setProperty("where", [where, params, join]);
             return this;
@@ -442,7 +441,7 @@ package org.aerial.system
          * @param params
          * @return
          */
-		public function having(having:String, params:*):DoctrineQuery
+		public function having(having:String=null, params:*=undefined):DoctrineQuery
 		{
             setProperty("having", [having, params]);
             return this;
@@ -517,8 +516,11 @@ package org.aerial.system
         private function getParametersAsString(values:Array):String
         {
             var params:Array = [];
-            for each(var value:* in values)
+            for each(var value:*=undefined in values)
             {
+                if(value == null || !value)
+                    continue;
+                
                 if(value is String)
                     params.push("'" + value + "'");
                 else

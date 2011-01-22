@@ -112,5 +112,17 @@ abstract class AbstractService
 	{
 		return $this->table->count();
 	}
+
+    public function executeDQL($properties)
+    {
+        $q = Doctrine_Query::create();
+        foreach($properties as $property)
+        {
+            $method = $property["key"];
+            call_user_func_array(array($q, $method), $property["value"]);
+        }
+
+        return $q->execute();
+    }
 }
 ?>

@@ -3,12 +3,14 @@ package org.aerial.rpc
 	import flash.utils.getQualifiedClassName;
 
     import mx.rpc.AbstractOperation;
-    import mx.rpc.remoting.RemoteObject;
+import mx.rpc.AsyncToken;
+import mx.rpc.remoting.RemoteObject;
 	
 	import org.aerial.rpc.IService;
 	import org.aerial.rpc.operation.Operation;
+import org.aerial.system.DoctrineQuery;
 
-	public class AbstractService extends RemoteObject implements IService
+public class AbstractService extends RemoteObject implements IService
 	{
 		import org.aerial.rpc.messages.AerialErrorMessage; AerialErrorMessage;
 
@@ -72,38 +74,25 @@ package org.aerial.rpc
         }
 
 		// Find Methods
-		
+
 		public function find(criteria:* = null):Operation
 		{
-			var op:Operation = new Operation(this, "find", criteria); 
-			return op;
-		}
-		
-		public function findFirst(criteria:* = null):Operation
-		{
-			var op:Operation = new Operation(this, "findFirst", criteria); 
-			return op;
-		}
-		
-		public function findLast(criteria:* = null):Operation
-		{
-			var op:Operation = new Operation(this, "findLast", criteria); 
-			return op;
-		}
-		
-		public function findById(id:int):Operation
-		{
-			var op:Operation = new Operation(this, "findById", id);
+			var op:Operation = new Operation(this, "find", criteria);
 			return op;
 		}
 
-		public function findRelated(field:String, id:int):Operation
+        public function count():Operation
 		{
-			var op:Operation = new Operation(this, "findRelated", field, id);
+			var op:Operation = new Operation(this, "count");
 
 			return op;
 		}
-		
+
+        public function executeDQL(query:DoctrineQuery):AsyncToken
+        {
+			var op:Operation = new Operation(this, "executeDQL", query.properties);
+			return op.execute();
+        }
 		
 		// Helpers
 		
@@ -111,22 +100,5 @@ package org.aerial.rpc
 			if(!(vo is _voClass))
 				throw new ArgumentError(this.source + ".insert(vo:Object) argument must be of type " + getQualifiedClassName(_voClass) + " (You used " + getQualifiedClassName(vo) + ")");
 		}
-		
-		/*
-		public function findByField(field:Object, page:int):void
-		{
-		}
-		
-		public function findByParent(parent:Object, page:int=0):void
-		{
-		}
-		
-		public function findByExample(example:Object, page:int=0):void
-		{
-		}
-		
-		public function count(example:Object=null):void
-		{
-		}*/
 	}
 }

@@ -1,10 +1,4 @@
 <?php
-	if(!file_exists("../../project.xml"))
-	{
-		trigger_error("project.xml file not present.");
-		die();
-	}
-
 	// Load Aerial's configuration data
 	include("../lib/config.php");
 

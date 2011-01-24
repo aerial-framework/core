@@ -2,7 +2,4 @@
 <aerial>
     <!-- The version of Aerial -->
     <version>1.0a</version>
-
-    <!-- The location of the config.xml and config-alt.xml files, relative to the project root -->
-    <config-path>src_php/config</config-path>
 </aerial>

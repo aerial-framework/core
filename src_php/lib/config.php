@@ -1,10 +1,9 @@
 <?php
-	$projectXML = simplexml_load_file(dirname(__FILE__)."/../../project.xml");
-	$_configPath = realpath(dirname(__FILE__)."/../../".((string) $projectXML->{"config-path"}));
+	$_configPath = realpath(dirname(__FILE__)."/../config");
 
 	if(!file_exists($_configPath))
 	{
-		trigger_error("The configuration file could not be found under ".((string) $projectXML->{"config-path"}));
+		trigger_error("The configuration file could not be found under src_php/config");
 		die();
 	}
 

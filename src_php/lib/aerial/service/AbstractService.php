@@ -56,7 +56,7 @@ abstract class AbstractService
 		return $object->delete();
 	}
 
-	public function find($criteria, $limit, $offset, $sort, $relations)
+	public function find($criteria, $limit, $offset, $sort, $relations, $where)
 	{
 		$q = Doctrine_Query::create()->from("$this->modelName r");
 
@@ -87,6 +87,12 @@ abstract class AbstractService
 			foreach($criteria as $key=>$value)
 				$q->addWhere("r.$key =?", $value);
 		}
+		
+	  	if($where)
+      	{
+      		foreach($where as $value)
+      			$q->addWhere($value);
+      	}
 
 		//============================   Order  ===============================
 		if($sort){

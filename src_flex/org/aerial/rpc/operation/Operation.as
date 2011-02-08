@@ -26,7 +26,6 @@ package org.aerial.rpc.operation
 		private var _page:uint;
 		private var _sort:Object;
 		private var _relations:Array;
-		private var _where:Array;
 		 
 		public function Operation(service:AbstractService, remoteMethod:String, ...args)
 		{
@@ -38,7 +37,6 @@ package org.aerial.rpc.operation
 			_offset = 0;
 			_sort = new Object();
 			_relations = new Array();
-			_where = new Array();
 		}
 		
 		
@@ -52,12 +50,6 @@ package org.aerial.rpc.operation
 		public function addRelation(relation:String):Operation
 		{
 			_relations.push(relation);
-			return this;
-		}
-		
-		public function where(criteria:String):Operation
-		{
-			_where.push(criteria);
 			return this;
 		}
 		
@@ -138,7 +130,7 @@ package org.aerial.rpc.operation
 		
 		private function _execute(limit:uint, offset:uint):AsyncToken
 		{
-            _args.push(_limit, _offset, _sort, _relations, _where);
+            _args.push(_limit, _offset, _sort, _relations);
 
 			token = _op.send(_args);
 			

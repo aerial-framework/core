@@ -88,8 +88,13 @@ abstract class AbstractService
 				$q->addWhere("r.$key =?", $value);
 		}
 		
-		foreach($relationParts["criteria"] as $criteria)
-                $q->addWhere($criteria);
+		
+		if($relationParts)
+		{
+			foreach($relationParts["criteria"] as $criteria)
+				$q->addWhere($criteria);
+		}
+		
 		
 		//============================   Order  ===============================
 		if($sort){

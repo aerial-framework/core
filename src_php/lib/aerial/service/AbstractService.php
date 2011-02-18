@@ -35,7 +35,7 @@ abstract class AbstractService
 		return self::save($object);
 	}
 
-	public function insert($object)
+	public function insert($object, $returnCompleteObject = false)
 	{
 		$object = ModelMapper::mapToModel($this->modelName, $object);
 		
@@ -44,9 +44,16 @@ abstract class AbstractService
 			unset($object->$primaryKey);
 			
 		$result = $object->trySave();		
-		return ($result === true)
-		?   $object->getIdentifier()
-		:   $object->save();
+		
+		if($result === true)
+		{
+			return $returnCompleteObject ? $object : $object->getIdentifier();
+		}
+		else
+		{
+			$object->save();
+		}
+		
 	}
 
 	public function drop($object)

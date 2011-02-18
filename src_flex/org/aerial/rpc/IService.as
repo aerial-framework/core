@@ -5,7 +5,7 @@ package org.aerial.rpc{
 		
 		function find(arg:*=null):Operation;
 		
-		function insert(vo:Object):Operation;
+		function insert(vo:Object, returnCompleteObject:Boolean = false):Operation;
 		
 
 		/*function findFirst():void;

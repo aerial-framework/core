@@ -16,14 +16,21 @@ abstract class AbstractService
 		$this->table = $this->connection->getTable($this->modelName);
 	}
 
-	public function save($object)
+	public function save($object, $returnCompleteObject = false)
 	{
 		$object = ModelMapper::mapToModel($this->modelName, $object, true);
 
 		$result = $object->trySave();
-		return ($result === true)
-		?   $object->getIdentifier()
-		:   $object->save();
+		
+		if($result === true)
+		{
+			return $returnCompleteObject ? $object : $object->getIdentifier();
+		}
+		else
+		{
+			$object->save();
+		}
+		
 	}
 	
 	/**

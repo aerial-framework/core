@@ -35,10 +35,10 @@ package org.aerial.rpc
 			return op;
 		}
 		
-		public function update(vo:Object):Operation
+		public function update(vo:Object, returnCompleteObject:Boolean = false):Operation
 		{
 			validateVO(vo);
-			var op:Operation = new Operation(this, "update", vo);
+			var op:Operation = new Operation(this, "update", vo, returnCompleteObject);
 			
 			return op;
 		}

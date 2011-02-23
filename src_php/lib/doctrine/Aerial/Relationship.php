@@ -8,6 +8,33 @@ class Aerial_Relationship
 
 		return $cols;
 	}
+	
+	public static function extractCriteria(&$column, &$criteria=null, &$with=null)
+	{
+		$operators = array( "!=", ">=", "<=", "=", ">", "<",  "&", "IS ", "NOT ", "BETWEEN ", "LIKE ");
+		
+		foreach ($operators as $op)
+		{
+			$criteriaPosition = strpos($column, $op);
+			
+			if($criteriaPosition !== false)
+			{
+				//If the criteria operator is preceeded by "_", use doctrine "WITH" in leftJoin.  
+				$useWith = substr($column, $criteriaPosition-1, 1) == "_" ? true : false;
+				
+				if(!$useWith){
+					$criteria = substr($column, $criteriaPosition);
+				}else{
+					$with = substr($column, $criteriaPosition);
+				}
+				
+				$column = substr($column, 0, $criteriaPosition - ($useWith ?  1 : 0));
+				
+				break;
+			}
+		}
+		
+	}
 
 	public static function key($dirty_key)
 	{
@@ -87,8 +114,9 @@ class Aerial_Relationship
 		$dAlias = $relations;
 		$joins = array();
 		$selects = array();
+		$criteria = array();
 
-		self::internal_relationParts($dAlias, $pTable, $joins, $selects);
+		self::internal_relationParts($dAlias, $pTable, $joins, $selects, $criteria);
 
 		//Combine the SELECT array elements into a single string.
 		$start = true;
@@ -106,10 +134,10 @@ class Aerial_Relationship
 			}
 		}
 
-		return array("selects"=>$selectStr, "joins"=>$joins);
+		return array("selects"=>$selectStr, "joins"=>$joins, "criteria"=>$criteria);
 	}
 
-	private static function internal_relationParts($dAlias, $pTable, &$leftJoins, &$selectedTables, $sAlias=null, &$i=0)
+	private static function internal_relationParts($dAlias, $pTable, &$leftJoins, &$selectedTables, &$criteria, $sAlias=null, &$i=0)
 	{
 		$isRoot = ($sAlias == null) ? true : false;
 		
@@ -129,17 +157,16 @@ class Aerial_Relationship
 				$d_docTable = Doctrine_Core::getTable($d_name); //DoctrineTable
 	
 				//Build the leftJoin().
-				$leftJoins[] = "$sAlias." . $rd . " $sqlAlias";
+				$leftJoin = "$sAlias." . $rd . " $sqlAlias";
 			}
 
 
-			//Build the column selects.
+			//Build the column selects and build the criteria
 			$columns = self::columns($d);
 			$selectedTables[$sqlAlias] = array();
 
 			if(count($columns) == 0)
 			{
-				$test  = $d_docTable->getIdentifier();
 				$selectedTables[$sqlAlias][] = $d_docTable->getIdentifier(); //Primary Key
 			}
 
@@ -149,6 +176,16 @@ class Aerial_Relationship
 				$oper = ($firstChar == "-" ? "-" : "+");
 				$colName = (($firstChar == "-") || ($firstChar ==  "+") ? substr($col, 1) : $col);
 
+				//Need to extract any criteria before proceeding.
+				$with = null;
+				$cri = null;
+				self::extractCriteria($colName, $cri, $with);
+				
+				if($cri)
+					$criteria[] = "$sqlAlias." . $colName . " $cri";
+				if($with)
+					$leftJoin .= " WITH $sqlAlias." .  $colName . " $with";
+				
 				if($oper == "+"){
 					if($colName == "*"){
 						$selectedTables[$sqlAlias] =  $d_docTable->getFieldNames();;
@@ -165,12 +202,17 @@ class Aerial_Relationship
 				}
 			}
 
+			if(!$isRoot)
+			{
+				$leftJoins[] = $leftJoin;
+			}
+
 			//Recursion
 			if(count($dd) > 0){
 				if($isRoot){
 					$d_name = $pTable;
 				}
-				self::internal_relationParts($dd, $d_name, $leftJoins, $selectedTables, $sqlAlias, $i);
+				self::internal_relationParts($dd, $d_name, $leftJoins, $selectedTables, $criteria, $sqlAlias, $i);
 			}
 
 		}//Table Loop

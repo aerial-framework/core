@@ -27,18 +27,18 @@ package org.aerial.rpc
 		
 		//Modify Methods
 		
-		public function insert(vo:Object):Operation
+		public function insert(vo:Object, returnCompleteObject:Boolean = false):Operation
 		{
 			validateVO(vo);
-			var op:Operation = new Operation(this, "insert", vo);
+			var op:Operation = new Operation(this, "insert", vo, returnCompleteObject);
 			
 			return op;
 		}
 		
-		public function update(vo:Object):Operation
+		public function update(vo:Object, returnCompleteObject:Boolean = false):Operation
 		{
 			validateVO(vo);
-			var op:Operation = new Operation(this, "update", vo);
+			var op:Operation = new Operation(this, "update", vo, returnCompleteObject);
 			
 			return op;
 		}

@@ -5,7 +5,8 @@ package org.aerial.rpc{
 		
 		function find(arg:*=null):Operation;
 		
-		function insert(vo:Object):Operation;
+		function insert(vo:Object, returnCompleteObject:Boolean = false):Operation;
+		function update(vo:Object, returnCompleteObject:Boolean = false):Operation;
 		
 
 		/*function findFirst():void;
@@ -20,13 +21,7 @@ package org.aerial.rpc{
 
 		function findByExample(example:Object):void;
 
-		
-
-		function update(topic:TopicVO):void;
-
 		function drop(topic:TopicVO):void;
-
-		function save(topic:TopicVO):void;
 
 		function count(example:Object=null):void;*/
 	}

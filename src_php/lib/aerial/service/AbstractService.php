@@ -101,8 +101,10 @@ abstract class AbstractService
 			foreach($criteria as $key=>$value)
 				$q->addWhere("r.$key =?", $value);
 		}
-		
-		
+
+		if($relationParts && !$relationParts["criteria"])
+			$relationParts["criteria"] = array();
+
 		if($relationParts)
 		{
 			foreach($relationParts["criteria"] as $criteria)

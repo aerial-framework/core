@@ -42,8 +42,14 @@
 				foreach($data as $key => $value)
 				{
 					if(is_undefined($value))
-						continue;
-						
+							continue;
+					else
+						if($value == null)
+						{
+								$instance->$key = NULL;
+								continue;
+						}
+
 					if($instance->table->hasColumn($key) && $value == $instance->table->getDefaultValueOf($key))
 					{
 						$instance->$key = $value;

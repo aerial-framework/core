@@ -45,7 +45,10 @@
 						continue;
 						
 					if($instance->table->hasColumn($key) && $value == $instance->table->getDefaultValueOf($key))
+					{
+						$instance->$key = $value;
 						continue;
+					}
 	
 					$found = false;
 					foreach($relations as $relation)

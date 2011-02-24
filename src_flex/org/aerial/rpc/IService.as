@@ -8,6 +8,7 @@ package org.aerial.rpc{
 		function insert(vo:Object, returnCompleteObject:Boolean = false):Operation;
 		function update(vo:Object, returnCompleteObject:Boolean = false):Operation;
 		
+        function count():Operation;
 
 		/*function findFirst():void;
 

@@ -66,7 +66,7 @@ class Aerial_Hydrator_CollectionDriver  extends Doctrine_Hydrator_Graph
 	{
 	}
 
-	public function initRelated(&$record, $name)
+	public function initRelated(&$record, $name, $keyColumn = null)
 	{
 		if ( ! isset($record[$name])) {
 			$record[$name] = new Aerial_ArrayCollection();

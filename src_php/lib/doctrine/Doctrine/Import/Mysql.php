@@ -1,6 +1,6 @@
 <?php
 /*
- *  $Id: Mysql.php 6484 2009-10-12 17:40:41Z jwage $
+ *  $Id: Mysql.php 7644 2010-06-08 15:12:02Z jwage $
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -16,7 +16,7 @@
  *
  * This software consists of voluntary contributions made by many individuals
  * and is licensed under the LGPL. For more information, see
- * <http://www.phpdoctrine.org>.
+ * <http://www.doctrine-project.org>.
  */
 
 /**
@@ -25,8 +25,8 @@
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @author      Lukas Smith <smith@pooteeweet.org> (PEAR MDB2 library)
- * @version     $Revision: 6484 $
- * @link        www.phpdoctrine.org
+ * @version     $Revision: 7644 $
+ * @link        www.doctrine-project.org
  * @since       1.0
  */
 class Doctrine_Import_Mysql extends Doctrine_Import
@@ -67,7 +67,7 @@ class Doctrine_Import_Mysql extends Doctrine_Import
     {
         $keyName = 'Key_name';
         $nonUnique = 'Non_unique';
-        if ($this->conn->getAttribute(Doctrine_Core::ATTR_PORTABILITY) & Doctrine_Core::PORTABILITY_FIX_CASE) {
+        if ($this->conn->getAttribute(Doctrine_Core::ATTR_FIELD_CASE) && ($this->conn->getAttribute(Doctrine_Core::ATTR_PORTABILITY) & Doctrine_Core::PORTABILITY_FIX_CASE)) {
             if ($this->conn->getAttribute(Doctrine_Core::ATTR_FIELD_CASE) == CASE_LOWER) {
                 $keyName = strtolower($keyName);
                 $nonUnique = strtolower($nonUnique);
@@ -186,7 +186,7 @@ class Doctrine_Import_Mysql extends Doctrine_Import
     {
         $keyName = 'Key_name';
         $nonUnique = 'Non_unique';
-        if ($this->conn->getAttribute(Doctrine_Core::ATTR_PORTABILITY) & Doctrine_Core::PORTABILITY_FIX_CASE) {
+        if ($this->conn->getAttribute(Doctrine_Core::ATTR_FIELD_CASE) && ($this->conn->getAttribute(Doctrine_Core::ATTR_PORTABILITY) & Doctrine_Core::PORTABILITY_FIX_CASE)) {
             if ($this->conn->getAttribute(Doctrine_Core::ATTR_FIELD_CASE) == CASE_LOWER) {
                 $keyName = strtolower($keyName);
                 $nonUnique = strtolower($nonUnique);

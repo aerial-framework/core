@@ -1,6 +1,6 @@
 <?php
 /*
- *  $Id: UnitOfWork.php 6690 2009-11-10 16:34:23Z jwage $
+ *  $Id: UnitOfWork.php 7684 2010-08-24 16:34:16Z jwage $
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -16,7 +16,7 @@
  *
  * This software consists of voluntary contributions made by many individuals
  * and is licensed under the LGPL. For more information, see
- * <http://www.phpdoctrine.org>.
+ * <http://www.doctrine-project.org>.
  */
 
 /**
@@ -31,9 +31,9 @@
  * @package     Doctrine
  * @subpackage  Connection
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link        www.phpdoctrine.org
+ * @link        www.doctrine-project.org
  * @since       1.0
- * @version     $Revision: 6690 $
+ * @version     $Revision: 7684 $
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @author      Roman Borschel <roman@code-factory.org>
  */
@@ -94,6 +94,8 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
                         break;
                 }
 
+                $aliasesUnlinkInDb = array();
+
                 if ($isValid) {
                     // NOTE: what about referential integrity issues?
                     foreach ($record->getPendingDeletes() as $pendingDelete) {
@@ -103,8 +105,10 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
                     foreach ($record->getPendingUnlinks() as $alias => $ids) {
                         if ($ids === false) {
                             $record->unlinkInDb($alias, array());
+                            $aliasesUnlinkInDb[] = $alias;
                         } else if ($ids) {
                             $record->unlinkInDb($alias, array_keys($ids));
+                            $aliasesUnlinkInDb[] = $alias;
                         }
                     }
                     $record->resetPendingUnlinks();
@@ -128,7 +132,8 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
 
                             // check that the related object is not an instance of Doctrine_Null
                             if ($obj && ! ($obj instanceof Doctrine_Null)) {
-                                $obj->save($conn);
+                                $processDiff = !in_array($alias, $aliasesUnlinkInDb);
+                                $obj->save($conn, $processDiff);
                             }
                         }
                     }
@@ -381,6 +386,9 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
      */
     public function saveRelatedLocalKeys(Doctrine_Record $record)
     {
+        $state = $record->state();
+        $record->state($record->exists() ? Doctrine_Record::STATE_LOCKED : Doctrine_Record::STATE_TLOCKED);
+
         foreach ($record->getReferences() as $k => $v) {
             $rel = $record->getTable()->getRelation($k);
             
@@ -409,6 +417,7 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
                 }
             }
         }
+        $record->state($state);
     }
 
     /**
@@ -439,8 +448,8 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
                 $assocTable = $rel->getAssociationTable();
                 foreach ($v->getDeleteDiff() as $r) {
                     $query = 'DELETE FROM ' . $assocTable->getTableName()
-                           . ' WHERE ' . $rel->getForeign() . ' = ?'
-                           . ' AND ' . $rel->getLocal() . ' = ?';
+                           . ' WHERE ' . $rel->getForeignRefColumnName() . ' = ?'
+                           . ' AND ' . $rel->getLocalRefColumnName() . ' = ?';
 
                     $this->conn->execute($query, array($r->getIncremented(), $record->getIncremented()));
                 }
@@ -591,7 +600,14 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
 
                 $table = $record->getTable();
                 $identifier = (array) $table->getIdentifier();
-                $data = $record->getPrepared();                
+                $data = $record->getPrepared();       
+
+                foreach ($data as $key  => $value) {
+                    if ($value instanceof Doctrine_Expression) {
+                        $data[$key] = $value->getSql();
+                    }
+                }
+
                 $result = $this->conn->replace($table, $data, $identifier);
 
                 $record->invokeSaveHooks('post', 'insert', $insertEvent);
@@ -915,18 +931,23 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
     protected function _assignIdentifier(Doctrine_Record $record)
     {
         $table = $record->getTable();
-        $identifier = (array) $table->getIdentifier();
+        $identifier = $table->getIdentifier();
         $seq = $table->sequenceName;
 
-        if (empty($seq) && count($identifier) == 1 && $identifier[0] == $table->getIdentifier() &&
+        if (empty($seq) && !is_array($identifier) &&
             $table->getIdentifierType() != Doctrine_Core::IDENTIFIER_NATURAL) {
-            if (($driver = strtolower($this->conn->getDriverName())) == 'pgsql') {
-                $seq = $table->getTableName() . '_' . $identifier[0];
-            } elseif ($driver == 'oracle') {
-                $seq = $table->getTableName();
+            $id = false;
+            if ($record->$identifier == null) { 
+                if (($driver = strtolower($this->conn->getDriverName())) == 'pgsql') {
+                    $seq = $table->getTableName() . '_' . $table->getColumnName($identifier);
+                } elseif ($driver == 'oracle' || $driver == 'mssql') {
+                    $seq = $table->getTableName();
+                }
+    
+                $id = $this->conn->sequence->lastInsertId($seq);
+            } else {
+                $id = $record->$identifier;
             }
-
-            $id = $this->conn->sequence->lastInsertId($seq);
 
             if ( ! $id) {
                 throw new Doctrine_Connection_Exception("Couldn't get last insert identifier.");

@@ -16,7 +16,7 @@
  *
  * This software consists of voluntary contributions made by many individuals
  * and is licensed under the LGPL. For more information, see
- * <http://www.phpdoctrine.org>.
+ * <http://www.doctrine-project.org>.
  */
 
 /**
@@ -38,8 +38,8 @@ class Doctrine_Hydrator_ArrayHierarchyDriver extends Doctrine_Hydrator_ArrayDriv
 
         $table = $this->getRootComponent();
 
-        if ( ! $table->hasTemplate('NestedSet')) {
-            throw new Doctrine_Exception('Cannot hydrate model that does not have the NestedSet behavior enabled');
+        if ( ! $table->isTree() || ! $table->hasColumn('level')) {
+            throw new Doctrine_Exception('Cannot hydrate model that does not implements Tree behavior with `level` column');
         }
 
         // Trees mapped

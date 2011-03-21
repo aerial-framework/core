@@ -1,6 +1,6 @@
 <?php
 /*
- *  $Id: Column.php 5876 2009-06-10 18:43:12Z piccoloprincipe $
+ *  $Id: Column.php 7663 2010-06-08 19:00:08Z jwage $
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -16,7 +16,7 @@
  *
  * This software consists of voluntary contributions made by many individuals
  * and is licensed under the LGPL. For more information, see
- * <http://www.phpdoctrine.org>.
+ * <http://www.doctrine-project.org>.
  */
 
 /**
@@ -27,8 +27,8 @@
  * @package     Doctrine
  * @subpackage  Column
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @version     $Revision: 5876 $
- * @link        www.phpdoctrine.org
+ * @version     $Revision: 7663 $
+ * @link        www.doctrine-project.org
  * @since       1.0
  */
 class Doctrine_Column extends Doctrine_Access implements IteratorAggregate, Countable
@@ -121,10 +121,10 @@ class Doctrine_Column extends Doctrine_Access implements IteratorAggregate, Coun
     public function enumValue($index)
     {
         if ($index instanceof Doctrine_Null) {
-            return $index;
+            return false;
         }
 
-        return isset($this->_definition['values'][$index]) ? $this->_definition['values'][$index] : $index;
+        return isset($this->_definition['values'][$index]) ? $this->_definition['values'][$index] : false;
     }
 
     /**

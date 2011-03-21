@@ -16,7 +16,7 @@
  *
  * This software consists of voluntary contributions made by many individuals
  * and is licensed under the LGPL. For more information, see
- * <http://www.phpdoctrine.org>.
+ * <http://www.doctrine-project.org>.
  */
 
 /**
@@ -26,7 +26,7 @@
  * @subpackage  Data
  * @author      Jonathan H. Wage <jwage@mac.com>
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link        www.phpdoctrine.org
+ * @link        www.doctrine-project.org
  * @since       1.0
  * @version     $Revision: 2552 $
  */
@@ -153,6 +153,7 @@ class Doctrine_Data_Export extends Doctrine_Data
 
         foreach ($data AS $className => $classData) {
             $preparedData[$className] = array();
+            $keyType = $classData->getTable()->getIdentifierType();
             foreach ($classData as $record) {
                 $className = get_class($record);
                 $recordKey = $className . '_' . implode('_', $record->identifier());
@@ -168,7 +169,7 @@ class Doctrine_Data_Export extends Doctrine_Data
                       $keys = array($keys);
                     }
 
-                    if (count($keys) <= 1 && in_array($key, $keys)) {
+                    if ($keyType !== Doctrine_Core::IDENTIFIER_NATURAL && count($keys) <= 1 && in_array($key, $keys)) {
                         continue;
                     }
 

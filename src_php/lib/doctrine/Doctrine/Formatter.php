@@ -16,7 +16,7 @@
  *
  * This software consists of voluntary contributions made by many individuals
  * and is licensed under the LGPL. For more information, see
- * <http://www.phpdoctrine.org>.
+ * <http://www.doctrine-project.org>.
  */
 
 /**
@@ -25,7 +25,7 @@
  * @package     Doctrine
  * @subpackage  Formatter
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link        www.phpdoctrine.org
+ * @link        www.doctrine-project.org
  * @since       1.0
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
@@ -186,6 +186,7 @@ class Doctrine_Formatter extends Doctrine_Connection_Module
         case 'blob':
         case 'clob':
         case 'enum':
+        case 'set':
         case 'boolean':
         return "'" . str_replace("'","''",$input) . "'";
         }
@@ -256,7 +257,8 @@ class Doctrine_Formatter extends Doctrine_Connection_Module
      */
     public function getForeignKeyName($fkey)
     {
-        return preg_replace('/[^a-z0-9_\$]/i', '_', $fkey);
+        return sprintf($this->conn->getAttribute(Doctrine_Core::ATTR_FKNAME_FORMAT),
+            preg_replace('/[^a-z0-9_\$]/i', '_', $fkey));
     }
 
     /**

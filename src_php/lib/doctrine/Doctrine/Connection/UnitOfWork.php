@@ -392,7 +392,7 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
                 $obj = $record->get($rel->getAlias());
 
                 // Protection against infinite function recursion before attempting to save
-                if ($obj instanceof Doctrine_Record && $obj->isModified()) {
+                if ($obj instanceof Doctrine_Record && $obj->isModified(true)) {
                     $obj->save($this->conn);
 
                     $id = array_values($obj->identifier());

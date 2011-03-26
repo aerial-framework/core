@@ -1,19 +1,19 @@
 package org.aerial.rpc
 {
 	import flash.utils.getQualifiedClassName;
-
-    import mx.rpc.AbstractOperation;
-import mx.rpc.AsyncToken;
-import mx.rpc.remoting.RemoteObject;
+	
+	import mx.rpc.AbstractOperation;
+	import mx.rpc.AsyncToken;
+	import mx.rpc.remoting.RemoteObject;
 	
 	import org.aerial.rpc.IService;
 	import org.aerial.rpc.operation.Operation;
-import org.aerial.system.DoctrineQuery;
-
-public class AbstractService extends RemoteObject implements IService
+	import org.aerial.system.DoctrineQuery;
+	
+	public class AbstractService extends RemoteObject implements IService
 	{
 		import org.aerial.rpc.messages.AerialErrorMessage; AerialErrorMessage;
-
+		
 		private var _voClass:Class;
 		
 		public function AbstractService(source:String, endpoint:String, voClass:Class)
@@ -22,13 +22,16 @@ public class AbstractService extends RemoteObject implements IService
 			this.source = source;
 			this.endpoint = endpoint;
 			_voClass = voClass;
-
-            this.convertParametersHandler = preprocessArguments;
+			
+			this.convertParametersHandler = preprocessArguments;
 		}
 		
-		
-		//Modify Methods
-		
+		public function get voClass():Class
+		{
+			return _voClass;
+		}
+
+		/*Modify Methods*/
 		public function insert(vo:Object, returnCompleteObject:Boolean = false):Operation
 		{
 			validateVO(vo);
@@ -60,39 +63,39 @@ public class AbstractService extends RemoteObject implements IService
 			
 			return op;
 		}
-
-        /**
-         * Pre-processes an array of given arguments so that it will not send an array of arguments
-         * but rather a collection of arguments
-         *
-         * @param args The arguments to be sent to PHP
-         * @return
-         */
+		
+		/**
+		 * Pre-processes an array of given arguments so that it will not send an array of arguments
+		 * but rather a collection of arguments
+		 *
+		 * @param args The arguments to be sent to PHP
+		 * @return
+		 */
 		public function preprocessArguments(args:Array):Array
-        {
-            return args[0];
-        }
-
+		{
+			return args[0];
+		}
+		
 		// Find Methods
-
+		
 		public function find(criteria:* = null):Operation
 		{
 			var op:Operation = new Operation(this, "find", criteria);
 			return op;
 		}
-
-        public function count():Operation
+		
+		public function count():Operation
 		{
 			var op:Operation = new Operation(this, "count");
-
+			
 			return op;
 		}
-
-        public function executeDQL(query:DoctrineQuery):AsyncToken
-        {
+		
+		public function executeDQL(query:DoctrineQuery):AsyncToken
+		{
 			var op:Operation = new Operation(this, "executeDQL", query.properties);
 			return op.execute();
-        }
+		}
 		
 		// Helpers
 		

@@ -65,6 +65,15 @@
 					{
 						$columnName = $instance->getTable()->getColumnName($key);
 						$definition = $instance->getTable()->getColumnDefinition($columnName);
+
+                        // pre-process special types if needed
+						switch($definition["type"])
+						{
+							case "blob":
+								if($value instanceof ByteArray)
+									$value = $value->data;
+								break;
+						}
 						
 						$instance->$key = $value;
 					}					

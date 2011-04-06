@@ -11,6 +11,7 @@
     <amfphp>src_php/public_html/amfphp/core</amfphp>
     <doctrine>src_php/lib/doctrine</doctrine>
     <internal-services>src_php/lib/services</internal-services>
+    <encryption>src_php/lib/aerial/encryption/</encryption>
   </paths>
   <code-generation>
     <php>src_php</php>

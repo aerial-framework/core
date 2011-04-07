@@ -21,10 +21,10 @@ package org.aerial.encryption
 
 		public function startSession(data:String):AsyncToken
 		{
-			//var encrypted:Encrypted = new Encrypted();
-			//encrypted.data = data;
+			var encrypted:Encrypted = new Encrypted();
+			encrypted.data = Hex.toArray(Hex.fromString(data));
 
-			return this.getOperation("startSession").send(data);
+			return this.getOperation("startSession").send(encrypted);
 		}
 	}
 }

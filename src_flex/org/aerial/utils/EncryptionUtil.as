@@ -17,15 +17,46 @@ package org.aerial.utils
 			for(var i:uint = 0; i < length; i++)
 				key.writeUTFBytes(pool.charAt(Math.floor(Math.random() * pool.length)));
 
+			trace(key.length + " : " + length);
 			return key;
 		}
 
-		public static function encryptRSA(data:ByteArray, key:RSAKey):ByteArray
+		public static function encryptRSA(data:ByteArray, key:RSAKey):String
 		{
+			return concatAndEncrypt(data, key.getBlockSize(), key);
+		}
+
+		private static function concatAndEncrypt(data:ByteArray, blockSize:int, key:RSAKey):String
+		{
+			blockSize = blockSize / 2;          // halve the blocksize to avoid errors in PHP OpenSSL
 			data.position = 0;
 
-			var encrypted:ByteArray = new ByteArray();
-			key.encrypt(data, encrypted, data.length);
+			var encrypted:String = "";
+			if(data.length >= blockSize)
+			{
+				for(var i:uint = 0; i < Math.ceil(data.length / blockSize); i++)
+				{
+					var subset:ByteArray = new ByteArray();
+					var len:uint = blockSize;
+
+					var offset:uint = i * blockSize;
+
+					if(offset + len > data.length)
+						len = data.length % blockSize;
+
+					for(var j:uint = offset; j < offset + len; j++)
+					{
+						data.position = j;
+						subset.writeByte(data.readByte());
+					}
+
+					var encBytes:ByteArray = new ByteArray();
+					subset.position = 0;
+
+					key.encrypt(subset, encBytes, subset.length);
+					encrypted += Hex.fromArray(encBytes) + "|";
+				}
+			}
 
 			return encrypted;
 		}

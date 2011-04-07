@@ -65,8 +65,8 @@
 					{
 						$columnName = $instance->getTable()->getColumnName($key);
 						$definition = $instance->getTable()->getColumnDefinition($columnName);
-						
-						// pre-process special types if needed
+
+                        // pre-process special types if needed
 						switch($definition["type"])
 						{
 							case "blob":

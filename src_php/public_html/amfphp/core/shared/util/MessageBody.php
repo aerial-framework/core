@@ -52,6 +52,19 @@ class MessageBody {
 	 * @return mixed The results
 	 */
 	function &getResults () {
+		if(Encryption::isKeySet())
+		{
+			$serializer = new AMFSerializer();
+
+			$amf = $serializer->serializeSpecial($this->_results->body);
+			$encryptedAMF = Encryption::encrypt(bin2hex($amf));
+
+			$encrypted = new Encrypted();
+			$encrypted->data = new ByteArray($encryptedAMF);
+
+			$this->_results->body = $encrypted;
+		}
+
 		return $this->_results;
 	} 
 

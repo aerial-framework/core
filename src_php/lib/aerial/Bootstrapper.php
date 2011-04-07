@@ -62,6 +62,8 @@
 			    Doctrine_Core::loadModels($models_path);
 			
 			require_once(conf("paths/encryption")."Encrypted.php");
+			require_once(conf("paths/encryption")."Encryption.php");
+			require_once(conf("paths/encryption")."rc4crypt.php");
 			
 			Authentication::getInstance();
 

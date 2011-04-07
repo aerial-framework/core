@@ -1,15 +1,23 @@
 package org.aerial.rpc
 {
+	import com.hurlant.crypto.prng.ARC4;
+
+	import flash.utils.ByteArray;
 	import flash.utils.getQualifiedClassName;
 	
 	import mx.rpc.AbstractOperation;
 	import mx.rpc.AsyncToken;
 	import mx.rpc.remoting.RemoteObject;
-	
+
+	import mx.utils.ObjectUtil;
+
+	import org.aerial.bootstrap.Aerial;
+	import org.aerial.encryption.Encrypted;
 	import org.aerial.rpc.IService;
 	import org.aerial.rpc.operation.Operation;
 	import org.aerial.system.DoctrineQuery;
-	
+	import org.aerial.utils.EncryptionUtil;
+
 	public class AbstractService extends RemoteObject implements IService
 	{
 		import org.aerial.rpc.messages.AerialErrorMessage; AerialErrorMessage;
@@ -24,6 +32,16 @@ package org.aerial.rpc
 			_voClass = voClass;
 			
 			this.convertParametersHandler = preprocessArguments;
+			this.convertResultHandler = processResults;
+		}
+
+		private function processResults(result:*, operation:AbstractOperation):*
+		{
+			if(!result is Encrypted)
+				return result;
+
+			var decryptedResult:ByteArray = EncryptionUtil.decryptRC4((result as Encrypted).data, Aerial.instance.encryptionKey);
+			return decryptedResult.readObject();
 		}
 		
 		public function get voClass():Class
@@ -73,7 +91,31 @@ package org.aerial.rpc
 		 */
 		public function preprocessArguments(args:Array):Array
 		{
-			return args[0];
+			var argument:Array = [];
+
+			if(Aerial.instance.encryptedSessionStarted)
+			{
+				var encrypted:Encrypted = new Encrypted();
+				encrypted.data = new ByteArray();
+				encrypted.data.writeObject(args[0]);
+
+				encrypted.data.position = 0;
+				trace(ObjectUtil.toString(encrypted.data.readObject()));
+
+				var encData:String = EncryptionUtil.encryptRC4(encrypted.data, Aerial.instance.encryptionKey);
+				encrypted.data = new ByteArray();
+				encrypted.data.writeUTFBytes(encData);
+
+				encrypted.data.position = 0;
+				trace(ObjectUtil.toString(encrypted.data.readUTFBytes(encrypted.data.length)));
+
+				encrypted.data.position = 0;
+				argument = [encrypted];
+			}
+			else
+				argument = args[0];
+
+			return argument;
 		}
 		
 		// Find Methods

@@ -6,6 +6,7 @@ package org.aerial.encryption
 	public class Encrypted
 	{
 		public var data:ByteArray;
+		public var resetKey:Boolean;
 
 		public function Encrypted()
 		{

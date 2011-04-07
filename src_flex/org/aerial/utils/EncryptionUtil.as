@@ -1,5 +1,6 @@
 package org.aerial.utils
 {
+	import com.hurlant.crypto.prng.ARC4;
 	import com.hurlant.crypto.rsa.RSAKey;
 
 	import com.hurlant.util.Hex;
@@ -17,13 +18,29 @@ package org.aerial.utils
 			for(var i:uint = 0; i < length; i++)
 				key.writeUTFBytes(pool.charAt(Math.floor(Math.random() * pool.length)));
 
-			trace(key.length + " : " + length);
 			return key;
 		}
 
 		public static function encryptRSA(data:ByteArray, key:RSAKey):String
 		{
 			return concatAndEncrypt(data, key.getBlockSize(), key);
+		}
+
+		public static function encryptRC4(data:ByteArray, key:ByteArray):String
+		{
+			var rc4:ARC4 = new ARC4(key);
+			rc4.encrypt(data);
+
+			return Hex.fromArray(data);
+		}
+
+		public static function decryptRC4(data:ByteArray, key:ByteArray):ByteArray
+		{
+			var rc4:ARC4 = new ARC4(key);
+			rc4.init(key);
+			rc4.decrypt(data);
+
+			return data;
 		}
 
 		private static function concatAndEncrypt(data:ByteArray, blockSize:int, key:RSAKey):String

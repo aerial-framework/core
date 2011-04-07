@@ -27,6 +27,8 @@ class AMFSerializer extends AMFBaseSerializer {
    var $storedStrings = array();
    var $outBuffer;
    var $encounteredStrings = 0;
+
+   private $startEncrypting = false;
    
    var $native = false;
 
@@ -46,9 +48,19 @@ class AMFSerializer extends AMFBaseSerializer {
 	 * @param bool $d The boolean value
 	 */
 	function writeBoolean($d) {
+		$this->encryptionCheck($d, __FUNCTION__);
+
 		$this->writeByte(1); // write the boolean flag
 		$this->writeByte($d); // write  the boolean byte
-	} 
+	}
+
+	private function encryptionCheck($data, $function)
+	{
+		if(!$this->startEncrypting)
+			return $data;
+
+		$i = 1;
+	}
 
 	/**
 	 * writeString writes the string code (0x02) and the UTF8 encoded
@@ -821,6 +833,8 @@ class AMFSerializer extends AMFBaseSerializer {
 	// (for example, ByteArray) should not get a reference index.
 	function writeAmf3String($d, $raw = false, $store_ok = true)
 	{
+		$this->encryptionCheck($d, __FUNCTION__);
+		
 		if( $d == "" )
 		{
 			//Write 0x01 to specify the empty string
@@ -1079,9 +1093,13 @@ class AMFSerializer extends AMFBaseSerializer {
 				$this->writeAmf3String($key);
 				
 				if($key == "body")
+				{
 					$this->writeAmf3Data($val, ($package == $this->models_path) ? conf("options/use-arraycollection", false) : false);
+				}
 				else
-				$this->writeAmf3Data($val);
+				{
+					$this->writeAmf3Data($val);
+				}
 			}
 			//Now we close the open object
 			$this->outBuffer .= "\1";

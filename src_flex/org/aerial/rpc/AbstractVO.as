@@ -52,6 +52,18 @@ package org.aerial.rpc
 			setPrivateProperty("_" + property, null);
         }
 		
+		public function unset(property:String):void
+		{
+			if(!this.hasOwnProperty(property))
+			{
+				var voType:String = getQualifiedClassName(this).replace("::",".");
+				var voClass:Class = getDefinitionByName(voType) as Class;
+				throw new ArgumentError("No such property [" + property + "] in " + voClass);
+			}
+			
+			setPrivateProperty("_" + property, undefined);
+		}
+		
 		public function readExternal(input:IDataInput):void
 		{	
 			//We shouldn't have to set this as long as we don't return an IExternalizable from AMFPHP.

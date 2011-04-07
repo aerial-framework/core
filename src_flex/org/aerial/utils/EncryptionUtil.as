@@ -7,6 +7,8 @@ package org.aerial.utils
 
 	import flash.utils.ByteArray;
 
+	import org.aerial.errors.AerialError;
+
 	public class EncryptionUtil
 	{
 		private static const pool:String = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890!@#$%^&*()";
@@ -28,17 +30,45 @@ package org.aerial.utils
 
 		public static function encryptRC4(data:ByteArray, key:ByteArray):String
 		{
-			var rc4:ARC4 = new ARC4(key);
-			rc4.encrypt(data);
+			if(!key || key.length == 0)
+			{
+				throw new AerialError(AerialError.INVALID_ENCRYPTION_KEY_ERROR);
+				return null;
+			}
+
+			try
+			{
+				var rc4:ARC4 = new ARC4(key);
+				rc4.encrypt(data);
+			}
+			catch(e:Error)
+			{
+				throw new AerialError(AerialError.ENCRYPTION_ERROR);
+				return null;
+			}
 
 			return Hex.fromArray(data);
 		}
 
 		public static function decryptRC4(data:ByteArray, key:ByteArray):ByteArray
 		{
-			var rc4:ARC4 = new ARC4(key);
-			rc4.init(key);
-			rc4.decrypt(data);
+			if(!key || key.length == 0)
+			{
+				throw new AerialError(AerialError.INVALID_ENCRYPTION_KEY_ERROR);
+				return null;
+			}
+
+			try
+			{
+				var rc4:ARC4 = new ARC4(key);
+				rc4.init(key);
+				rc4.decrypt(data);
+			}
+			catch(e:Error)
+			{
+				throw new AerialError(AerialError.DECRYPTION_ERROR);
+				return null;
+			}
 
 			return data;
 		}

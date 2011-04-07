@@ -27,6 +27,7 @@
 
 			require_once(conf("paths/doctrine").'Aerial/Connection/Aerial_Connection.php');
 			require_once(conf("paths/aerial")."exceptions/Aerial_Exception.php");
+			require_once(conf("paths/aerial")."exceptions/Aerial_Encryption_Exception.php");
 			
 			self::$_instance->manager = Doctrine_Manager::getInstance();
 			

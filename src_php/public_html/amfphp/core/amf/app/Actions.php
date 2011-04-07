@@ -215,7 +215,14 @@ function executionAction (&$amfbody)
 				$decrypted = Encryption::decrypt($bytes);
 				$deserializer = new AMFDeserializer("");
 
-				$args = $deserializer->deserializeSpecial($decrypted);
+				try
+				{
+					$args = $deserializer->deserializeSpecial($decrypted);
+				}
+				catch(Exception $e)
+				{
+					throw new Aerial_Encryption_Exception(Aerial_Encryption_Exception::AMF_ENCODING_ERROR);
+				}
 			}
 
 			$time = microtime_float();

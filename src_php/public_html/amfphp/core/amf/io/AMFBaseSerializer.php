@@ -112,7 +112,15 @@ class AMFBaseSerializer {
 	function serializeSpecial($results)
 	{
 		$this->outBuffer = "";
-		$this->writeAmf3Data($results);
+
+		try
+		{
+			$this->writeAmf3Data($results);
+		}
+		catch(Exception $e)
+		{
+			throw new Aerial_Encryption_Exception(Aerial_Encryption_Exception::AMF_ENCODING_ERROR);
+		}
 
 		$tempBuf2 = $this->outBuffer;
 

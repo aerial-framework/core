@@ -3,75 +3,64 @@
 
 	class EncryptionService
 	{
+		private $keyResource;
+
 		public function startSession($encrypted)
 		{
-//			$e = new Encrypted();
-//			$e->data = $encrypted["data"];
+			try
+			{
+				$e = new Encrypted();
+				$e->data = $encrypted["data"];
 
-			return $this->decrypt($encrypted);
+				$sessionKey = $this->decrypt($e->data->data);
+				openssl_free_key($this->keyResource);
+
+				if(!session_start())
+					session_start();
+
+				$_SESSION["KEY"] = $sessionKey;
+				return true;
+			}
+			catch(Exception $e)
+			{
+				return false;
+			}
 		}
 
 		private function decrypt($bytes)
 		{
-			$fp = fopen(conf("paths/encryption")."exchange.key", "r");
-			$priv_key = fread($fp, 8192);
-			fclose($fp);
-			// $passphrase is required if your key is encoded (suggested)
-			$res = openssl_get_privatekey($priv_key);
-			$details = openssl_pkey_get_details($res);
+			if(!$this->keyResource)
+			{
+				$fp = fopen(conf("paths/encryption")."exchange.key", "r");
+				$priv_key = fread($fp, 8192);
+				fclose($fp);
+				// $passphrase is required if your key is encoded (suggested)
+				$this->keyResource = openssl_get_privatekey($priv_key);
+				$details = openssl_pkey_get_details($this->keyResource);
+			}
+
+			if($this->keyResource == null)
+				trigger_error("Could not read private key");
 
 			$keyBits = $details["bits"];
 			$blockSize = $keyBits / 8;
 
 			$raw = $bytes;
+
+			$raw = substr($raw, 0, strlen($raw) - 1);
 			$pieces = explode("|", $raw);
 
-			$total = "";
+			$decryptedKey = "";
 
 			foreach($pieces as $piece)
 			{
 				$piece = $this->hex2bin($piece);
 
-				openssl_private_decrypt($piece, $decrypted, $res);
-				$total .= $decrypted;
+				openssl_private_decrypt($piece, $decrypted, $this->keyResource);
+				$decryptedKey .= $decrypted;
 			}
 
-			/*$pieces = array();
-
-			for($i = 0; $i < strlen($raw) / $blockSize; $i++)
-			{
-				$pieces[] = base64_encode(substr($raw, $i * $blockSize, ($i + 1) * $blockSize));
-			}
-
-			if(count($pieces) * $blockSize != strlen($raw) / $blockSize)
-			{
-				$pieces[] = substr($raw, strlen($raw) / $blockSize);
-			}
-
-			$decrypted = "";
-			foreach($pieces as $piece)
-			{
-				$p = "";
-				openssl_private_decrypt(base64_decode($piece), $p, $res);
-
-				$decrypted .= $p;
-			}*/
-
-			//openssl_private_decrypt($raw, $decrypted, $res);
-
-			/*while ($msg = openssl_error_string())
-                echo $msg . "<br />\n";*/
-
-			return $total;
-		}
-
-		private function hex_to_str($hex)
-		{
-			for ($i = 0; $i < strlen($hex) - 1; $i += 2)
-			{
-				$string .= chr(hexdec($hex[$i] . $hex[$i + 1]));
-			}
-			return $string;
+			return $decryptedKey;
 		}
 
 		private function hex2bin($str)

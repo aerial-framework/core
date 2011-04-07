@@ -4,15 +4,37 @@
 		public static function decrypt(ByteArray $data)
 		{
 			$key = self::strToHex($_SESSION["KEY"]);
+			if(!$key || strlen($key) == 0)
+				throw new Aerial_Encryption_Exception(Aerial_Encryption_Exception::INVALID_KEY_ERROR);
+			
+			try
+			{
+				$decrypted = rc4crypt::decrypt($key, self::hex2bin($data->data), 1);
+			}
+			catch(Exception $e)
+			{
+				throw new Aerial_Encryption_Exception(Aerial_Encryption_Exception::DECRYPTION_ERROR);
+			}
 
-			return rc4crypt::decrypt($key, self::hex2bin($data->data), 1);
+			return $decrypted;
 		}
 	
 		public static function encrypt($amf)
 		{
 			$key = self::strToHex($_SESSION["KEY"]);
+			if(!$key || strlen($key) == 0)
+				throw new Aerial_Encryption_Exception(Aerial_Encryption_Exception::INVALID_KEY_ERROR);
 
-			return rc4crypt::encrypt($key, self::hex2bin($amf), 1);
+			try
+			{
+				$encrypted = rc4crypt::encrypt($key, self::hex2bin($amf), 1);
+			}
+			catch(Exception $e)
+			{
+				throw new Aerial_Encryption_Exception(Aerial_Encryption_Exception::ENCRYPTION_ERROR);
+			}
+
+			return $encrypted;
 		}
 
 		public static function strToHex($string)

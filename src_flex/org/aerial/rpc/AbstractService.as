@@ -13,6 +13,7 @@ package org.aerial.rpc
 
 	import org.aerial.bootstrap.Aerial;
 	import org.aerial.encryption.Encrypted;
+	import org.aerial.errors.AerialError;
 	import org.aerial.rpc.IService;
 	import org.aerial.rpc.operation.Operation;
 	import org.aerial.system.DoctrineQuery;
@@ -33,15 +34,6 @@ package org.aerial.rpc
 			
 			this.convertParametersHandler = preprocessArguments;
 			this.convertResultHandler = processResults;
-		}
-
-		private function processResults(result:*, operation:AbstractOperation):*
-		{
-			if(!result is Encrypted)
-				return result;
-
-			var decryptedResult:ByteArray = EncryptionUtil.decryptRC4((result as Encrypted).data, Aerial.instance.encryptionKey);
-			return decryptedResult.readObject();
 		}
 		
 		public function get voClass():Class
@@ -93,6 +85,17 @@ package org.aerial.rpc
 		{
 			var argument:Array = [];
 
+			if(Aerial.instance.useEncryption && !Aerial.instance.encryptedSessionStarted)
+			{
+				throw new AerialError(AerialError.ENCRYPTED_SESSION_NOT_STARTED_ERROR);
+				return null;
+			}
+			else if(Aerial.instance.useEncryption && Aerial.instance.encryptedSessionStarted && !Aerial.instance.encryptionKey)
+			{
+				throw new AerialError(AerialError.NO_ENCRYPTION_KEY_ERROR);
+				return null;
+			}
+
 			if(Aerial.instance.encryptedSessionStarted)
 			{
 				var encrypted:Encrypted = new Encrypted();
@@ -100,14 +103,12 @@ package org.aerial.rpc
 				encrypted.data.writeObject(args[0]);
 
 				encrypted.data.position = 0;
-				trace(ObjectUtil.toString(encrypted.data.readObject()));
 
 				var encData:String = EncryptionUtil.encryptRC4(encrypted.data, Aerial.instance.encryptionKey);
 				encrypted.data = new ByteArray();
 				encrypted.data.writeUTFBytes(encData);
 
 				encrypted.data.position = 0;
-				trace(ObjectUtil.toString(encrypted.data.readUTFBytes(encrypted.data.length)));
 
 				encrypted.data.position = 0;
 				argument = [encrypted];
@@ -116,6 +117,39 @@ package org.aerial.rpc
 				argument = args[0];
 
 			return argument;
+		}
+
+		private function processResults(result:*, operation:AbstractOperation):*
+		{
+			if(!result is Encrypted)
+				return result;
+
+			if(!Aerial.instance.encryptedSessionStarted)
+			{
+				throw new AerialError(AerialError.ENCRYPTED_SESSION_NOT_STARTED_ERROR);
+				return null;
+			}
+
+			if(!Aerial.instance.encryptionKey)
+			{
+				throw new AerialError(AerialError.NO_ENCRYPTION_KEY_ERROR);
+				return null;
+			}
+
+			var decryptedResult:ByteArray = EncryptionUtil.decryptRC4((result as Encrypted).data, Aerial.instance.encryptionKey);
+
+			var result:*;
+			try
+			{
+				result = decryptedResult.readObject();
+			}
+			catch(e:Error)
+			{
+				throw new AerialError(AerialError.DECRYPTION_ERROR);
+				return null;
+			}
+
+			return result;
 		}
 		
 		// Find Methods

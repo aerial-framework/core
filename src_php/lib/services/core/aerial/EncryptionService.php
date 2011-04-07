@@ -7,40 +7,47 @@
 
 		public function startSession($encrypted)
 		{
-			try
-			{
-				$e = new Encrypted();
-				$e->data = $encrypted["data"];
+			if($encrypted["_explicitType"] != "org.aerial.encryption.Encrypted")
+				throw new Aerial_Encryption_Exception(Aerial_Encryption_Exception::INVALID_KEY_ERROR);
 
-				$sessionKey = $this->decrypt($e->data->data);
-				openssl_free_key($this->keyResource);
+			$e = new Encrypted();
+			$e->data = $encrypted["data"];
 
-				if(!session_start())
-					session_start();
+			$sessionKey = $this->decryptRSA($e->data->data);
+			openssl_free_key($this->keyResource);
 
-				$_SESSION["KEY"] = $sessionKey;
-				return true;
-			}
-			catch(Exception $e)
-			{
-				return false;
-			}
+			if(!$sessionKey || strlen($sessionKey) == 0)
+				throw new Aerial_Encryption_Exception(Aerial_Encryption_Exception::INVALID_KEY_ERROR);
+
+			if(!session_start())
+				session_start();
+
+			$_SESSION["KEY"] = $sessionKey;
+			return true;
 		}
 
-		private function decrypt($bytes)
+		private function decryptRSA($bytes)
 		{
 			if(!$this->keyResource)
 			{
-				$fp = fopen(conf("paths/encryption")."exchange.key", "r");
-				$priv_key = fread($fp, 8192);
-				fclose($fp);
-				// $passphrase is required if your key is encoded (suggested)
-				$this->keyResource = openssl_get_privatekey($priv_key);
-				$details = openssl_pkey_get_details($this->keyResource);
+				try
+				{
+					$fp = fopen(conf("paths/encryption")."exchange.key", "r");
+
+					$priv_key = fread($fp, 8192);
+					fclose($fp);
+					// $passphrase is required if your key is encoded (suggested)
+					$this->keyResource = openssl_get_privatekey($priv_key);
+					$details = openssl_pkey_get_details($this->keyResource);
+				}
+				catch(Exception $e)
+				{
+					throw new Aerial_Encryption_Exception(Aerial_Encryption_Exception::PRIVATE_KEY_INVALID_ERROR);
+				}
 			}
 
 			if($this->keyResource == null)
-				trigger_error("Could not read private key");
+				throw new Aerial_Encryption_Exception(Aerial_Encryption_Exception::PRIVATE_KEY_INVALID_ERROR);
 
 			$keyBits = $details["bits"];
 			$blockSize = $keyBits / 8;
@@ -56,7 +63,15 @@
 			{
 				$piece = $this->hex2bin($piece);
 
-				openssl_private_decrypt($piece, $decrypted, $this->keyResource);
+				try
+				{
+					openssl_private_decrypt($piece, $decrypted, $this->keyResource);
+				}
+				catch(Exception $e)
+				{
+					throw new Aerial_Encryption_Exception(Aerial_Encryption_Exception::DECRYPTION_ERROR);
+				}
+
 				$decryptedKey .= $decrypted;
 			}
 

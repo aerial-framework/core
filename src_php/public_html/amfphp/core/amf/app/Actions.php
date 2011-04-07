@@ -88,6 +88,12 @@ function adapterAction (&$amfbody) {
 					$amfbody->setMetadata("clientId", $body[0]->clientId);
 					$amfbody->setMetadata("messageId", $body[0]->messageId);
 					$amfbody->noExec = true;
+
+					$GLOBALS['amfphp']["ping"] = true;
+				}
+				else
+				{
+					$GLOBALS['amfphp']["ping"] = false;
 				}
 					
 				if(!empty($body[0]->body))
@@ -166,7 +172,7 @@ function adapterAction (&$amfbody) {
 	$amfbody->methodName = $methodname;
 
 	return true;
-} 
+}
 
 /**
  * ExecutionAction executes the required methods
@@ -198,40 +204,24 @@ function executionAction (&$amfbody)
 		}
 		else
 		{
-			/*
-			if(isset($construct->methodTable[$method]['pagesize']))
+			if($args[0]["_explicitType"] == "org.aerial.encryption.Encrypted" && $args[0]["resetKey"] == true)
+				unset($_SESSION["KEY"]);
+
+			// check to see if the incoming request is encrypted
+			if(@$args[0]["_explicitType"] == "org.aerial.encryption.Encrypted" && Encryption::isKeySet())
 			{
-				//Check if counting method was overriden
-				if(isset($construct->methodTable[$method]['countMethod']))
-				{
-					$counter = $construct->methodTable[$method]['countMethod'];
-				}
-				else
-				{
-					$counter = $method . '_count';
-				}
-				
-				$dataset = Executive::doMethodCall($amfbody, $construct, $method, $args); // do the magic
-				$count = Executive::doMethodCall($amfbody, $construct, $counter, $args);
-				
-				//Include the wrapper
-				$results = array('class' => $amfbody->uriClassPath, 
-								 'method' => $amfbody->methodName, 
-								 'count' => $count, 
-								 "args" => $args, 
-								 "data" => $dataset);
-				$amfbody->setMetadata('type', '__DYNAMIC_PAGEABLE_RESULTSET__');
-				$amfbody->setMetadata('pagesize', $construct->methodTable[$method]['pagesize']);
-				*/
-			//}
-			//else
-			//{
-				//The usual
-				$time = microtime_float();
-				$results = Executive::doMethodCall($amfbody, $construct, $method, $args); // do the magic
-				global $amfphp;
-				$amfphp['callTime'] += microtime_float() - $time;
-			//}
+				$bytes = $args[0]["data"];
+
+				$decrypted = Encryption::decrypt($bytes);
+				$deserializer = new AMFDeserializer("");
+
+				$args = $deserializer->deserializeSpecial($decrypted);
+			}
+
+			$time = microtime_float();
+			$results = Executive::doMethodCall($amfbody, $construct, $method, $args); // do the magic
+			global $amfphp;
+			$amfphp['callTime'] += microtime_float() - $time;
 		}
 
 		if($results !== '__amfphp_error')

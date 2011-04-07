@@ -144,6 +144,21 @@
 			global $amfphp;
 			$amfphp['decodeTime'] = microtime_float() - $time;
 		}
+
+		/**
+		 * Allows the deserialization of a given AMF stream
+		 *
+		 * @param  $data
+		 * @return
+		 */
+		function deserializeSpecial($data)
+		{
+			$this->raw_data = $data;
+			$data = $this->readAmf3Data(); // turn the element into real data
+
+			return $data;
+		}
+
 		/**
 		 * returns the built AMFObject from the deserialization operation
 		 *

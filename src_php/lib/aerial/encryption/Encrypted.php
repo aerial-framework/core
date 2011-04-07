@@ -5,5 +5,6 @@
 
 		// ByteArray containing encrypted data
 		public $data;
+		public $resetKey = false;
 	}
 ?>

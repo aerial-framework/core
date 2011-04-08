@@ -4,6 +4,7 @@
 	require_once(conf("paths/doctrine").'Aerial.php');
 	require_once(conf("paths/aerial")."utils/ModelMapper.php");
 	require_once(conf("paths/aerial")."utils/Date.php");
+	require_once(conf("paths/aerial")."utils/firephp/fb.php");
 
 	class Bootstrapper
 	{

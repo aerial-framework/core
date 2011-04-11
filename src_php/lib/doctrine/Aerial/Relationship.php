@@ -2,38 +2,70 @@
 class Aerial_Relationship
 {
 
+	public static function strpos_criteria($column)
+	{
+		$needle = array( "!=", ">=", "<=", "=", ">", "<",  "&", "IS ", "NOT ", "BETWEEN ", "LIKE ", "IN ");
+		//$needle is an array of values.
+		if(!is_array($needle))
+		$needle = array($needle);
+
+		foreach($needle as $what)
+		{
+			if(($pos = stripos($column, $what))!==false) return $pos;
+		}
+
+		return false;
+	}
+
 	public static function columns($dirty_key)
 	{
 		$cols = preg_split('#\w+$|.+\(\s*|\s*,\s*|\s*\)\s*#', $dirty_key, -1, PREG_SPLIT_NO_EMPTY);
 
 		return $cols;
 	}
-	
-	public static function extractCriteria(&$column, &$criteria=null, &$with=null)
+
+	public function splitOR($column)
 	{
-		$operators = array( "!=", ">=", "<=", "=", ">", "<",  "&", "IS ", "NOT ", "BETWEEN ", "LIKE ");
-		
-		foreach ($operators as $op)
+		$cols = preg_split('#\s+OR\s+#', $column, -1, PREG_SPLIT_NO_EMPTY);
+
+		return $cols;
+	}
+
+	public static function setSelectColumn(&$d_docTable, &$selectedTables, $sqlAlias, $col)
+	{
+		$firstChar = substr($col, 0,1);
+		$oper = ($firstChar == "-" ? "-" : "+");
+
+		$colName = (($firstChar == "-") || ($firstChar ==  "+") ? substr($col, 1) : $col);
+
+		$criteriaPosition = self::strpos_criteria($colName);
+		if($criteriaPosition !== false)
 		{
-			$criteriaPosition = strpos($column, $op);
-			
-			if($criteriaPosition !== false)
-			{
-				//If the criteria operator is preceeded by "_", use doctrine "WITH" in leftJoin.  
-				$useWith = substr($column, $criteriaPosition-1, 1) == "_" ? true : false;
-				
-				if(!$useWith){
-					$criteria = substr($column, $criteriaPosition);
-				}else{
-					$with = substr($column, $criteriaPosition);
-				}
-				
-				$column = substr($column, 0, $criteriaPosition - ($useWith ?  1 : 0));
-				
-				break;
-			}
+			//If the criteria operator is preceeded by "_", use doctrine "WITH" in leftJoin.
+			$useWith = substr($colName, $criteriaPosition-1, 1) == "_" ? true : false;
+			$cri = substr($colName, $criteriaPosition);
+			$cleanColumn = substr($colName, 0, $criteriaPosition - ($useWith ?  1 : 0));
+		}else{
+			$cleanColumn = $colName;
 		}
-		
+
+		if($oper == "+"){
+			if($cleanColumn == "*"){
+				$selectedTables[$sqlAlias] =  $d_docTable->getFieldNames();
+			}else{
+				$found = array_search($cleanColumn, $selectedTables[$sqlAlias]);
+				if(!$found) $selectedTables[$sqlAlias][] =  $cleanColumn;
+			}
+		}elseif($oper == "-"){
+			if($cleanColumn == "*"){
+				//May need to build some logic to handle user error here.
+			}
+			//Need to check if the column exists before removing.
+			$found = array_search($cleanColumn, $selectedTables[$sqlAlias]);
+			if($found) unset($selectedTables[$sqlAlias][$found]);
+		}
+
+		return $colName;
 	}
 
 	public static function key($dirty_key)
@@ -107,7 +139,6 @@ class Aerial_Relationship
 		return $tree;
 	}
 
-
 	public static function relationParts($relations)
 	{
 		$pTable = self::key(key($relations));
@@ -140,7 +171,7 @@ class Aerial_Relationship
 	private static function internal_relationParts($dAlias, $pTable, &$leftJoins, &$selectedTables, &$criteria, $sAlias=null, &$i=0)
 	{
 		$isRoot = ($sAlias == null) ? true : false;
-		
+
 		$_table = Doctrine_Core::getTable($pTable);
 
 		foreach($dAlias as $d => $dd)
@@ -152,54 +183,55 @@ class Aerial_Relationship
 				$i++;
 				$sqlAlias = "n" . $i;
 				$rd = self::key($d);
-				
+
 				$d_name = $_table->getRelation($rd)->getClass(); //String
 				$d_docTable = Doctrine_Core::getTable($d_name); //DoctrineTable
-	
-				//Build the leftJoin().
+
 				$leftJoin = "$sAlias." . $rd . " $sqlAlias";
 			}
 
-
-			//Build the column selects and build the criteria
+			// Split the columns out by ","
 			$columns = self::columns($d);
 			$selectedTables[$sqlAlias] = array();
 
-			if(count($columns) == 0)
-			{
-				$selectedTables[$sqlAlias][] = $d_docTable->getIdentifier(); //Primary Key
+			if(count($columns) == 0){
+				$selectedTables[$sqlAlias][] = $d_docTable->getIdentifier(); //Add the Primary Key column
 			}
 
-			foreach($columns as $col)
+			foreach($columns as $col) // columns are separated by ",".  Could have "OR" clause in there.
 			{
-				$firstChar = substr($col, 0,1);
-				$oper = ($firstChar == "-" ? "-" : "+");
-				$colName = (($firstChar == "-") || ($firstChar ==  "+") ? substr($col, 1) : $col);
+				// Set WHERE and WITH and split the "OR" parts.
+				$colORs = self::splitOR($col);  // firstName='Rob' OR -lastName='Cesaric'
 
-				//Need to extract any criteria before proceeding.
-				$with = null;
-				$cri = null;
-				self::extractCriteria($colName, $cri, $with);
-				
-				if($cri)
-					$criteria[] = "$sqlAlias." . $colName . " $cri";
-				if($with)
-					$leftJoin .= " WITH $sqlAlias." .  $colName . " $with";
-				
-				if($oper == "+"){
-					if($colName == "*"){
-						$selectedTables[$sqlAlias] =  $d_docTable->getFieldNames();;
-					}else{
-						$selectedTables[$sqlAlias][] =  $colName;
+				foreach($colORs as &$c)
+				{
+					$column = self::setSelectColumn($d_docTable, $selectedTables, $sqlAlias, $c); //Returns the column & criteria with the opperator stripped off.
+
+						
+					$criteriaPosition = self::strpos_criteria($column);
+
+					if($criteriaPosition !== false)
+					{
+						//If the criteria operator is preceeded by "_", use doctrine "WITH" in leftJoin.
+						$useWith = substr($column, $criteriaPosition-1, 1) == "_" ? true : false;
+						$cri = substr($column, $criteriaPosition);
+						$cleanColumn = substr($column, 0, $criteriaPosition - ($useWith ?  1 : 0));
+
+						//Clean the column name
+						$column = $cleanColumn;
 					}
-				}elseif($oper == "-"){
-					if($colName == "*"){
-						//May need to build some logic to handle user error here.
-					}
-					//Need to check if the column exists before removing.
-					$found = array_search($colName, $selectedTables[$sqlAlias]);
-					if($found) unset($selectedTables[$sqlAlias][$found]);
+					$c =  $sqlAlias . "." . $c;
 				}
+
+				if($criteriaPosition !== false){
+					if($useWith){
+						$leftJoin .= " WITH $sqlAlias." .  $cleanColumn . " $cri";
+					}else{
+						//$criteria[] = "$sqlAlias." . $cleanColumn . " $cri";
+						$criteria[] = implode(" OR ",$colORs);
+					}
+				}
+
 			}
 
 			if(!$isRoot)

@@ -44,7 +44,7 @@
 					if(is_undefined($value))
 							continue;
 					else
-						if($value == null)
+						if($value == null && $value !== false)
 						{
 								$instance->$key = NULL;
 								continue;

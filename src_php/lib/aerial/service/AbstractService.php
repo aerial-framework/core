@@ -81,7 +81,6 @@ abstract class AbstractService
 			$mergedRelations = array();
 			foreach($relations as $path)
 			{
-				$path = str_replace(' ','', $path); //Remove white space
 				list($dirty_key) = explode(".", $path, 2);
 				if(Aerial_Relationship::key($dirty_key) <> $this->modelName) $path = $this->modelName . "." . $path;
 					$mergedRelations = Aerial_Relationship::merge($mergedRelations, $path);

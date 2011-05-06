@@ -1,5 +1,7 @@
 package org.aerial.rpc.operation
 {
+	import com.hurlant.util.Hex;
+
 	import flash.events.Event;
 	
 	import mx.rpc.AbstractOperation;
@@ -8,9 +10,11 @@ package org.aerial.rpc.operation
 	import mx.rpc.events.FaultEvent;
 	import mx.rpc.events.ResultEvent;
 	import mx.rpc.http.Operation;
-	
+
+	import org.aerial.bootstrap.Aerial;
 	import org.aerial.rpc.AbstractService;
-	
+	import org.aerial.utils.EncryptionUtil;
+
 	public class Operation implements IOperation
 	{
 		
@@ -131,6 +135,14 @@ package org.aerial.rpc.operation
 		private function _execute(limit:uint, offset:uint):AsyncToken
 		{
             _args.push(_limit, _offset, _sort, _relations);
+
+			if(Aerial.ENCRYPT_SERVICE_AND_FUNCTION)
+			{
+				_op = _service.getOperation(EncryptionUtil.encryptRC4(Hex.toArray(Hex.fromString(_method)),
+						Aerial.instance.encryptionKey));
+				_service.source = EncryptionUtil.encryptRC4(Hex.toArray(Hex.fromString(_service.source)),
+						Aerial.instance.encryptionKey);
+			}
 
 			token = _op.send(_args);
 			

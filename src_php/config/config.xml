@@ -28,6 +28,10 @@
     <directory-mode>0664</directory-mode>
     <file-mode>0777</file-mode>
   </code-generation>
+  <encryption>
+    <use-encryption include-in-bootstrap="true">false</use-encryption>
+    <encrypt-request include-in-bootstrap="true">false</encrypt-request>
+  </encryption>
   <options>
     <debug-mode include-in-bootstrap="true">true</debug-mode>
     <server-url include-in-bootstrap="true"></server-url>

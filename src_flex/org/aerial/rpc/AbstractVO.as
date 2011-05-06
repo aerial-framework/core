@@ -8,9 +8,14 @@ package org.aerial.rpc
 	import flash.utils.getDefinitionByName;
 	import flash.utils.getQualifiedClassName;
 
+    import org.aerial.rpc.utils.GUIDGenerator;
 
     public class AbstractVO implements IExternalizable
 	{
+        private var _delete:Boolean;
+
+        private var _aerialGUID:String;
+
 		private var getPrivateProperty:Function;
 		private var setPrivateProperty:Function;
 		
@@ -18,15 +23,21 @@ package org.aerial.rpc
 		{
 			getPrivateProperty = getProp;
 			setPrivateProperty = setProp;
+
+            _aerialGUID = GUIDGenerator.create();
 		}
 		
 		public function isUndefined(property:String):Boolean
 		{
-			try{
+			try
+            {
 				var isUndef:Boolean = (getPrivateProperty("_" + property) === undefined);
-			}catch(e:ReferenceError){
+			}
+            catch(e:ReferenceError)
+            {
 				throw e;
 			}
+
 			return isUndef;
 		}
 		
@@ -50,6 +61,11 @@ package org.aerial.rpc
             }
 			
 			setPrivateProperty("_" + property, null);
+        }
+
+        public function deleteVO(reset:Boolean=false):void
+        {
+            _delete = !reset;
         }
 		
 		public function unset(property:String):void
@@ -81,16 +97,26 @@ package org.aerial.rpc
 			for each(var prop:XML in props)
 			{ 
 				var propName:String = prop.@name.toString();
-				try{
+				try
+                {
 					var propValue:* = getPrivateProperty("_" + propName);
-				}catch(e:Error){
+				}
+                catch(e:Error)
+                {
 					throw e;
 				}
+
 				voOutput[propName] = propValue;				
 			}
 
+            if(_delete)
+                voOutput["deleted"] = true;
+
+            if(_aerialGUID)
+                voOutput["aerialGUID"] = _aerialGUID;
+
 			output.writeObject(voOutput);
 		}
-	}
+    }
 
 }

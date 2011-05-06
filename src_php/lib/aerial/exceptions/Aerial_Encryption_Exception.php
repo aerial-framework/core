@@ -7,6 +7,7 @@
 		const ENCRYPTION_ERROR = "An error occurred while attempting to encrypt data";
 		const AMF_ENCODING_ERROR = "An error occurred while encoding an AMF stream";
 		const AMF_DECODING_ERROR = "An error occurred while encoding an AMF stream";
+		const ENCRYPTION_NOT_USED_ERROR = "Encryption has been enabled but a regular request was issued.\nPlease either disable encryption in your configuration file or send an encrypted request";
 		
 	    const UNKNOWN = "Unknown exception";
 

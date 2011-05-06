@@ -2,6 +2,8 @@ package org.aerial.rpc
 {
 	import com.hurlant.crypto.prng.ARC4;
 
+	import com.hurlant.util.Hex;
+
 	import flash.utils.ByteArray;
 	import flash.utils.getQualifiedClassName;
 	
@@ -85,18 +87,22 @@ package org.aerial.rpc
 		{
 			var argument:Array = [];
 
-			if(Aerial.instance.useEncryption && !Aerial.instance.encryptedSessionStarted)
+			if(Aerial.USE_ENCRYPTION)
 			{
-				throw new AerialError(AerialError.ENCRYPTED_SESSION_NOT_STARTED_ERROR);
-				return null;
-			}
-			else if(Aerial.instance.useEncryption && Aerial.instance.encryptedSessionStarted && !Aerial.instance.encryptionKey)
-			{
-				throw new AerialError(AerialError.NO_ENCRYPTION_KEY_ERROR);
-				return null;
+				if(Aerial.instance.usingEncryption && !Aerial.instance.encryptedSessionStarted)
+				{
+					throw new AerialError(AerialError.ENCRYPTED_SESSION_NOT_STARTED_ERROR);
+					return null;
+				}
+				else if(Aerial.instance.usingEncryption && Aerial.instance.encryptedSessionStarted &&
+																			!Aerial.instance.encryptionKey)
+				{
+					throw new AerialError(AerialError.NO_ENCRYPTION_KEY_ERROR);
+					return null;
+				}
 			}
 
-			if(Aerial.instance.encryptedSessionStarted)
+			if(Aerial.USE_ENCRYPTION && Aerial.instance.encryptedSessionStarted)
 			{
 				var encrypted:Encrypted = new Encrypted();
 				encrypted.data = new ByteArray();
@@ -121,7 +127,7 @@ package org.aerial.rpc
 
 		private function processResults(result:*, operation:AbstractOperation):*
 		{
-			if(!result is Encrypted)
+			if(!(result is Encrypted) || !Aerial.USE_ENCRYPTION)
 				return result;
 
 			if(!Aerial.instance.encryptedSessionStarted)

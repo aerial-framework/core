@@ -52,7 +52,7 @@ class MessageBody {
 	 * @return mixed The results
 	 */
 	function &getResults () {
-		if(Encryption::isKeySet())
+		if(Encryption::canUseEncryption())
 		{
 			$serializer = new AMFSerializer();
 

@@ -3,6 +3,19 @@
 
 	abstract class Aerial_Record extends Doctrine_Record
 	{
+		private $_aerialGUID;
+
+		public function setGUID($guid)
+		{
+			if(!$this->_aerialGUID)
+				$this->_aerialGUID = $guid;
+		}
+
+		public function getGUID()
+		{
+			return $this->_aerialGUID;
+		}
+		
 		protected function _set($fieldName, $value, $load = true)
 		{
 			if($this->isRelation($fieldName))

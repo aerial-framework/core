@@ -10,6 +10,7 @@ package org.aerial.errors
 		public static const DECRYPTION_ERROR:String = "An error occurred while attempting to decrypt encrypted data";
 		public static const INVALID_ENCRYPTION_KEY_ERROR:String = "The provided encryption key is invalid";
 		public static const ENCRYPTION_ERROR:String = "An error occurred while attempting to encrypt data";
+		public static const ENCRYPTION_NOT_ENABLED_ERROR:String = "Encryption has not been enabled in the configuration file";
 
 		public function AerialError(message:* = "",id:* = 0)
 		{

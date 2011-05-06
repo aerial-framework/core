@@ -62,12 +62,17 @@
 			return $bin;
 		}
 
-		public static function isKeySet()
+		public static function mustDecryptRequest()
+		{
+			return conf("encryption/encrypt-request",false,false);
+		}
+
+		public static function canUseEncryption()
 		{
 			if(!session_start())
 				return false;
 
-			if($_SESSION["KEY"])
+			if($_SESSION["KEY"] && conf("encryption/use-encryption",false,false))
 				return true;
 			else
 				return false;

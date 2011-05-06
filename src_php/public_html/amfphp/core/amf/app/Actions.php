@@ -59,6 +59,15 @@ function adapterAction (&$amfbody) {
 				
 				$methodname = $body[0]->operation;
 				$classAndPackage = $body[0]->source;
+
+				// ignore initial session start request
+				if(Encryption::mustDecryptRequest() &&
+				            $classAndPackage != "core.aerial.EncryptionService" && $methodname != "startSession")
+				{
+					$methodname = Encryption::decrypt(new ByteArray($methodname));
+					$classAndPackage = Encryption::decrypt(new ByteArray($classAndPackage));
+				}
+
 				$lpos = strrpos($classAndPackage, ".");
 				if($lpos !== FALSE)
 				{
@@ -204,29 +213,61 @@ function executionAction (&$amfbody)
 		}
 		else
 		{
-			if($args[0]["_explicitType"] == "org.aerial.encryption.Encrypted" && $args[0]["resetKey"] == true)
-				unset($_SESSION["KEY"]);
-
-			// check to see if the incoming request is encrypted
-			if(@$args[0]["_explicitType"] == "org.aerial.encryption.Encrypted" && Encryption::isKeySet())
+			try
 			{
-				$bytes = $args[0]["data"];
+				if($args[0]["_explicitType"] == "org.aerial.encryption.Encrypted" && $args[0]["resetKey"] == true)
+					unset($_SESSION["KEY"]);
 
-				$decrypted = Encryption::decrypt($bytes);
-				$deserializer = new AMFDeserializer("");
+				// check to see if the incoming request is encrypted
+				if(@$args[0]["_explicitType"] == "org.aerial.encryption.Encrypted" && Encryption::canUseEncryption())
+				{
+					$bytes = $args[0]["data"];
 
-				try
-				{
-					$args = $deserializer->deserializeSpecial($decrypted);
+					$decrypted = Encryption::decrypt($bytes);
+					$deserializer = new AMFDeserializer("");
+
+					try
+					{
+						$args = $deserializer->deserializeSpecial($decrypted);
+					}
+					catch(Exception $e)
+					{
+						throw new Aerial_Encryption_Exception(Aerial_Encryption_Exception::AMF_ENCODING_ERROR);
+					}
 				}
-				catch(Exception $e)
+				else
 				{
-					throw new Aerial_Encryption_Exception(Aerial_Encryption_Exception::AMF_ENCODING_ERROR);
+					if(conf("encryption/use-encryption",false,false) &&
+								get_class($construct) != "EncryptionService" && $method != "startSession")
+					{
+						throw new Aerial_Encryption_Exception(Aerial_Encryption_Exception::ENCRYPTION_NOT_USED_ERROR);
+					}
 				}
+
+				$time = microtime_float();
+				$results = Executive::doMethodCall($amfbody, $construct, $method, $args); // do the magic
+			}
+			catch(Exception $fault)
+			{
+				if(get_class($fault) == "VerboseException")
+				{
+					$ex = new MessageException($fault->getCode(), $fault->getMessage(), $fault->getFile(),
+						$fault->getLine(), 'AMFPHP_RUNTIME_ERROR');
+				}
+				else
+				{
+					$code = "AMFPHP_RUNTIME_ERROR";
+					if($fault->getCode() != 0)
+					{
+						$code = $fault->getCode();
+					}
+					$ex = new MessageException(E_USER_ERROR, $fault->getMessage(), $fault->getFile(),
+						$fault->getLine(), $code);
+				}
+				MessageException::throwException($amfbody, $ex);
+				$results = '__amfphp_error';
 			}
 
-			$time = microtime_float();
-			$results = Executive::doMethodCall($amfbody, $construct, $method, $args); // do the magic
 			global $amfphp;
 			$amfphp['callTime'] += microtime_float() - $time;
 		}

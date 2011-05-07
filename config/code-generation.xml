@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<code-generation>
+	<php>src_php</php>
+	<as3>src_flex</as3>
+	<package>org.aerial</package>
+	<bootstrap-package>org.aerial.bootstrap</bootstrap-package>
+	<bootstrap-filename>Aerial</bootstrap-filename>
+	<php-models-folder>vo</php-models-folder>
+	<php-services-folder>services</php-services-folder>
+	<as3-models-folder>vo</as3-models-folder>
+	<as3-services-folder>services</as3-services-folder>
+	<vo>VO</vo>
+	<service>Service</service>
+	<directory-mode>0664</directory-mode>
+	<file-mode>0777</file-mode>
+</code-generation>

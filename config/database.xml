@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<database use="development">
+	<development>
+		<engine>mysql</engine>
+		<host>localhost</host>
+		<database></database>
+		<username></username>
+		<password></password>
+		<port>3306</port>
+	</development>
+	<production>
+		<engine>mysql</engine>
+		<host>localhost</host>
+		<database></database>
+		<username></username>
+		<password></password>
+		<port>3306</port>
+	</production>
+</database>

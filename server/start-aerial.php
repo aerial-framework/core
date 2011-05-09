@@ -1,4 +1,7 @@
 <?php
+	if(realpath(__FILE__) == realpath($_SERVER['SCRIPT_FILENAME']))
+		die("You may not access this file directly.");
+
 	$_configPath = realpath(dirname(__FILE__)."/../config");
 
 	if(!file_exists($_configPath))

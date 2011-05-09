@@ -1,7 +1,7 @@
 <?php
 	require_once(conf("paths/doctrine").'Doctrine.php');
-	require_once(conf("paths/libs")."config/Authentication.php");
-	require_once(conf("paths/doctrine").'Aerial.php');
+	require_once(conf("paths/aerial")."core/Authentication.php");
+	require_once(conf("paths/aerial").'doctrine-extensions/Aerial.php');
 	require_once(conf("paths/aerial")."utils/ModelMapper.php");
 	require_once(conf("paths/aerial")."utils/Date.php");
 	require_once(conf("paths/aerial")."utils/firephp/fb.php");
@@ -25,7 +25,7 @@
 			spl_autoload_register(array('Doctrine_Core', 'modelsAutoload'));
 			spl_autoload_register(array('Aerial', 'autoload'));
 
-			require_once(conf("paths/doctrine").'Aerial/Connection/Aerial_Connection.php');
+			require_once(conf("paths/aerial").'doctrine-extensions/Aerial/Connection/Aerial_Connection.php');
 			require_once(conf("paths/aerial")."exceptions/Aerial_Exception.php");
 			
 			self::$_instance->manager = Doctrine_Manager::getInstance();
@@ -36,7 +36,7 @@
 			self::$_instance->manager->setAttribute(Doctrine_Core::ATTR_MODEL_LOADING, Doctrine_Core::MODEL_LOADING_CONSERVATIVE);
 			self::$_instance->manager->setAttribute(Doctrine_Core::ATTR_AUTO_ACCESSOR_OVERRIDE, true);
 			self::$_instance->manager->setAttribute(Doctrine_Core::ATTR_AUTOLOAD_TABLE_CLASSES, true);
-			require_once(conf("paths/doctrine")."Aerial/Record/Aerial_Record.php");
+			require_once(conf("paths/aerial")."doctrine-extensions/Aerial/Record/Aerial_Record.php");
 
 			self::setCustomConnections();
 
@@ -49,20 +49,14 @@
 								
 			self::$_instance->conn = Doctrine_Manager::connection($connectionString, "doctrine");
 
-			$php_path = conf("code-generation/php");
-			$package = conf("code-generation/package", false);
-
-			if($package)
-				$php_path .= implode(DIRECTORY_SEPARATOR, explode(".", $package)).DIRECTORY_SEPARATOR;
-
-			$models_path = $php_path.conf("code-generation/php-models-folder", true, false);
+			$models_path = conf("paths/php-models", true, false);
 
 			if(file_exists($models_path))
 			    Doctrine_Core::loadModels($models_path);
 			
 			Authentication::getInstance();
 
-			require_once(dirname(__FILE__)."/../services/core/aerial/Configuration.php");
+			require_once(conf("paths/aerial")."core/Configuration.php");
 		}
 		
 		public static function setCredentials($username, $password)

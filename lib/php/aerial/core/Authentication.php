@@ -16,17 +16,10 @@
 		
 		private static function init()
 		{
-			$file = conf("options/config-path")."authentication.xml";
-            if(!$file)
-                return;
+			global $_config;
 
-			$f = fopen($file, "r");
-			$contents = fread($f, filesize($file));
-			fclose($f);
-			
-			$contents = new SimpleXMLElement($contents);
-			self::getInstance()->config = $contents;
-			
+			self::getInstance()->config = $_config->authentication;
+
 			$parsed = self::getInstance()->parse();
 			if(self::getInstance()->validate($parsed))
 			{

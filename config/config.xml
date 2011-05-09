@@ -6,19 +6,59 @@
 		you need to. Take care not to add this file to your source-control system.
 	-->
 
+    <!-- path options -->
+
 	<paths>
 		<project></project>
-		<aerial>src_php/lib/aerial</aerial>
-		<libs>src_php/lib</libs>
-		<amfphp>src_php/public_html/amfphp/core</amfphp>
-		<doctrine>src_php/lib/doctrine</doctrine>
-		<internal-services>src_php/lib/services</internal-services>
+        <aerial>../lib/php/aerial</aerial>
+        <amfphp>../lib/php/amfphp</amfphp>
+        <doctrine>../lib/php/doctrine</doctrine>
 	</paths>
+
+    <!-- general options -->
+    
 	<options>
-		<debug-mode include-in-bootstrap="true">true</debug-mode>
-		<server-url include-in-bootstrap="true"></server-url>
+		<debug-mode expose="true">true</debug-mode>
+		<server-url expose="true"></server-url>
 		<use-arraycollection>true</use-arraycollection>
 		<use-authentication>false</use-authentication>
 		<timezone>UTC</timezone>
 	</options>
+
+    <!-- database options -->
+
+    <database use="development">
+        <development>
+            <engine>mysql</engine>
+            <host>localhost</host>
+            <database></database>
+            <username></username>
+            <password></password>
+            <port>3306</port>
+        </development>
+        <production>
+            <engine>mysql</engine>
+            <host>localhost</host>
+            <database></database>
+            <username></username>
+            <password></password>
+            <port>3306</port>
+        </production>
+    </database>
+
+    <!-- authentication options -->
+
+    <authentication>
+        <groups>
+            <group name="General" role="safe">
+            </group>
+        </groups>
+
+        <roles>
+            <!-- default-rule = if the service/function doesn't appear in the list, apply this rule -->
+            <!-- list-rule = if the service/function appears in the list, apply this rule -->
+            <role name="safe" default-rule="deny" list-rule="allow">
+            </role>
+        </roles>
+    </authentication>
 </config>

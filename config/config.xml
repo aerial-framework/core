@@ -10,9 +10,13 @@
 
 	<paths>
 		<project></project>
+		<config>../config</config>
         <aerial>../lib/php/aerial</aerial>
         <amfphp>../lib/php/amfphp</amfphp>
         <doctrine>../lib/php/doctrine</doctrine>
+
+        <php-models>../src_php/za/co/rsajobs/vo</php-models>
+        <php-services>../src_php/za/co/rsajobs/services</php-services>
 	</paths>
 
     <!-- general options -->
@@ -31,9 +35,9 @@
         <development>
             <engine>mysql</engine>
             <host>localhost</host>
-            <database></database>
-            <username></username>
-            <password></password>
+            <database>rsajobs</database>
+            <username>rsajobs</username>
+            <password>rsajobs</password>
             <port>3306</port>
         </development>
         <production>

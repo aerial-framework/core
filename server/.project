@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project>
-    <location>../</location>    <!-- relative or absolute reference to config directory or parent of config directory
+
+    <!-- relative or absolute reference to config directory or parent of config directory -->
+    <location>../config/config.xml</location>
 </project>

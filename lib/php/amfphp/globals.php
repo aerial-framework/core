@@ -5,15 +5,8 @@
 
 	$basePath = AMFPHP_BASE;
 
-	$servicesPath = conf("paths/internal-services");
-
-	$php_path = conf("code-generation/php");
-	$package = conf("code-generation/package", false);
-
-	if($package)
-		$php_path .= implode(DIRECTORY_SEPARATOR, explode(".", $package)).DIRECTORY_SEPARATOR;
-
-	$models_path = $php_path.conf("code-generation/php-models-folder");
+	$servicesPath = conf("paths/aerial")."core";
+	$models_path = conf("paths/php-models");
 
 	$voPath = realpath($models_path."/..");  //Needed to make this the "model" directory for AMFPHP.  Rob: 4-16-2010	
 ?>

@@ -1,17 +1,11 @@
 <?php
-	if(realpath(__FILE__) == realpath($_SERVER['SCRIPT_FILENAME']))
-		die("You may not access this file directly.");
+	$_configPath = getConfigPath();
 
-	$_configPath = realpath(dirname(__FILE__)."/../config");
+	$_config = simplexml_load_file($_configPath);
+	$_config_alt = @simplexml_load_file(dirname($_configPath)."/config-alt.xml");
 
-	if(!file_exists($_configPath))
-	{
-		trigger_error("The configuration file could not be found under src_php/config");
-		die();
-	}
-
-	$_config = simplexml_load_file($_configPath."/config.xml");
-	$_config_alt = @simplexml_load_file($_configPath."/config-alt.xml");
+	if(!$_config)
+		die("Could not locate configuration file at ".realpath($_configPath));
 
     // add config path to config XML dynamically
     $_config->options->{"config-path"} = $_configPath;
@@ -103,6 +97,50 @@
 		return $value;
 	}
 
-	require_once(conf("paths/aerial")."Bootstrapper.php");
+	function getConfigPath()
+	{
+		$directory = dirname(__FILE__);
+		$configDirectoryGuess = realpath($directory."/../config/config.xml");
+
+		// check for existence of .project file if the config folder is not in its default location
+		if(!file_exists("$directory/.project") && !file_exists($configDirectoryGuess))
+		{
+			die("Aerial could not find your configuration file. Please make sure that you have a file named
+					\".project\" in your \"server\" directory.");
+		}
+
+		try
+		{
+			$projectXML = @simplexml_load_file("$directory/.project");
+			if(!$projectXML)
+				throw new Exception("Syntax error");
+
+			$location = realpath((string) $projectXML->location);
+			$filetype = substr($location, strrpos($location, ".") + 1);
+
+			if(!$location || !file_exists($location) || $filetype != "xml")
+				throw new Exception("Invalid location");
+
+			return $location;
+		}
+		catch(Exception $e)
+		{
+			$message = "An unexpected error occurred when reading the \".project\" file.";
+
+			switch($e->getMessage())
+			{
+				case "Syntax error":
+					$message = "There is an XML syntax error in the \".project\" file";
+					break;
+				case "Invalid location":
+					$message = "Please ensure that the location used in the \".project\" file is valid.";
+					break;
+			}
+
+			die($message);
+		}
+	}
+
+	require_once(conf("paths/aerial")."core/Bootstrapper.php");
 	Bootstrapper::getInstance();
 ?>

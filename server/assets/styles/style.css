@@ -1,0 +1,43 @@
+body
+{
+    background: url("../images/logo.png") no-repeat bottom right fixed #000000;
+    /*background-position: bottom right;
+                     background-attachment: fixed;*/
+
+    font-family: Droid Sans, Tahoma, sans-serif;
+    color: #FFFFFF;
+    font-size: 12px;
+}
+
+h2
+{
+    font-size: 15px;
+}
+
+/*p
+{
+    background-color: #ff2222;
+    font-size: 14px;
+    padding: 8px 8px 8px 8px;
+    border: #CCCCCC solid 1px;
+    margin: 20px;
+}
+
+p.warning { background-color: #ffaa11; }
+
+p.success
+{
+    background-color: #77dd00;
+}*/
+
+.warning {border:2px #ffaa11 solid; margin-bottom:10px;}
+.warning h2 {background: #ffaa11; color:#000;padding:2px;margin-top:0px; padding-bottom:4px}
+.warning p {color:#ffaa11;font-size: 13px; padding-left:5px; padding-right:5px}
+
+.error {border:2px #ff2222 solid; margin-bottom:10px;}
+.error h2 {background: #ff2222; color:#000;padding:2px;margin-top:0px; padding-bottom:4px}
+.error p {color:#ff2222;font-size: 13px; padding-left:5px; padding-right:5px}
+
+.success {border:2px #77dd00 solid; margin-bottom:10px;}
+.success h2 {background: #77dd00; color:#000;padding:2px;margin-top:0px; padding-bottom:4px}
+.success p {color:#77dd00;font-size: 13px; padding-left:5px; padding-right:5px}

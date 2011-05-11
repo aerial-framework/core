@@ -1,11 +1,4 @@
 <?php
-	require_once(conf("paths/doctrine").'Doctrine.php');
-	require_once(conf("paths/aerial")."core/Authentication.php");
-	require_once(conf("paths/aerial").'doctrine-extensions/Aerial.php');
-	require_once(conf("paths/aerial")."utils/ModelMapper.php");
-	require_once(conf("paths/aerial")."utils/Date.php");
-	require_once(conf("paths/aerial")."utils/firephp/fb.php");
-
 	class Bootstrapper
 	{
 		public $conn;
@@ -19,8 +12,10 @@
 				trigger_error("You must not call the constructor directly! This class is a Singleton");
 		}
 
-		private static function init()
+		private function init()
 		{
+			$this->validatePaths();
+
 			spl_autoload_register(array('Doctrine', 'autoload'));
 			spl_autoload_register(array('Doctrine_Core', 'modelsAutoload'));
 			spl_autoload_register(array('Aerial', 'autoload'));
@@ -53,10 +48,39 @@
 
 			if(file_exists($models_path))
 			    Doctrine_Core::loadModels($models_path);
+			else
+				trigger_error("No Aerial models not found - check your 'php-models' value in <i>config.xml</i>", E_USER_WARNING);
 			
 			Authentication::getInstance();
 
 			require_once(conf("paths/aerial")."core/Configuration.php");
+		}
+
+		private function validatePaths()
+		{
+			$configPath = realpath(conf("paths/config"));
+			$aerialPath = realpath(conf("paths/aerial"));
+			$amfphpPath = realpath(conf("paths/amfphp"));
+			$doctrinePath = realpath(conf("paths/doctrine"));
+
+			if(!$configPath)
+				StartupHelper::error("The path to the <strong>config</strong> folder is invalid in <i>config.xml</i>", E_USER_ERROR);
+
+			if(!$aerialPath)
+				trigger_error("The path to the <strong>aerial</strong> folder is invalid in <i>config.xml</i>", E_USER_ERROR);
+
+			if(!$amfphpPath)
+				trigger_error("The path to the <strong>amfphp</strong> folder is invalid in <i>config.xml</i>", E_USER_ERROR);
+
+			if(!$doctrinePath)
+				trigger_error("The path to the <strong>doctrine</strong> folder is invalid in <i>config.xml</i>", E_USER_ERROR);
+
+			require_once(conf("paths/doctrine").'Doctrine.php');
+			require_once(conf("paths/aerial")."core/Authentication.php");
+			require_once(conf("paths/aerial").'doctrine-extensions/Aerial.php');
+			require_once(conf("paths/aerial")."utils/ModelMapper.php");
+			require_once(conf("paths/aerial")."utils/Date.php");
+			require_once(conf("paths/aerial")."utils/firephp/fb.php");
 		}
 		
 		public static function setCredentials($username, $password)
@@ -74,7 +98,7 @@
 			if(!isset(self::$_instance))
 			{
 				self::$_instance = new self();
-				self::init();
+				self::$_instance->init();
 			}
 
 			return self::$_instance;

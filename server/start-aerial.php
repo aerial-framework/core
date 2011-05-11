@@ -1,22 +1,20 @@
 <?php
 	$_configPath = getConfigPath();
 
-	$_config = simplexml_load_file($_configPath);
+	$_config = @simplexml_load_file($_configPath);
 	$_config_alt = @simplexml_load_file(dirname($_configPath)."/config-alt.xml");
 
 	if(!$_config)
-		die("Could not locate configuration file at ".realpath($_configPath));
+		StartupHelper::error("There is a syntax error in config.xml");
 
     // add config path to config XML dynamically
     $_config->options->{"config-path"} = $_configPath;
 
 	// Get the base path
-	$_base = conf("paths/project");
+	$_base = dirname($_configPath);
 
 	if(!realpath($_base))
-		throw new Exception("Project root directory is invalid [$_base]");
-
-	$_base = realpath($_base);
+		StartupHelper::error("Project root directory is invalid [$_base]");
 	
 	date_default_timezone_set(conf("options/timezone", false, false));						// Required for PHP >= 5.3
 
@@ -38,7 +36,8 @@
 			$node = $_config_alt->xpath($path);
 
 		if(!$node)
-			throw new Exception("Could not find configuration value [$path]");
+			StartupHelper::error("Could not find configuration value <strong>$path</strong>!<br/>".
+			                "Please ensure that there is a <strong>$path</strong> node in <i>config.xml</i>");
 
 		$value = (string) $node[0];
 
@@ -84,7 +83,7 @@
 					$value = $nodeToUse->xpath($subnode);
 				}
 				else
-					trigger_error("$subnode node is missing in the database configuration");
+					StartupHelper::error("$subnode node is missing in the database configuration");
 			}
 			
 			$value = (string) $value[0];
@@ -105,42 +104,35 @@
 		// check for existence of .project file if the config folder is not in its default location
 		if(!file_exists("$directory/.project") && !file_exists($configDirectoryGuess))
 		{
-			die("Aerial could not find your configuration file. Please make sure that you have a file named
+			throw new Exception("Aerial could not find your configuration file. Please make sure that you have a file named
 					\".project\" in your \"server\" directory.");
 		}
 
-		try
-		{
-			$projectXML = @simplexml_load_file("$directory/.project");
-			if(!$projectXML)
-				throw new Exception("Syntax error");
+		if(!file_exists("$directory/.project"))
+			StartupHelper::error("Please ensure that the path used for the <strong>.project</strong> file is valid.");
 
-			$location = realpath((string) $projectXML->location);
-			$filetype = substr($location, strrpos($location, ".") + 1);
+		$projectXML = @simplexml_load_file("$directory/.project");
+		if(!$projectXML)
+			StartupHelper::error("There is an XML syntax error in the <strong>.project</strong> file");
 
-			if(!$location || !file_exists($location) || $filetype != "xml")
-				throw new Exception("Invalid location");
+		$location = realpath((string) $projectXML->location);
+		$filetype = substr($location, strrpos($location, ".") + 1);
 
-			return $location;
-		}
-		catch(Exception $e)
-		{
-			$message = "An unexpected error occurred when reading the \".project\" file.";
+		if($filetype != "xml")
+			$location = $location."/config.xml";
 
-			switch($e->getMessage())
-			{
-				case "Syntax error":
-					$message = "There is an XML syntax error in the \".project\" file";
-					break;
-				case "Invalid location":
-					$message = "Please ensure that the location used in the \".project\" file is valid.";
-					break;
-			}
+		if(!$location || !file_exists($location))
+			StartupHelper::error("Please ensure that the path used for the <strong>config.xml</strong> in <i>.project</i> is valid.");
 
-			die($message);
-		}
+		return $location;
 	}
 
-	require_once(conf("paths/aerial")."core/Bootstrapper.php");
-	Bootstrapper::getInstance();
+	if(!realpath(conf("paths/aerial")."core/Bootstrapper.php"))
+		StartupHelper::error("The <strong>Aerial core</strong> could not be located - check your 'aerial' path in <i>config.xml</i>");
+	else
+	{
+		require_once(conf("paths/aerial")."core/Bootstrapper.php");
+
+		Bootstrapper::getInstance();
+	}
 ?>

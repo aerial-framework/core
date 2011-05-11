@@ -21,14 +21,8 @@ function adapterAction (&$amfbody) {
 	$classpath = "";
 	$methodname = "";
 	$isWebServiceURI = false;
-
-	$php_path = conf("code-generation/php");
-	$package = conf("code-generation/package", false);
-
-	if($package)
-		$php_path .= implode(DIRECTORY_SEPARATOR, explode(".", $package)).DIRECTORY_SEPARATOR;
 	
-	$services_path = $php_path.conf("code-generation/php-services-folder");
+	$services_path = conf("paths/php-services");
 
 	$target = $amfbody->targetURI;
 	
@@ -70,11 +64,11 @@ function adapterAction (&$amfbody) {
 				}
 				$uriclasspath = str_replace('.','/',$classAndPackage) . '.php';
 
-				if(realpath(conf("paths/internal-services")."/".$uriclasspath))
-					$classpath = realpath(conf("paths/internal-services")."/".$uriclasspath);
-					
-				if(realpath($services_path."/".$uriclasspath))
-					$classpath = realpath($services_path."/".$uriclasspath);
+				if(conf("paths/aerial")."core/".$uriclasspath)
+					$classpath = conf("paths/aerial")."core/".$uriclasspath;
+
+				if(realpath($services_path.$uriclasspath))
+					$classpath = realpath($services_path.$uriclasspath);
 				
 				//$classpath = $baseClassPath . $uriclasspath;
 				//die($classpath);

@@ -6,10 +6,13 @@
 		you need to. Take care not to add this file to your source-control system.
 	-->
 
-    <!-- path options -->
+    <!-- path options
+
+        config -> use comments like this
+        
+    -->
 
 	<paths>
-		<project></project>
 		<config>../config</config>
         <aerial>../lib/php/aerial</aerial>
         <amfphp>../lib/php/amfphp</amfphp>
@@ -22,32 +25,25 @@
     <!-- general options -->
     
 	<options>
-		<debug-mode expose="true">true</debug-mode>
+		<debug-mode>true</debug-mode>
 		<server-url expose="true"></server-url>
-		<use-arraycollection>true</use-arraycollection>
+		<use-arraycollection>true</use-arraycollection> <!-- ambiguous, Rob think this should be in .aerial file - to discuss later -->
 		<use-authentication>false</use-authentication>
 		<timezone>UTC</timezone>
 	</options>
 
     <!-- database options -->
 
+    <!-- remove "development" -->
     <database use="development">
         <development>
             <engine>mysql</engine>
             <host>localhost</host>
-            <database>rsajobs</database>
+            <database>rsajobs</database> <!-- rename to schema -->
             <username>rsajobs</username>
             <password>rsajobs</password>
             <port>3306</port>
         </development>
-        <production>
-            <engine>mysql</engine>
-            <host>localhost</host>
-            <database></database>
-            <username></username>
-            <password></password>
-            <port>3306</port>
-        </production>
     </database>
 
     <!-- authentication options -->

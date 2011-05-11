@@ -71,7 +71,7 @@ class Aerial_Core extends Doctrine_Core
 	    $permissions = substr(sprintf('%o', fileperms($directory)), -4);
 	    if(!is_readable($directory))
 	    {
-		    StartupHelper::error("Cannot load <strong>Aerial models</strong> from an unreadable directory with
+		    AerialStartupManager::error("Cannot load <strong>Aerial models</strong> from an unreadable directory with
 		                            permissions of <strong>$permissions</strong>. Please check your
 		                            <strong>php-models</strong> directory in <i>config.xml</i>");
 	    }
@@ -151,7 +151,7 @@ class Aerial_Core extends Doctrine_Core
 	    }
 	    catch(Exception $e)
 		{
-			StartupHelper::error($e->getMessage()."<br/>In file: <strong>".$e->getFile()."</strong> on line ".$e->getLine());
+			AerialStartupManager::error($e->getMessage()."<br/>In file: <strong>".$e->getFile()."</strong> on line ".$e->getLine());
 		}
 
         asort($loadedModels);

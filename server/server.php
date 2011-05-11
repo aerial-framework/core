@@ -23,17 +23,17 @@
 	set_error_handler("errorHandler");
 	set_exception_handler("exceptionHandler");
 
-	include(dirname(__FILE__) . "/start-aerial.php");
+	include_once(dirname(__FILE__) . "/start-aerial.php");
 		
 	// define AMFPHP base path for AMFPHP's usage
 	define("AMFPHP_BASE", realpath(conf("paths/amfphp"))."/core/");
 
 	// Load AMFPHP
 	set_include_path(AMFPHP_BASE);
-	include(AMFPHP_BASE."../gateway.php");
-	include(AMFPHP_BASE."../globals.php");
+	include_once(AMFPHP_BASE."../gateway.php");
+	include_once(AMFPHP_BASE."../globals.php");
 
-	StartupHelper::info("<strong>Aerial</strong> is configured correctly");
+	AerialStartupManager::info("<strong>Aerial</strong> is configured correctly");
 
 	restore_error_handler();
  	restore_exception_handler();
@@ -49,11 +49,16 @@
 		{
 			case E_USER_ERROR:
 			case E_ERROR:
-				StartupHelper::error($errstr);
+				AerialStartupManager::error($errstr);
 				break;
 			case E_USER_WARNING:
-				StartupHelper::warn($errstr);
+				AerialStartupManager::warn($errstr);
 				break;
 		}
+	}
+
+	function exceptionHandler(Exception $e)
+	{
+		errorHandler(E_USER_ERROR, $e->getMessage(), $e->getFile(), $e->getLine());
 	}
 ?>

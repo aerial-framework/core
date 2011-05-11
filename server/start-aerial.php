@@ -5,7 +5,7 @@
 	$_config_alt = @simplexml_load_file(dirname($_configPath)."/config-alt.xml");
 
 	if(!$_config)
-		StartupHelper::error("There is a syntax error in config.xml");
+		AerialStartupManager::error("There is a syntax error in config.xml");
 
     // add config path to config XML dynamically
     $_config->options->{"config-path"} = $_configPath;
@@ -14,9 +14,10 @@
 	$_base = dirname($_configPath);
 
 	if(!realpath($_base))
-		StartupHelper::error("Project root directory is invalid [$_base]");
-	
-	date_default_timezone_set(conf("options/timezone", false, false));						// Required for PHP >= 5.3
+		AerialStartupManager::error("Project root directory is invalid [$_base]");
+
+	include_once(dirname(__FILE__)."/server.php");
+	date_default_timezone_set(conf("options/timezone", false, false));				// Required for PHP >= 5.3
 
 	/**
 	 * @throws Exception
@@ -31,13 +32,18 @@
 		global $_base;
 		global $_config_alt;
 
+		if(!$_config)
+		{
+			AerialStartupManager::error("No configuration options were found.");
+		}
+
 		$node = $_config->xpath($path);
 		if($_config_alt && $_config_alt->xpath($path))
 			$node = $_config_alt->xpath($path);
 
 		if(!$node)
 		{
-			StartupHelper::error("Could not find configuration value <strong>$path</strong>!<br/>".
+			AerialStartupManager::error("Could not find configuration value <strong>$path</strong>!<br/>".
 			                     "Please ensure that there is a <strong>$path</strong> node in <i>config.xml</i>");
 		}
 
@@ -85,7 +91,7 @@
 					$value = $nodeToUse->xpath($subnode);
 				}
 				else
-					StartupHelper::error("$subnode node is missing in the database configuration");
+					AerialStartupManager::error("$subnode node is missing in the database configuration");
 			}
 			
 			$value = (string) $value[0];
@@ -111,11 +117,11 @@
 		}
 
 		if(!file_exists("$directory/.project"))
-			StartupHelper::error("Please ensure that the path used for the <strong>.project</strong> file is valid.");
+			AerialStartupManager::error("Please ensure that the path used for the <strong>server/.project</strong> file is valid.");
 
 		$projectXML = @simplexml_load_file("$directory/.project");
 		if(!$projectXML)
-			StartupHelper::error("There is an XML syntax error in the <strong>.project</strong> file");
+			AerialStartupManager::error("There is an XML syntax error in the <strong>server/.project</strong> file");
 
 		$location = realpath((string) $projectXML->location);
 		$filetype = substr($location, strrpos($location, ".") + 1);
@@ -124,15 +130,18 @@
 			$location = $location."/config.xml";
 
 		if(!$location || !file_exists($location))
-			StartupHelper::error("Please ensure that the path used for the <strong>config.xml</strong> in <i>.project</i> is valid.");
+		{
+			AerialStartupManager::error("Please ensure that the path used for the <strong>config.xml</strong>
+					file in <strong>server/.project</strong> is <u>valid</u> and <u>readable</u>.");
+		}
 
 		return $location;
 	}
 
 	if(!is_readable(conf("paths/aerial")."core/Bootstrapper.php"))
-		StartupHelper::error("The <strong>Aerial core</strong> directory is unreadable - check your 'aerial' path in <i>config.xml</i>");
+		AerialStartupManager::error("The <strong>Aerial core</strong> directory is unreadable - check your 'aerial' path in <i>config.xml</i>");
 	else if(!realpath(conf("paths/aerial")."core/Bootstrapper.php"))
-		StartupHelper::error("The <strong>Aerial core</strong> could not be located - check your 'aerial' path in <i>config.xml</i>");
+		AerialStartupManager::error("The <strong>Aerial core</strong> could not be located - check your 'aerial' path in <i>config.xml</i>");
 	else
 	{
 		require_once(conf("paths/aerial")."core/Bootstrapper.php");
@@ -140,7 +149,7 @@
 		Bootstrapper::getInstance();
 	}
 
-	class StartupHelper
+	class AerialStartupManager
 	{
 		static private $displayedProductionMessage;
 
@@ -159,24 +168,41 @@
 			self::log($message, "Success");
 		}
 
+		public static function hasAMFRequest()
+		{
+			global $request;
+
+			return $request != null;
+		}
+
+		public static function getAMFRequest()
+		{
+			global $request;
+
+			return $request;
+		}
+
 		private static function log($message, $type)
 		{
 			global $request;
 			global $_config;
 
-			if(((string) $_config->options->{"debug-mode"}) == "")        // no debug-mode node in config
+			if($_config)
 			{
-				$message = "You are missing the <strong>options/debug-mode</strong> node in your <i>config.xml</i> file";
-				$type = E_USER_ERROR;
-			}
-			else if(!conf("options/debug-mode",false,false))
-			{
-				if(!self::$displayedProductionMessage)
+				if(((string) $_config->options->{"debug-mode"}) == "")        // no debug-mode node in config
 				{
-					echo "<p>Server is in production mode.</p>";
-					self::$displayedProductionMessage = true;
+					$message = "You are missing the <strong>options/debug-mode</strong> node in your <i>config.xml</i> file";
+					$type = E_USER_ERROR;
 				}
-				return;
+				else if(!conf("options/debug-mode",false,false))
+				{
+					if(!self::$displayedProductionMessage)
+					{
+						self::simpleLog("<p>Enable debug mode to view errors.</p>", E_USER_ERROR);
+						self::$displayedProductionMessage = true;
+					}
+					return;
+				}
 			}
 
 			// if an AMF request has been received, let amfPHP handle the errors, only display startup problems
@@ -203,7 +229,7 @@
 		private static function simpleLog($message, $type)
 		{
 			if($type == E_USER_ERROR || $type == E_ERROR)
-				die("Aerial startup warning: ".$message);
+				die("Aerial startup warning: ".strip_tags($message));
 		}
 	}
 ?>

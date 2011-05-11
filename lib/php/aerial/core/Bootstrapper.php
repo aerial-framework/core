@@ -41,23 +41,32 @@
 							"@".conf("database/host", false, false).
 							":".conf("database/port", false, false).
 							"/".conf("database/schema", false, false);
-								
-			self::$_instance->conn = Doctrine_Manager::connection($connectionString, "doctrine");
 
-			$models_path = conf("paths/php-models", true, false);
-			$services_path = conf("paths/php-services", true, false);
+			try
+			{
+				self::$_instance->conn = Doctrine_Manager::connection($connectionString, "doctrine");
+			}
+			catch(Exception $e)
+			{
+				AerialStartupManager::error("<strong>Doctrine Exception: </strong><i>".$e->getMessage()."</i>");
+			}
 
-			if(file_exists($models_path))
-			    Aerial_Core::loadModels($models_path);
+			$modelsPath = conf("paths/php-models", true, false);
+			$servicesPath = conf("paths/php-services", true, false);
+
+			if(file_exists($modelsPath))
+			    Aerial_Core::loadModels($modelsPath);
 			else
-				StartupHelper::warn("No Aerial <strong>models</strong> found - check your 'php-models' value in <i>config.xml</i>");
+				AerialStartupManager::warn("No Aerial <strong>models</strong> found - check your 'php-models' value in <i>config.xml</i>");
 
-			if(!file_exists($services_path))
-				StartupHelper::warn("No Aerial <strong>services</strong> found - check your 'php-services' value in <i>config.xml</i>");
+			if(!file_exists($servicesPath))
+				AerialStartupManager::warn("No Aerial <strong>services</strong> found - check your 'php-services' value in <i>config.xml</i>");
 			
 			Authentication::getInstance();
 
 			require_once(conf("paths/aerial")."core/Configuration.php");
+
+			AerialStartupManager::info("<strong>Doctrine</strong> is configured correctly.");
 		}
 
 		private function validatePaths()
@@ -82,11 +91,11 @@
 			foreach($directories as $key => $directory)
 			{
 				if(!file_exists($directory))
-					StartupHelper::error("The path to the <strong>$key</strong> directory is invalid in <i>config.xml</i>");
+					AerialStartupManager::error("The path to the <strong>$key</strong> directory is invalid in <i>config.xml</i>");
 
 				if(!is_readable($directory))
 				{
-					StartupHelper::warn("The <strong>$key</strong> directory is unreadable.
+					AerialStartupManager::warn("The <strong>$key</strong> directory is unreadable.
 						Please ensure that the directory defined in <i>config.xml</i> has read access.");
 				}
 			}

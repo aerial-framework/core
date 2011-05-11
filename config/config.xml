@@ -34,16 +34,13 @@
 
     <!-- database options -->
 
-    <!-- remove "development" -->
-    <database use="development">
-        <development>
-            <engine>mysql</engine>
-            <host>localhost</host>
-            <database>rsajobs</database> <!-- rename to schema -->
-            <username>rsajobs</username>
-            <password>rsajobs</password>
-            <port>3306</port>
-        </development>
+    <database>
+        <engine>mysql</engine>
+        <host>localhost</host>
+        <schema>rsajobs</schema> <!-- rename to schema -->
+        <username>rsajobs</username>
+        <password>rsajobs</password>
+        <port>3306</port>
     </database>
 
     <!-- authentication options -->

@@ -35,21 +35,25 @@
 
 			self::setCustomConnections();
 
-			$connectionString = conf("database", false, false, "engine")."://".
-							conf("database", false, false, "username").":".
-							conf("database", false, false, "password").
-							"@".conf("database", false, false, "host").
-							":".conf("database", false, false, "port").
-							"/".conf("database", false, false, "database");
+			$connectionString = conf("database/engine", false, false)."://".
+							conf("database/username", false, false).":".
+							conf("database/password", false, false).
+							"@".conf("database/host", false, false).
+							":".conf("database/port", false, false).
+							"/".conf("database/schema", false, false);
 								
 			self::$_instance->conn = Doctrine_Manager::connection($connectionString, "doctrine");
 
 			$models_path = conf("paths/php-models", true, false);
+			$services_path = conf("paths/php-services", true, false);
 
 			if(file_exists($models_path))
-			    Doctrine_Core::loadModels($models_path);
+			    Aerial_Core::loadModels($models_path);
 			else
-				trigger_error("No Aerial models not found - check your 'php-models' value in <i>config.xml</i>", E_USER_WARNING);
+				StartupHelper::warn("No Aerial <strong>models</strong> found - check your 'php-models' value in <i>config.xml</i>");
+
+			if(!file_exists($services_path))
+				StartupHelper::warn("No Aerial <strong>services</strong> found - check your 'php-services' value in <i>config.xml</i>");
 			
 			Authentication::getInstance();
 
@@ -63,17 +67,29 @@
 			$amfphpPath = realpath(conf("paths/amfphp"));
 			$doctrinePath = realpath(conf("paths/doctrine"));
 
-			if(!$configPath)
-				StartupHelper::error("The path to the <strong>config</strong> folder is invalid in <i>config.xml</i>", E_USER_ERROR);
+			$modelsPath = conf("paths/php-models", true, false);
+			$servicesPath = conf("paths/php-services", true, false);
 
-			if(!$aerialPath)
-				trigger_error("The path to the <strong>aerial</strong> folder is invalid in <i>config.xml</i>", E_USER_ERROR);
+			$directories = array(
+				"config" => $configPath,
+				"aerial" => $aerialPath,
+				"amfphp" => $amfphpPath,
+				"doctrine" => $doctrinePath,
+				"Aerial models" => $modelsPath,
+				"Aerial services" => $servicesPath
+			);
 
-			if(!$amfphpPath)
-				trigger_error("The path to the <strong>amfphp</strong> folder is invalid in <i>config.xml</i>", E_USER_ERROR);
+			foreach($directories as $key => $directory)
+			{
+				if(!file_exists($directory))
+					StartupHelper::error("The path to the <strong>$key</strong> directory is invalid in <i>config.xml</i>");
 
-			if(!$doctrinePath)
-				trigger_error("The path to the <strong>doctrine</strong> folder is invalid in <i>config.xml</i>", E_USER_ERROR);
+				if(!is_readable($directory))
+				{
+					StartupHelper::warn("The <strong>$key</strong> directory is unreadable.
+						Please ensure that the directory defined in <i>config.xml</i> has read access.");
+				}
+			}
 
 			require_once(conf("paths/doctrine").'Doctrine.php');
 			require_once(conf("paths/aerial")."core/Authentication.php");

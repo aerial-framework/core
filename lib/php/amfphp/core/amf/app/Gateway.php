@@ -269,7 +269,7 @@ class Gateway {
 		}
 		else
 		{
-			echo "<p class='success'><strong>AMFPHP</strong> is configured correctly</p>";
+			StartupHelper::info("<strong>AMFPHP</strong> is configured correctly");
 		}
 	}
 	

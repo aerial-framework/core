@@ -2,5 +2,5 @@
 <project>
 
     <!-- relative or absolute reference to config directory or parent of config directory -->
-    <location>/home/danny/Work/www/open-source/aerial-new-structure/config/config.xml</location>
+    <location>/home/danny/Work/www/open-source/aerial-new-structure/config</location>
 </project>

@@ -71,19 +71,13 @@
 
 		private function validatePaths()
 		{
-			$configPath = realpath(conf("paths/config"));
-			$aerialPath = realpath(conf("paths/aerial"));
-			$amfphpPath = realpath(conf("paths/amfphp"));
-			$doctrinePath = realpath(conf("paths/doctrine"));
+			$libPath = realpath(conf("paths/lib"));
 
 			$modelsPath = conf("paths/php-models", true, false);
 			$servicesPath = conf("paths/php-services", true, false);
 
 			$directories = array(
-				"config" => $configPath,
-				"aerial" => $aerialPath,
-				"amfphp" => $amfphpPath,
-				"doctrine" => $doctrinePath,
+				"Library" => $libPath,
 				"Aerial models" => $modelsPath,
 				"Aerial services" => $servicesPath
 			);

@@ -62,7 +62,7 @@
 			$models_path = $php_path.conf("code-generation/php-models-folder");
 
 			if($fromYAML)
-				$dataToWrite = Aerial_Core::generateModelsFromYaml(conf("options/config-path").'schema.yml', $models_path, $options);
+				$dataToWrite = Aerial_Core::generateModelsFromYaml(conf("options/config").'schema.yml', $models_path, $options);
 			else
 			{
 				if(!file_exists($models_path))					// if the folder does not exist, create it to avoid errors!

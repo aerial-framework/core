@@ -16,16 +16,16 @@
 		
 		private static function init()
 		{
-			global $_config;
+			global $server;
 
-			self::getInstance()->config = $_config->authentication;
+			/*self::getInstance()->config = $server->_config->authentication;
 
 			$parsed = self::getInstance()->parse();
 			if(self::getInstance()->validate($parsed))
 			{
 				session_start();
 				$_SESSION["valid-credentials"] = $parsed;
-			}
+			}*/
 		}
 		
 		protected function parse()

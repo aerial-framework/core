@@ -35,6 +35,13 @@
 			return self::$_request;
 		}
 
+		public static function getGroup()
+		{
+			$pid = posix_getgid();
+			$group = posix_getgrgid($pid);
+			return $group["name"];
+		}
+
 		private static function log($message, $type)
 		{
 			global $server;

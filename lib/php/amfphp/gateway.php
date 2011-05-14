@@ -113,7 +113,7 @@
 	include "core/amf/app/Gateway.php";
 
 	$gateway = new Gateway();
-	
+
 	//Set where the services classes are loaded from, *with trailing slash*
 	//$servicesPath defined in globals.php
 	$gateway->setClassPath($servicesPath);

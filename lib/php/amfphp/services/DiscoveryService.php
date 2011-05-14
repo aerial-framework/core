@@ -12,17 +12,13 @@
 
 		public function __construct()
 		{
-			$php_path = conf("code-generation/php");
-			$package = conf("code-generation/package", false);
-
-			if($package)
-				$php_path .= implode(DIRECTORY_SEPARATOR, explode(".", $package)).DIRECTORY_SEPARATOR;
+			$php_path = conf("paths/lib")."php";
 
 			$this->internal_services_path = conf("paths/internal-services", true, false);
-			$this->services_path = $php_path.conf("code-generation/php-services-folder", true, false);
+			$this->services_path = conf("paths/php-services", true, false);
 
 			if(!file_exists($this->services_path))					// if the folder does not exist, create it to avoid errors!
-				@mkdir($this->services_path, conf("code-generation/directory-mode", false), true);
+				@mkdir($this->services_path, 0744, true);
 		}
 
 		/**

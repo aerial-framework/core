@@ -64,8 +64,15 @@ function adapterAction (&$amfbody) {
 				}
 				$uriclasspath = str_replace('.','/',$classAndPackage) . '.php';
 
-				if(conf("paths/aerial")."core/".$uriclasspath)
-					$classpath = conf("paths/aerial")."core/".$uriclasspath;
+				// try find the correct path to the PHP service for the incoming request
+				if(conf("paths/lib")."php/".$uriclasspath)
+					$classpath = conf("paths/lib")."php/".$uriclasspath;
+
+				if(!realpath($classpath))
+					$classpath = conf("paths/amfphp")."services/$classname.php";
+
+				if(!realpath($classpath))
+					$classpath = conf("paths/aerial")."core/$classname.php";
 
 				if(realpath($services_path.$uriclasspath))
 					$classpath = realpath($services_path.$uriclasspath);
@@ -137,7 +144,7 @@ function adapterAction (&$amfbody) {
 				else {
 					$uriclasspath = $trunced . ".php";
 					//$classpath = $baseClassPath . $trunced . ".php";
-					
+
 					if(realpath(conf("paths/internal-services")."/".$uriclasspath))
 						$classpath = realpath(conf("paths/internal-services")."/".$uriclasspath);
 						

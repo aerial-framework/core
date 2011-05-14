@@ -15,7 +15,7 @@ function classLoaderAction (&$amfbody) {
 	{ 
 		// change to the gateway.php script directory
 		// now change to the directory of the classpath.  Possible relative to gateway.php
-		$dirname = dirname($amfbody->classPath); 
+		$dirname = dirname($amfbody->classPath);
 		if(is_dir($dirname))
 		{
 			chdir($dirname);

@@ -5,8 +5,8 @@
 
 	$basePath = AMFPHP_BASE;
 
-	$servicesPath = conf("paths/aerial")."core";
+	$servicesPath = conf("paths/lib")."php";
 	$models_path = conf("paths/php-models");
 
-	$voPath = realpath($models_path."/..");  //Needed to make this the "model" directory for AMFPHP.  Rob: 4-16-2010	
+	$voPath = realpath($models_path."/..");
 ?>

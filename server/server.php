@@ -107,6 +107,7 @@
 				"config" => dirname($_configPath),
 				"project" => dirname(dirname($_configPath)),        // convention: config must always be in root of project
 				"aerial" => conf("paths/lib", true, false)."/php/aerial",
+				"internal-services" => conf("paths/lib", true, false)."/php",
 				"doctrine" => conf("paths/lib", true, false)."/php/doctrine",
 				"amfphp" => conf("paths/lib", true, false)."/php/amfphp"
 			);
@@ -120,9 +121,13 @@
 			date_default_timezone_set(conf("options/timezone", false, false));				// Required for PHP >= 5.3
 
 			if(!is_readable(conf("paths/aerial")."core/Bootstrapper.php"))
-				AerialStartupManager::error("The <strong>Aerial core</strong> directory is unreadable - check your 'aerial' path in <i>config.xml</i>");
+			{
+				AerialStartupManager::error("The <strong>Aerial core</strong> directory is unreadable - check your 'lib' path in <i>config.xml</i>
+												<br/>Hint: Change the directory owner to <strong>".AerialStartupManager::getGroup()."</strong>
+												and ensure that the path is correct.");
+			}
 			else if(!realpath(conf("paths/aerial")."core/Bootstrapper.php"))
-				AerialStartupManager::error("The <strong>Aerial core</strong> could not be located - check your 'aerial' path in <i>config.xml</i>");
+				AerialStartupManager::error("The <strong>Aerial core</strong> could not be located - check your 'lib' path in <i>config.xml</i>");
 			else
 			{
 				require_once(conf("paths/aerial")."core/Bootstrapper.php");

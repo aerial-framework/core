@@ -13,10 +13,11 @@
     -->
 
 	<paths>
-        <lib>/home/danny/Work/www/open-source/aerial-new-structure/lib</lib>
+        <!--<lib>/home/danny/Desktop/aerial-new-structure/lib</lib>-->
+        <lib>../lib</lib>
 
-        <php-models>/home/danny/Work/www/open-source/aerial-new-structure/src_php/za/co/rsajobs/vo</php-models>
-        <php-services>/home/danny/Work/www/open-source/aerial-new-structure/src_php/za/co/rsajobs/services</php-services>
+        <php-models>/home/danny/Desktop/aerial-new-structure/src_php/za/co/rsajobs/vo</php-models>
+        <php-services>/home/danny/Desktop/aerial-new-structure/src_php/za/co/rsajobs/services</php-services>
 	</paths>
 
     <!-- general options -->

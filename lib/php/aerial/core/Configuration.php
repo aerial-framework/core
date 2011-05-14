@@ -39,8 +39,31 @@
 			
 			return count($results) != 0;
 		}
+
+		public function getDefinitionsFromYAML($packageName="org.aerialframework.vo")
+		{
+			$modelsPath = conf("paths/php-models");
+
+			$options = array(
+				"baseClassName" => "Aerial_Record",
+				"baseClassesDirectory" => "base",
+				"actionscriptPackageName" => $packageName
+			);
+
+			$emulated = Aerial_Core::generateEmulatedModelsFromYaml(conf("paths/config").'schema.yml', $modelsPath, $options);
+			foreach($emulated as $className => &$definition)
+			{
+				foreach($definition as &$field)
+				{
+					$field["type"] = $this->getAS3Type($field["type"], $field["unsigned"]);
+					unset($field["unsigned"]);
+				}
+			}
+
+			return $emulated;
+		}
 	
-		public function generate($fromYAML=true, $regenDB=false)
+		public function generate($fromYAML=true, $regenDB=false, $packageName="org.aerialframework.vo")
 		{					
 			if($regenDB)
 			{
@@ -50,29 +73,24 @@
 
 			$options = array(
 				"baseClassName" => "Aerial_Record",
-				"baseClassesDirectory" => "base"
+				"baseClassesDirectory" => "base",
+				"actionscriptPackageName" => $packageName
 			);
 
-			$php_path = conf("code-generation/php");
-			$package = conf("code-generation/package", false);
-
-			if($package)
-				$php_path .= implode(DIRECTORY_SEPARATOR, explode(".", $package)).DIRECTORY_SEPARATOR;
-
-			$models_path = $php_path.conf("code-generation/php-models-folder");
+			$modelsPath = conf("paths/php-models");
 
 			if($fromYAML)
-				$dataToWrite = Aerial_Core::generateModelsFromYaml(conf("options/config").'schema.yml', $models_path, $options);
+				$dataToWrite = Aerial_Core::generateModelsFromYaml(conf("paths/config").'schema.yml', $modelsPath, $options);
 			else
 			{
-				if(!file_exists($models_path))					// if the folder does not exist, create it to avoid errors!
-					@mkdir($models_path, conf("code-generation/directory-mode", false), true);
+				if(!file_exists($modelsPath))					// if the folder does not exist, create it to avoid errors!
+					@mkdir($modelsPath, 0744, true);
 
                 // if file STILL does not exist, throw an error
-                if(!file_exists($models_path))
-                    trigger_error("Cannot create folder: ".$models_path);
+                if(!file_exists($modelsPath))
+                    trigger_error("Cannot create folder: ".$modelsPath);
 
-				$dataToWrite = Aerial_Core::generateModelsFromDb($models_path, array("doctrine"), $options);
+				$dataToWrite = Aerial_Core::generateModelsFromDb($modelsPath, array("doctrine"), $options);
 			}
 
             return $dataToWrite;
@@ -165,6 +183,7 @@
                 	break;
                 case 'decimal':
                 case 'float':
+				case 'double':
                 	$as3type = "Number";
                 	break;
                 case 'set':
@@ -190,8 +209,10 @@
                 case 'gzip':
                 case 'string':
                 case 'clob':
-                default:
                 	$as3type = "String";
+					break;
+                default:
+                	$as3type = $type;
                 	break;
 			}
 

@@ -50,6 +50,14 @@ class Aerial_Core extends Doctrine_Core
         return $import->importSchema($directory, $databases, $options);
     }
 
+    public static function generateEmulatedModelsFromYaml($yamlPath, $directory, $options = array())
+    {
+        $import = new Aerial_Import_Schema();
+        $import->setOptions($options);
+
+        return $import->importEmulatedSchema($yamlPath, 'yml', $directory);
+    }
+
     public static function generateModelsFromYaml($yamlPath, $directory, $options = array())
     {
         $import = new Aerial_Import_Schema();

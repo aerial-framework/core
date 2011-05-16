@@ -64,7 +64,7 @@ class Aerial_Import_Builder extends Doctrine_Import_Builder
 		$voPath = $this->actionscriptPackageName.".".$definition["topLevelClassName"];
 
         $build = "\$this->mapValue('_explicitType', '$voPath');" . PHP_EOL;
-		return '    public function construct()' . PHP_EOL . '    {' . PHP_EOL . '        ' . $build . '    }';
+		return PHP_EOL.'    public function construct()' . PHP_EOL . '    {' . PHP_EOL . '        ' . $build . '    }';
 	}
 
     /**
@@ -132,6 +132,8 @@ class Aerial_Import_Builder extends Doctrine_Import_Builder
             $baseClass['abstract'] = true;
             $baseClass['override_parent'] = false;
             $baseClass['is_base_class'] = true;
+
+            $definition["files"] = $this->buildRecord($definition);
 
 	        return $this->getEmulatedDefinition($definition);
         }
@@ -227,6 +229,9 @@ class Aerial_Import_Builder extends Doctrine_Import_Builder
 	private function getEmulatedDefinition($definition)
 	{
 		$fields = array();
+        $files = $definition["files"];
+
+        unset($definition["files"]);
 
 		foreach ($definition['columns'] as $name => $column)
 		{
@@ -273,7 +278,7 @@ class Aerial_Import_Builder extends Doctrine_Import_Builder
 			}
 		}
 
-		return $fields;
+		return array("fields" => $fields, "files" => $files);
 	}
     
     /**

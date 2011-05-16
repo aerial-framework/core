@@ -42,7 +42,7 @@
 
 		public function getDefinitionsFromYAML($packageName="org.aerialframework.vo")
 		{
-			$modelsPath = conf("paths/php-models");
+			$modelsPath = conf("paths/php-models", true, false);
 
 			$options = array(
 				"baseClassName" => "Aerial_Record",
@@ -53,7 +53,7 @@
 			$emulated = Aerial_Core::generateEmulatedModelsFromYaml(conf("paths/config").'schema.yml', $modelsPath, $options);
 			foreach($emulated as $className => &$definition)
 			{
-				foreach($definition as &$field)
+				foreach($definition["fields"] as &$field)
 				{
 					$field["type"] = $this->getAS3Type($field["type"], $field["unsigned"]);
 					unset($field["unsigned"]);

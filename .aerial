@@ -4,18 +4,11 @@
         <version>1.0beta</version>
     </aerial>
     <code-generation>
-        <php>src_php</php>
-        <as3>src_flex</as3>
-        <package>org.aerial</package>
-        <bootstrap-package>org.aerial.bootstrap</bootstrap-package>
-        <bootstrap-filename>Aerial</bootstrap-filename>
-        <php-models-folder>vo</php-models-folder>
-        <php-services-folder>services</php-services-folder>
-        <as3-models-folder>vo</as3-models-folder>
-        <as3-services-folder>services</as3-services-folder>
-        <vo>VO</vo>
-        <service>Service</service>
-        <directory-mode>0664</directory-mode>
-        <file-mode>0777</file-mode>
+        <package>org.aerialframework</package>
+        <bootstrap>org.aerialframework.bootstrap.Aerial</bootstrap>
+		<as3-models>src_flex/[package]/vo/</as3-models>
+		<as3-services>src_flex/[package]/services/</as3-services>
+        <vo-suffix>VO</vo-suffix>
+        <service-suffix>Service</service-suffix>
     </code-generation>
 </project-options>

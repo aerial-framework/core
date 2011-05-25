@@ -462,6 +462,7 @@ function pluralizeTableName(s)
              or string.endswith(s, "sh")
              or string.endswith(s, "ss")
              or string.endswith(s, "zz")
+ 			 or string.endswith(s, "x")
              or string.endswith(s, "o") ) then
 
             -- append "es"

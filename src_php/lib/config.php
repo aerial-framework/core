@@ -1,5 +1,5 @@
 <?php
-	$_configPath = realpath(dirname(__FILE__)."/../config");
+	$_configPath = realpath(dirname($_SERVER["SCRIPT_FILENAME"])."/../config");
 
 	if(!file_exists($_configPath))
 	{

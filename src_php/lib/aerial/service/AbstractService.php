@@ -70,9 +70,23 @@ abstract class AbstractService
 		return $object->delete();
 	}
 
-	public function find($criteria, $limit, $offset, $sort, $relations)
+	public function find($criteria, $limit, $offset, $sort, $relations, $preprocess)
 	{
 		$q = Doctrine_Query::create()->from("$this->modelName r");
+		
+		//============================  PreProcess =============================
+		//Need to merge PreProcess branches as we can have two of the same processes effecting different columns in the same table. 
+		//For now, this is a working proof of concept.
+		foreach ($preprocess as $proc) 
+		{
+			list($processTable, $processColumn) = explode(".", $proc['field']);
+			list($processClass, $processMethod) = explode(".", $proc['process']);
+			$processClass = "Aerial_Hydrator_Preprocess_" . $processClass;
+			$params = $proc['args'];
+			
+			$T = Doctrine_Core::getTable($processTable);
+			$T->addRecordListener(new $processClass($processColumn, $processMethod, $params));
+		}
 
 		//========================  Selects / Joins ==========================
 		if($relations)

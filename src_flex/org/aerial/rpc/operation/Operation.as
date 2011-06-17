@@ -28,6 +28,7 @@ package org.aerial.rpc.operation
 		private var _page:uint;
 		private var _sort:Object;
 		private var _relations:Array;
+		private var _preProcess:Array;
 		 
 		public function Operation(service:AbstractService, remoteMethod:String, ...args)
 		{
@@ -39,6 +40,7 @@ package org.aerial.rpc.operation
 			_offset = 0;
 			_sort = new Object();
 			_relations = new Array();
+			_preProcess = new Array();
 		}
 		
 		
@@ -55,6 +57,13 @@ package org.aerial.rpc.operation
 			_relations.push(relation);
 			return this;
 		}
+		
+		public function preProcess(field:String, process:String, params:Object):Operation
+		{
+			_preProcess.push({field:field, process:process, args:params});
+			return this;
+		}
+		
 		
 		public function sortBy(field:String, order:String = "ASC"):Operation
 		{
@@ -141,7 +150,7 @@ package org.aerial.rpc.operation
 		
 		private function _execute(limit:uint, offset:uint):AsyncToken
 		{
-            _args.push(_limit, _offset, _sort, _relations);
+            _args.push(_limit, _offset, _sort, _relations, _preProcess);
 
 			_token = _op.send(_args);
 			

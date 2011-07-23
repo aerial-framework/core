@@ -64,8 +64,8 @@ function adapterAction (&$amfbody) {
 				if(Encryption::mustDecryptRequest() &&
 				            $classAndPackage != "core.aerial.EncryptionService" && $methodname != "startSession")
 				{
-//					$methodname = Encryption::decrypt(new ByteArray($methodname));
-//					$classAndPackage = Encryption::decrypt(new ByteArray($classAndPackage));
+					$methodname = Encryption::decrypt(new ByteArray($methodname));
+					$classAndPackage = Encryption::decrypt(new ByteArray($classAndPackage));
 				}
 
 				$lpos = strrpos($classAndPackage, ".");

@@ -136,7 +136,7 @@ package org.aerial.rpc.operation
 		{
             _args.push(_limit, _offset, _sort, _relations);
 
-			if(Aerial.ENCRYPT_SERVICE_AND_FUNCTION)
+			if(Aerial.USE_ENCRYPTION && Aerial.instance.encryptedSessionStarted && Aerial.ENCRYPT_SERVICE_AND_FUNCTION)
 			{
 				_op = _service.getOperation(EncryptionUtil.encryptRC4(Hex.toArray(Hex.fromString(_method)),
 						Aerial.instance.encryptionKey));

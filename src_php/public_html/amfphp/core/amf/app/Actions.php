@@ -28,7 +28,7 @@ function adapterAction (&$amfbody) {
 	if($package)
 		$php_path .= implode(DIRECTORY_SEPARATOR, explode(".", $package)).DIRECTORY_SEPARATOR;
 	
-	$services_path = $php_path.conf("code-generation/php-services-folder");
+	$servicesPath = $php_path.conf("code-generation/php-services-folder");
 
 	$target = $amfbody->targetURI;
 	
@@ -60,33 +60,25 @@ function adapterAction (&$amfbody) {
 				$methodname = $body[0]->operation;
 				$classAndPackage = $body[0]->source;
 
+				$classname = getClassname($classAndPackage);
+				$classpath = getServiceClass($classAndPackage, $servicesPath);
+
 				// ignore initial session start request
-				if(Encryption::mustDecryptRequest() &&
-				            $classAndPackage != "core.aerial.EncryptionService" && $methodname != "startSession")
+				$useEncryption = Encryption::canUseEncryption();
+				if(Encryption::canUseEncryption() && $classAndPackage != "core.aerial.EncryptionService" && $methodname != "startSession")
 				{
-					$methodname = Encryption::decrypt(new ByteArray($methodname));
-					$classAndPackage = Encryption::decrypt(new ByteArray($classAndPackage));
-				}
+					// no classpath could be obtained from the request yet, which means it might be encrypted
+					if(!$classpath)
+					{
+						// decrypt method and class names
+						$methodname = Encryption::decrypt(new ByteArray($methodname));
+						$classAndPackage = Encryption::decrypt(new ByteArray($classAndPackage));
 
-				$lpos = strrpos($classAndPackage, ".");
-				if($lpos !== FALSE)
-				{
-					$classname = substr($classAndPackage, $lpos + 1);
+						// ...then re-evaluate to see if the classpath is now valid
+						$classname = getClassname($classAndPackage);
+						$classpath = getServiceClass($classAndPackage, $servicesPath);
+					}
 				}
-				else
-				{
-					$classname = $classAndPackage;
-				}
-				$uriclasspath = str_replace('.','/',$classAndPackage) . '.php';
-
-				if(realpath(conf("paths/internal-services")."/".$uriclasspath))
-					$classpath = realpath(conf("paths/internal-services")."/".$uriclasspath);
-					
-				if(realpath($services_path."/".$uriclasspath))
-					$classpath = realpath($services_path."/".$uriclasspath);
-				
-				//$classpath = $baseClassPath . $uriclasspath;
-				//die($classpath);
 			}
 			elseif($messageType == "flex.messaging.messages.CommandMessage")
 			{
@@ -162,8 +154,8 @@ function adapterAction (&$amfbody) {
 					if(realpath(conf("paths/internal-services")."/".$uriclasspath))
 						$classpath = realpath(conf("paths/internal-services")."/".$uriclasspath);
 						
-					if(realpath($services_path."/".$uriclasspath))
-						$classpath = realpath($services_path."/".$uriclasspath);
+					if(realpath($servicesPath."/".$uriclasspath))
+						$classpath = realpath($servicesPath."/".$uriclasspath);
 				} 
 			} else {
 				$classname = substr($trunced, $lpos + 1);
@@ -181,6 +173,34 @@ function adapterAction (&$amfbody) {
 	$amfbody->methodName = $methodname;
 
 	return true;
+}
+
+function getClassname($classAndPackage)
+{
+	$lpos = strrpos($classAndPackage, ".");
+	if($lpos !== FALSE)
+	{
+		$classname = substr($classAndPackage, $lpos + 1);
+	}
+	else
+	{
+		$classname = $classAndPackage;
+	}
+
+	return $classname;
+}
+
+function getServiceClass($classAndPackage, $services_path)
+{
+	$uriclasspath = str_replace('.','/',$classAndPackage) . '.php';
+
+	if(realpath(conf("paths/internal-services")."/".$uriclasspath))
+		$classpath = realpath(conf("paths/internal-services")."/".$uriclasspath);
+
+	if(realpath($services_path."/".$uriclasspath))
+		$classpath = realpath($services_path."/".$uriclasspath);
+
+	return $classpath;
 }
 
 /**

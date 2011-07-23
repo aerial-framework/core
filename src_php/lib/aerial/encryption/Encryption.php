@@ -62,11 +62,6 @@
 			return $bin;
 		}
 
-		public static function mustDecryptRequest()
-		{
-			return conf("encryption/encrypt-request",false,false);
-		}
-
 		public static function canUseEncryption()
 		{
 			if(!session_start())

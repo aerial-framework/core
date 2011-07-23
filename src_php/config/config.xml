@@ -30,7 +30,6 @@
   </code-generation>
   <encryption>
     <use-encryption include-in-bootstrap="true">false</use-encryption>
-    <encrypt-request include-in-bootstrap="true">false</encrypt-request>
   </encryption>
   <options>
     <debug-mode include-in-bootstrap="true">true</debug-mode>

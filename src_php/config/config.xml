@@ -36,6 +36,7 @@
     <debug-mode include-in-bootstrap="true">true</debug-mode>
     <server-url include-in-bootstrap="true"></server-url>
     <use-arraycollection>true</use-arraycollection>
+    <collection-class>flex.messaging.io.ArrayCollection</collection-class>
     <use-authentication>false</use-authentication>
     <timezone>UTC</timezone>
   </options>

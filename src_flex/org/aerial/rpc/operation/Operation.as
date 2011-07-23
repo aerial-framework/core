@@ -5,6 +5,7 @@ package org.aerial.rpc.operation
 	import flash.events.Event;
 	
 	import mx.rpc.AbstractOperation;
+	import mx.rpc.AsyncResponder;
 	import mx.rpc.AsyncToken;
 	import mx.rpc.Responder;
 	import mx.rpc.events.FaultEvent;
@@ -22,7 +23,8 @@ package org.aerial.rpc.operation
 		private var _method:String;
 		private var _resultHandler:Function;
 		private var _faultHandler:Function;
-		private var token:AsyncToken;
+		private var _tokenData:Object;
+		private var _token:AsyncToken;
 		private var _op:AbstractOperation;
 		private var _args:Array;
 		private var _offset:uint;
@@ -44,10 +46,11 @@ package org.aerial.rpc.operation
 		}
 		
 		
-		public function callback(resultHandler:Function, faultHandler:Function = null):Operation
+		public function callback(resultHandler:Function, faultHandler:Function = null, tokenData:Object = null):Operation
 		{
 			_faultHandler = faultHandler;
 			_resultHandler = resultHandler;
+			_tokenData = tokenData;
 			return this;
 		}
 		
@@ -93,17 +96,25 @@ package org.aerial.rpc.operation
 			}
 		}
 		
-		private function notifyResultHandler(event:ResultEvent):void
+		private function notifyResultHandler(event:ResultEvent, token:Object = null):void
 		{
 			event.preventDefault(); 
-			_resultHandler(event);
+			if(token){
+				_resultHandler(event, token);	
+			}else{
+				_resultHandler(event);
+			}
 		}
 		
-		private function notifyFaultHandler(event:FaultEvent):void
+		private function notifyFaultHandler(event:FaultEvent, token:Object = null):void
 		{
 			if(_faultHandler != null){
 				event.preventDefault();
-				_faultHandler(event);
+				if(token){
+					_faultHandler(event, token);
+				}else{
+					_faultHandler(event);
+				}
 			}
 		}
 		
@@ -144,11 +155,11 @@ package org.aerial.rpc.operation
 						Aerial.instance.encryptionKey);
 			}
 
-			token = _op.send(_args);
+			_token = _op.send(_args);
 			
-			if(_resultHandler !== null) token.addResponder(new Responder(notifyResultHandler, notifyFaultHandler));
+			if(_resultHandler !== null) _token.addResponder(new AsyncResponder(notifyResultHandler, notifyFaultHandler, _tokenData));
 		
-			return token;
+			return _token;
 		}
 	}
 }

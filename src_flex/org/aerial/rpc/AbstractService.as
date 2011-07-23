@@ -173,10 +173,10 @@ package org.aerial.rpc
 			return op;
 		}
 		
-		public function executeDQL(query:DoctrineQuery):AsyncToken
+		public function query(query:DoctrineQuery):Operation
 		{
-			var op:Operation = new Operation(this, "executeDQL", query.properties);
-			return op.execute();
+			var op:Operation = new Operation(this, "query", query.properties);
+			return op;
 		}
 		
 		// Helpers

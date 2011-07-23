@@ -81,7 +81,6 @@ abstract class AbstractService
 			$mergedRelations = array();
 			foreach($relations as $path)
 			{
-				$path = str_replace(' ','', $path); //Remove white space
 				list($dirty_key) = explode(".", $path, 2);
 				if(Aerial_Relationship::key($dirty_key) <> $this->modelName) $path = $this->modelName . "." . $path;
 					$mergedRelations = Aerial_Relationship::merge($mergedRelations, $path);
@@ -126,7 +125,7 @@ abstract class AbstractService
 
 		$q->setHydrationMode(Aerial_Core::HYDRATE_AMF_COLLECTION);
 		$results = $q->execute();
-		
+
 		return $results;
 
 	}
@@ -137,7 +136,7 @@ abstract class AbstractService
 		return $this->table->count();
 	}
 
-    public function executeDQL($properties)
+    public function query($properties)
     {
         $q = Doctrine_Query::create();
         foreach($properties as $property)
@@ -146,6 +145,7 @@ abstract class AbstractService
             call_user_func_array(array($q, $method), $property["value"]);
         }
 
+		$q->setHydrationMode(Aerial_Core::HYDRATE_AMF_COLLECTION);
         return $q->execute();
     }
 }

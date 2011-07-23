@@ -31,12 +31,13 @@ class Aerial_Relationship
 		return $cols;
 	}
 
-	public static function setSelectColumn(&$d_docTable, &$selectedTables, $sqlAlias, $col)
+	public static function setSelectColumn(&$d_docTable, &$selectedTables, $sqlAlias, &$col)
 	{
 		$firstChar = substr($col, 0,1);
 		$oper = ($firstChar == "-" ? "-" : "+");
 
 		$colName = (($firstChar == "-") || ($firstChar ==  "+") ? substr($col, 1) : $col);
+		$col = $colName;
 
 		$criteriaPosition = self::strpos_criteria($colName);
 		if($criteriaPosition !== false)

@@ -125,7 +125,39 @@ package org.aerial.rpc
 			return argument;
 		}
 
-		private function processResults(result:*, operation:AbstractOperation):*
+        /*override public function get operations():Object
+        {
+            // if encryption is enabled, always return the operations as encrypted strings
+            if(Aerial.USE_ENCRYPTION && Aerial.instance.encryptedSessionStarted)
+            {
+                var encryptedOperations:Object = {};
+
+                for(var operationName:String in super.operations)
+                {
+                    var encryptedName:String = EncryptionUtil.encryptRC4String(operationName, Aerial.instance.encryptionKey);
+                    encryptedOperations[encryptedName] = super.operations[operationName];
+                }
+
+                return encryptedOperations;
+            }
+            else
+                return super.operations;
+        }
+
+        [Inspectable(category="General")]
+        override public function get source():String
+        {
+            // if encryption is enabled, always return the source as an encrypted string
+
+            if(Aerial.USE_ENCRYPTION && Aerial.instance.encryptedSessionStarted)
+            {
+                return EncryptionUtil.encryptRC4String(super.source, Aerial.instance.encryptionKey);
+            }
+            else
+                return super.source;
+        }*/
+
+        private function processResults(result:*, operation:AbstractOperation):*
 		{
 			if(!(result is Encrypted) || !Aerial.USE_ENCRYPTION)
 				return result;

@@ -50,6 +50,14 @@ package org.aerial.utils
 			return Hex.fromArray(data);
 		}
 
+        public static function encryptRC4String(str:String, key:ByteArray):String
+        {
+            var bytes:ByteArray = new ByteArray();
+            bytes.writeUTFBytes(str);
+
+            return encryptRC4(bytes, key);
+        }
+
 		public static function decryptRC4(data:ByteArray, key:ByteArray):ByteArray
 		{
 			if(!key || key.length == 0)

@@ -569,13 +569,12 @@ class AMFDeserializer extends AMFBaseDeserializer {
 		//Add to references as circular references may search for this object
 		$this->storedObjects[] = & $obj;
 
+		$class = substr($type, strrpos($type, ".") + 1);
+		$validModel = Doctrine_Core::isValidModelClass($class);
+
 		if( $classDefinition['externalizable'])
 		{
-			if($type == 'flex.messaging.io.ArrayCollection')
-			{
-				$obj = $this->readAmf3Data();
-			}
-			else if($type == 'flex.messaging.io.ObjectProxy')
+			if(!$validModel)
 			{
 				$obj = $this->readAmf3Data();
 			}
@@ -583,8 +582,6 @@ class AMFDeserializer extends AMFBaseDeserializer {
 			{
 				// Fix for externalizable Aerial VOs
 				$obj = $this->mapExternalized($type, $this->readAmf3Data());
-
-				//trigger_error("Unable to read externalizable data type " . $type, E_USER_ERROR);
 			}
 		}
 		else

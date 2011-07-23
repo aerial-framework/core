@@ -143,10 +143,13 @@
 				$relations = $table->getRelations();
 				foreach($relations as $relation)
 				{
+					$isMany = (bool) $relation->getType();
+					$type = $isMany ? "IList (".$relation->getClass().")" : $relation->getClass();
+
 					$details[$model][] = array("relation" => true,
 												"name" => $relation->getAlias(),
-												"type" => $relation->getClass(),
-												"many" => (bool) $relation->getType());
+												"type" => $type,
+												"many" => $isMany);
 				}
 
 				$instance = null;

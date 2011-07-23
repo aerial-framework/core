@@ -772,7 +772,7 @@ class AMFSerializer extends AMFBaseSerializer {
 	{
 		$this->writeByte(0x0a);
 		$this->writeByte(0x07);
-		$this->writeAmf3String("flex.messaging.io.ArrayCollection");
+		$this->writeAmf3String(conf("options/collection-class", false));
 		$this->storedDefinitions++;
 		$this->storedObjects[] = "";
 	}

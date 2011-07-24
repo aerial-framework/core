@@ -11,6 +11,7 @@
     <amfphp>src_php/public_html/amfphp/core</amfphp>
     <doctrine>src_php/lib/doctrine</doctrine>
     <internal-services>src_php/lib/services</internal-services>
+    <encryption>src_php/lib/aerial/encryption/</encryption>
   </paths>
   <code-generation>
     <php>src_php</php>
@@ -27,6 +28,9 @@
     <directory-mode>0664</directory-mode>
     <file-mode>0777</file-mode>
   </code-generation>
+  <encryption>
+    <use-encryption include-in-bootstrap="true">false</use-encryption>
+  </encryption>
   <options>
     <debug-mode include-in-bootstrap="true">true</debug-mode>
     <server-url include-in-bootstrap="true"></server-url>

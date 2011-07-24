@@ -28,7 +28,7 @@ function adapterAction (&$amfbody) {
 	if($package)
 		$php_path .= implode(DIRECTORY_SEPARATOR, explode(".", $package)).DIRECTORY_SEPARATOR;
 	
-	$services_path = $php_path.conf("code-generation/php-services-folder");
+	$servicesPath = $php_path.conf("code-generation/php-services-folder");
 
 	$target = $amfbody->targetURI;
 	
@@ -59,25 +59,26 @@ function adapterAction (&$amfbody) {
 				
 				$methodname = $body[0]->operation;
 				$classAndPackage = $body[0]->source;
-				$lpos = strrpos($classAndPackage, ".");
-				if($lpos !== FALSE)
-				{
-					$classname = substr($classAndPackage, $lpos + 1);
-				}
-				else
-				{
-					$classname = $classAndPackage;
-				}
-				$uriclasspath = str_replace('.','/',$classAndPackage) . '.php';
 
-				if(realpath(conf("paths/internal-services")."/".$uriclasspath))
-					$classpath = realpath(conf("paths/internal-services")."/".$uriclasspath);
-					
-				if(realpath($services_path."/".$uriclasspath))
-					$classpath = realpath($services_path."/".$uriclasspath);
-				
-				//$classpath = $baseClassPath . $uriclasspath;
-				//die($classpath);
+				$classname = getClassname($classAndPackage);
+				$classpath = getServiceClass($classAndPackage, $servicesPath);
+
+				// ignore initial session start request
+				$canUseEncryption = Encryption::canUseEncryption();
+				if($canUseEncryption && $classAndPackage != "core.aerial.EncryptionService" && $methodname != "startSession")
+				{
+					// no classpath could be obtained from the request yet, which means it might be encrypted
+					if(!$classpath)
+					{
+						// decrypt method and class names
+						$methodname = Encryption::decrypt(new ByteArray($methodname));
+						$classAndPackage = Encryption::decrypt(new ByteArray($classAndPackage));
+
+						// ...then re-evaluate to see if the classpath is now valid
+						$classname = getClassname($classAndPackage);
+						$classpath = getServiceClass($classAndPackage, $servicesPath);
+					}
+				}
 			}
 			elseif($messageType == "flex.messaging.messages.CommandMessage")
 			{
@@ -88,6 +89,12 @@ function adapterAction (&$amfbody) {
 					$amfbody->setMetadata("clientId", $body[0]->clientId);
 					$amfbody->setMetadata("messageId", $body[0]->messageId);
 					$amfbody->noExec = true;
+
+					$GLOBALS['amfphp']["ping"] = true;
+				}
+				else
+				{
+					$GLOBALS['amfphp']["ping"] = false;
 				}
 					
 				if(!empty($body[0]->body))
@@ -147,8 +154,8 @@ function adapterAction (&$amfbody) {
 					if(realpath(conf("paths/internal-services")."/".$uriclasspath))
 						$classpath = realpath(conf("paths/internal-services")."/".$uriclasspath);
 						
-					if(realpath($services_path."/".$uriclasspath))
-						$classpath = realpath($services_path."/".$uriclasspath);
+					if(realpath($servicesPath."/".$uriclasspath))
+						$classpath = realpath($servicesPath."/".$uriclasspath);
 				} 
 			} else {
 				$classname = substr($trunced, $lpos + 1);
@@ -166,7 +173,35 @@ function adapterAction (&$amfbody) {
 	$amfbody->methodName = $methodname;
 
 	return true;
-} 
+}
+
+function getClassname($classAndPackage)
+{
+	$lpos = strrpos($classAndPackage, ".");
+	if($lpos !== FALSE)
+	{
+		$classname = substr($classAndPackage, $lpos + 1);
+	}
+	else
+	{
+		$classname = $classAndPackage;
+	}
+
+	return $classname;
+}
+
+function getServiceClass($classAndPackage, $services_path)
+{
+	$uriclasspath = str_replace('.','/',$classAndPackage) . '.php';
+
+	if(realpath(conf("paths/internal-services")."/".$uriclasspath))
+		$classpath = realpath(conf("paths/internal-services")."/".$uriclasspath);
+
+	if(realpath($services_path."/".$uriclasspath))
+		$classpath = realpath($services_path."/".$uriclasspath);
+
+	return $classpath;
+}
 
 /**
  * ExecutionAction executes the required methods
@@ -198,40 +233,63 @@ function executionAction (&$amfbody)
 		}
 		else
 		{
-			/*
-			if(isset($construct->methodTable[$method]['pagesize']))
+			try
 			{
-				//Check if counting method was overriden
-				if(isset($construct->methodTable[$method]['countMethod']))
+				if($args[0]["_explicitType"] == "org.aerial.encryption.EncryptedVO" && $args[0]["resetKey"] == true)
+					unset($_SESSION["KEY"]);
+
+				// check to see if the incoming request is encrypted
+				if(@$args[0]["_explicitType"] == "org.aerial.encryption.EncryptedVO" && Encryption::canUseEncryption())
 				{
-					$counter = $construct->methodTable[$method]['countMethod'];
+					$bytes = $args[0]["data"];
+
+					$decrypted = Encryption::decrypt($bytes);
+					$deserializer = new AMFDeserializer("");
+
+					try
+					{
+						$args = $deserializer->deserializeSpecial($decrypted);
+					}
+					catch(Exception $e)
+					{
+						throw new Aerial_Encryption_Exception(Aerial_Encryption_Exception::AMF_ENCODING_ERROR);
+					}
 				}
 				else
 				{
-					$counter = $method . '_count';
+					if(conf("encryption/use-encryption",false,false) &&
+								get_class($construct) != "EncryptionService" && $method != "startSession")
+					{
+						throw new Aerial_Encryption_Exception(Aerial_Encryption_Exception::ENCRYPTION_NOT_USED_ERROR);
+					}
 				}
-				
-				$dataset = Executive::doMethodCall($amfbody, $construct, $method, $args); // do the magic
-				$count = Executive::doMethodCall($amfbody, $construct, $counter, $args);
-				
-				//Include the wrapper
-				$results = array('class' => $amfbody->uriClassPath, 
-								 'method' => $amfbody->methodName, 
-								 'count' => $count, 
-								 "args" => $args, 
-								 "data" => $dataset);
-				$amfbody->setMetadata('type', '__DYNAMIC_PAGEABLE_RESULTSET__');
-				$amfbody->setMetadata('pagesize', $construct->methodTable[$method]['pagesize']);
-				*/
-			//}
-			//else
-			//{
-				//The usual
+
 				$time = microtime_float();
 				$results = Executive::doMethodCall($amfbody, $construct, $method, $args); // do the magic
-				global $amfphp;
-				$amfphp['callTime'] += microtime_float() - $time;
-			//}
+			}
+			catch(Exception $fault)
+			{
+				if(get_class($fault) == "VerboseException")
+				{
+					$ex = new MessageException($fault->getCode(), $fault->getMessage(), $fault->getFile(),
+						$fault->getLine(), 'AMFPHP_RUNTIME_ERROR');
+				}
+				else
+				{
+					$code = "AMFPHP_RUNTIME_ERROR";
+					if($fault->getCode() != 0)
+					{
+						$code = $fault->getCode();
+					}
+					$ex = new MessageException(E_USER_ERROR, $fault->getMessage(), $fault->getFile(),
+						$fault->getLine(), $code);
+				}
+				MessageException::throwException($amfbody, $ex);
+				$results = '__amfphp_error';
+			}
+
+			global $amfphp;
+			$amfphp['callTime'] += microtime_float() - $time;
 		}
 
 		if($results !== '__amfphp_error')

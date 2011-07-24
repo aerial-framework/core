@@ -27,6 +27,7 @@
 
 			require_once(conf("paths/doctrine").'Aerial/Connection/Aerial_Connection.php');
 			require_once(conf("paths/aerial")."exceptions/Aerial_Exception.php");
+			require_once(conf("paths/aerial")."exceptions/Aerial_Encryption_Exception.php");
 			
 			self::$_instance->manager = Doctrine_Manager::getInstance();
 			
@@ -36,6 +37,7 @@
 			self::$_instance->manager->setAttribute(Doctrine_Core::ATTR_MODEL_LOADING, Doctrine_Core::MODEL_LOADING_CONSERVATIVE);
 			self::$_instance->manager->setAttribute(Doctrine_Core::ATTR_AUTO_ACCESSOR_OVERRIDE, true);
 			self::$_instance->manager->setAttribute(Doctrine_Core::ATTR_AUTOLOAD_TABLE_CLASSES, true);
+
 			require_once(conf("paths/doctrine")."Aerial/Record/Aerial_Record.php");
 
 			self::setCustomConnections();
@@ -59,6 +61,10 @@
 
 			if(file_exists($models_path))
 			    Doctrine_Core::loadModels($models_path);
+			
+			require_once(conf("paths/encryption")."Encrypted.php");
+			require_once(conf("paths/encryption")."Encryption.php");
+			require_once(conf("paths/encryption")."rc4crypt.php");
 			
 			Authentication::getInstance();
 

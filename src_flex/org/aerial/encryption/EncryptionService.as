@@ -1,19 +1,14 @@
 package org.aerial.encryption
 {
-	import com.hurlant.util.Hex;
+    import com.hurlant.util.Hex;
 
-	import flash.utils.ByteArray;
+    import mx.rpc.AsyncToken;
+    import mx.rpc.remoting.Operation;
+    import mx.rpc.remoting.RemoteObject;
 
-	import mx.rpc.AsyncToken;
-	import mx.rpc.events.FaultEvent;
-	import mx.rpc.events.ResultEvent;
-	import mx.rpc.remoting.Operation;
-	import mx.rpc.remoting.RemoteObject;
+    import org.aerial.bootstrap.Aerial;
 
-	import org.aerial.bootstrap.Aerial;
-	import org.aerial.events.AerialEvent;
-
-	public class EncryptionService extends RemoteObject
+    public class EncryptionService extends RemoteObject
 	{
 		public function EncryptionService()
 		{
@@ -25,7 +20,7 @@ package org.aerial.encryption
 
 		public function startSession(data:String):AsyncToken
 		{
-			var encrypted:Encrypted = new Encrypted();
+			var encrypted:EncryptedVO = new EncryptedVO();
 			encrypted.data = Hex.toArray(Hex.fromString(data));
 			encrypted.resetKey = true;
 

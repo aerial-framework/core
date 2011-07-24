@@ -157,11 +157,21 @@ package org.aerial.rpc.operation
 
             if(Aerial.USE_ENCRYPTION && encryption.encryptedSessionStarted && encryption.encryptSourceAndOperation)
             {
-                _op = _service.getOperation(Encryption.encryptRC4(Hex.toArray(Hex.fromString(_method)), encryption.encryptionKey));
-                _service.source = Encryption.encryptRC4(Hex.toArray(Hex.fromString(_service.source)), encryption.encryptionKey);
-            }
+                var plainServiceName:String = _service.source;
 
-            _token = _op.send(_args);
+                var encryptedMethodName:String = Encryption.encryptRC4(Hex.toArray(Hex.fromString(_method)), encryption.encryptionKey);
+                var encryptedServiceName:String = Encryption.encryptRC4(Hex.toArray(Hex.fromString(_service.source)), encryption.encryptionKey);
+
+                _op = _service.getOperation(encryptedMethodName);
+                _service.source = encryptedServiceName;
+
+                _token = _op.send(_args);
+
+                // restore service source
+                _service.source = plainServiceName;
+            }
+            else
+                _token = _op.send(_args);
 
             if(_resultHandler !== null) _token.addResponder(new AsyncResponder(notifyResultHandler, notifyFaultHandler, _tokenData));
 

@@ -32,6 +32,7 @@ package org.aerial.encryption
         private var _usingEncryption:Boolean;
         private var _encryptedSessionStarted:Boolean;
         private var _encryptSourceAndOperation:Boolean;
+        private var _keySize:uint;
 
         {
             _instance = new Encryption();
@@ -47,7 +48,7 @@ package org.aerial.encryption
          *
          * @param encryptSourceAndOperation Encrypt source and operation strings
          */
-        public function startEncryptedSession(encryptSourceAndOperation:Boolean=false):void
+        public function startEncryptedSession(encryptSourceAndOperation:Boolean=false, keySize:uint=1024):void
         {
             if(!Aerial.USE_ENCRYPTION)
             {
@@ -56,6 +57,7 @@ package org.aerial.encryption
             }
 
             this.encryptSourceAndOperation = encryptSourceAndOperation;
+            this.keySize = keySize;
 
             // if the encrypted session has already been started, skip to the success event
             if(Aerial.USE_ENCRYPTION && this.encryptedSessionStarted)
@@ -68,9 +70,11 @@ package org.aerial.encryption
 
             var encryptionService:EncryptionService = new EncryptionService();
 
-            _encryptionKey = Encryption.getRandomKey(2048);
+            _encryptionKey = Encryption.getRandomKey(keySize);
 
+            trace(new publicKey);
             var pubKey:RSAKey = PEM.readRSAPublicKey(new publicKey);
+
             var encrypted:String = Encryption.encryptRSA(_encryptionKey, pubKey);
 
             var requestToken:AsyncToken = encryptionService.startSession(encrypted);
@@ -128,6 +132,19 @@ package org.aerial.encryption
         public function set encryptSourceAndOperation(value:Boolean):void
         {
             _encryptSourceAndOperation = value;
+        }
+
+        /**
+         * The size of the randomly generated key
+         */
+        public function get keySize():uint
+        {
+            return _keySize;
+        }
+
+        public function set keySize(value:uint):void
+        {
+            _keySize = value;
         }
 
         /**

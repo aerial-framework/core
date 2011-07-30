@@ -84,7 +84,7 @@
 
 			foreach($directories as $key => $directory)
 			{
-				if(!file_exists($directory))
+				if(!file_exists($directory) && !@mkdir($directory, 0766, true))
 					AerialStartupManager::error("The path to the <strong>$key</strong> directory is invalid in <i>config.xml</i>");
 
 				if(!is_readable($directory))

@@ -2,11 +2,13 @@
 
 class Aerial_ArrayCollection implements ArrayAccess, Countable
 {
-	public $_explicitType = "flex.messaging.io.ArrayCollection";
+	public $_explicitType;
 	public $source = array();
 
 	function Aerial_ArrayCollection($component = null){
 		//$this->source = array();
+
+		$this->_explicitType = conf("options/collection-class", false);
 	}
 	
 	//ArrayAccess Implementation

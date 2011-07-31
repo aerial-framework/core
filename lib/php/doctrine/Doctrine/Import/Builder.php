@@ -500,6 +500,21 @@ class Doctrine_Import_Builder extends Doctrine_Builder
         return $build;
     }
 
+	/**
+	 * Build php code for AMFPHP class mapping
+	 *
+	 * @param array $mapping
+	 * @return string $build
+	 */
+	public function buildClassMapping($definition)
+	{
+		$voPath = conf("code-generation/package",false,false).".".conf("code-generation/php-models-folder",false,false);
+		$voPath .= ".".$definition["topLevelClassName"];
+
+        $build = "\$this->mapValue('_explicitType', '$voPath');" . PHP_EOL;
+		return '    public function construct()' . PHP_EOL . '    {' . PHP_EOL . '        ' . $build . '    }';
+	}
+
     /**
      * buildColumns
      *
@@ -895,13 +910,17 @@ class Doctrine_Import_Builder extends Doctrine_Builder
         if ( ! (isset($definition['no_definition']) && $definition['no_definition'] === true)) {
             $tableDefinitionCode = $this->buildTableDefinition($definition);
             $setUpCode = $this->buildSetUp($definition);
+	        $mapping = $this->buildClassMapping($definition);
         } else {
             $tableDefinitionCode = null;
             $setUpCode = null;
+	        $mapping = null;
         }
 
         if ($tableDefinitionCode && $setUpCode) {
             $setUpCode = PHP_EOL . $setUpCode;
+	        if($mapping)
+				$setUpCode .= PHP_EOL . $mapping;
         }
 
 

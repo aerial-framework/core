@@ -12,7 +12,7 @@
 				trigger_error("You must not call the constructor directly! This class is a Singleton");
 		}
 
-		private function init()
+		private static function init()
 		{
 			$this->validatePaths();
 
@@ -22,6 +22,11 @@
 
 			require_once(conf("paths/aerialframework").'doctrine-extensions/Aerial/Connection/Aerial_Connection.php');
 			require_once(conf("paths/aerialframework")."exceptions/Aerial_Exception.php");
+			require_once(conf("paths/aerialframework")."exceptions/Aerial_Encryption_Exception.php");
+			
+			require_once(conf("paths/encryption")."Encrypted.php");
+			require_once(conf("paths/encryption")."Encryption.php");
+			require_once(conf("paths/encryption")."rc4crypt.php");
 			
 			self::$_instance->manager = Doctrine_Manager::getInstance();
 			
@@ -31,6 +36,7 @@
 			self::$_instance->manager->setAttribute(Doctrine_Core::ATTR_MODEL_LOADING, Doctrine_Core::MODEL_LOADING_CONSERVATIVE);
 			self::$_instance->manager->setAttribute(Doctrine_Core::ATTR_AUTO_ACCESSOR_OVERRIDE, true);
 			self::$_instance->manager->setAttribute(Doctrine_Core::ATTR_AUTOLOAD_TABLE_CLASSES, true);
+
 			require_once(conf("paths/aerialframework")."doctrine-extensions/Aerial/Record/Aerial_Record.php");
 
 			self::setCustomConnections();
@@ -117,7 +123,7 @@
 			if(!isset(self::$_instance))
 			{
 				self::$_instance = new self();
-				self::$_instance->init();
+				self::init();
 			}
 
 			return self::$_instance;

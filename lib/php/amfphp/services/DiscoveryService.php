@@ -15,10 +15,7 @@
 			$php_path = conf("paths/lib")."php";
 
 			$this->internal_services_path = conf("paths/internal-services", true, false);
-			$this->services_path = conf("paths/php-services", true, false);
-
-			if(!file_exists($this->services_path))					// if the folder does not exist, create it to avoid errors!
-				@mkdir($this->services_path, 0744, true);
+			$this->services_path = realpath(conf("paths/php-services", true, false));
 		}
 
 		/**

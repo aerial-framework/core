@@ -5,7 +5,6 @@
 	class AerialServer
 	{
 		public $_config;
-		public $_base;
 		public $_config_alt;
 
 		/*private $started = false;*/
@@ -92,30 +91,68 @@
 		private function initializeAerial()
 		{
 			$_configPath = $this->getConfigPath();
+			$_basePath = $this->getBasePath();
 
 			$this->_config = @simplexml_load_file($_configPath);
 			if(file_exists(dirname($_configPath)."/config-alt.xml") && is_readable(dirname($_configPath)."/config-alt.xml"))
 				$this->_config_alt = @simplexml_load_file(dirname($_configPath)."/config-alt.xml");
 
+			$modelsPath = realpath(conf("paths/php-models", true, false));
+			$servicesPath = realpath(conf("paths/php-services", true, false));
+
 			if(!$this->_config)
 				AerialStartupManager::error("There is a syntax error in config.xml");
 
-			// Get the base path (one level above config folder)
-			$this->_base = dirname($_configPath);
+			if(!$modelsPath)             // models path is relative, so try resolve the absolute value
+			{
+				$modelsPath = realpath($_basePath."/".conf("paths/php-models"));
+
+				if(!$modelsPath)
+				{
+					// if no models path could be found at this point, try creating it
+					if(mkdir(conf("paths/php-models"), 0766, true))
+						$modelsPath = conf("paths/php-models");
+					else
+					{
+						// still could not create a models path - fail!
+						AerialStartupManager::error("PHP models path could not be found [".conf("paths/php-models")."]");
+					}
+				}
+			}
+
+			if(!$servicesPath)             // services path is relative, so try resolve the absolute value
+			{
+				$servicesPath = realpath($_basePath."/".conf("paths/php-services"));
+
+				if(!$servicesPath)
+				{
+					// if no services path could be found at this point, try creating it
+					if(mkdir(conf("paths/php-services"), 0766, true))
+						$modelsPath = conf("paths/php-services");
+					else
+					{
+						// still could not create a services path - fail!
+						AerialStartupManager::error("PHP services path could not be found [".conf("paths/php-services")."]");
+					}
+				}
+			}
 
 			$dynamicPaths = array(
+				"base" => $_basePath,
 				"config" => dirname($_configPath),
 				"project" => dirname(dirname($_configPath)),        // convention: config must always be in root of project
 				"aerial" => conf("paths/lib", true, false)."/php/aerial",
 				"internal-services" => conf("paths/lib", true, false)."/php",
 				"doctrine" => conf("paths/lib", true, false)."/php/doctrine",
-				"amfphp" => conf("paths/lib", true, false)."/php/amfphp"
+				"amfphp" => conf("paths/lib", true, false)."/php/amfphp",
+				"php-models" => $modelsPath,
+				"php-services" => $servicesPath
 			);
 
 			$this->assignDynamicPaths($dynamicPaths);
 
-			if(!realpath($this->_base))
-				AerialStartupManager::error("Project root directory is invalid [$this->_base]");
+			if(!realpath($_basePath))
+				AerialStartupManager::error("Project root directory is invalid [$_basePath]");
 
 			include_once(dirname(__FILE__)."/server.php");
 			date_default_timezone_set(conf("options/timezone", false, false));				// Required for PHP >= 5.3
@@ -145,7 +182,7 @@
 		private function assignDynamicPaths($paths)
 		{
 			foreach($paths as $key => $path)
-				$this->_config->paths->{$key} = $path;
+				$this->_config->paths->{$key} = realpath($path);
 		}
 
 		private function getConfigPath()
@@ -182,6 +219,26 @@
 			return $location;
 		}
 
+		private function getBasePath()
+		{
+			$directory = dirname(__FILE__);
+			if(!file_exists("$directory/.project"))
+				AerialStartupManager::error("Please ensure that the path used for the <strong>server/.project</strong> file is valid.");
+
+			$projectXML = @simplexml_load_file("$directory/.project");
+			if(!$projectXML)
+				AerialStartupManager::error("There is an XML syntax error in the <strong>server/.project</strong> file");
+
+			$location = realpath((string) $projectXML->base);
+			if(!$location)
+			{
+				AerialStartupManager::error("The base path for the project is invalid in the <strong>server/.project</strong> file. ".
+				                                "This value should point to the root of the project.");
+			}
+
+			return $location;
+		}
+
 		public function errorHandler($errno, $errstr, $errfile, $errline)
 		{
 			switch($errno)
@@ -207,21 +264,8 @@
 		}
 	}
 
-/*	session_start();
-
-	if(!@$_SESSION["server"] || (@$_GET["restart"] && @$_GET["restart"] == "true"))
-	{*/
-		$server = new AerialServer();
-		$server->start();
-/*
-		$_SESSION["server"] = $server;
-		session_write_close();
-	}
-	else
-	{
-		$server = $_SESSION["server"];
-		$server->start();
-	}*/
+	$server = new AerialServer();
+	$server->start();
 
 	if(!$server)
 		AerialStartupManager::error("Could not start Aerial server. Please check that you have PHP sessions enabled");

@@ -84,7 +84,7 @@
 			else
 			{
 				if(!file_exists($modelsPath))					// if the folder does not exist, create it to avoid errors!
-					@mkdir($modelsPath, 0744, true);
+					@mkdir($modelsPath, 0766, true);
 
                 // if file STILL does not exist, throw an error
                 if(!file_exists($modelsPath))

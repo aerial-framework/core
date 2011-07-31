@@ -73,8 +73,8 @@
 		{
 			$libPath = realpath(conf("paths/lib"));
 
-			$modelsPath = conf("paths/php-models", true, false);
-			$servicesPath = conf("paths/php-services", true, false);
+			$modelsPath = realpath(conf("paths/php-models", true, false));
+			$servicesPath = realpath(conf("paths/php-services", true, false));
 
 			$directories = array(
 				"Library" => $libPath,

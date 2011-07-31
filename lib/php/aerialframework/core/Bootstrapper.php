@@ -14,7 +14,7 @@
 
 		private static function init()
 		{
-			$this->validatePaths();
+			self::$_instance->validatePaths();
 
 			spl_autoload_register(array('Doctrine', 'autoload'));
 			spl_autoload_register(array('Doctrine_Core', 'modelsAutoload'));

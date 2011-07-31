@@ -67,7 +67,7 @@
 			if(!session_start())
 				return false;
 
-			if($_SESSION["KEY"] && conf("encryption/use-encryption",false,false))
+			if($_SESSION["KEY"] && conf("options/use-encryption",false,false))
 				return true;
 			else
 				return false;

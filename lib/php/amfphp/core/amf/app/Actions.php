@@ -2,7 +2,7 @@
 /**
  * Actions modify the AMF message PER BODY
  * This allows batching of calls
- * 
+ *
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
  * @copyright (c) 2003 amfphp.org
  * @package flashservices
@@ -21,36 +21,36 @@ function adapterAction (&$amfbody) {
 	$classpath = "";
 	$methodname = "";
 	$isWebServiceURI = false;
-	
-	$services_path = conf("paths/php-services");
+
+	$servicesPath = conf("paths/php-services");
 
 	$target = $amfbody->targetURI;
-	
+
 	if (strpos($target, "http://") === false && strpos($target, "https://") === false) { // check for a http link which means web service
 		$lpos = strrpos($target, ".");
 		if ($lpos === false) {
 			//Check to see if this is in fact a RemotingMessage
 			$body = $amfbody->getValue();
 			$handled = false;
-			
+
 			$messageType = $body[0]->_explicitType;
 			if($messageType == 'flex.messaging.messages.RemotingMessage')
 			{
 				$handled = true;
-				
+
 				//Fix for AMF0 mixed array bug in Flex 2
 				if(isset($body[0]->body['length']))
 				{
 					unset($body[0]->body['length']);
 				}
-				
+
 				$amfbody->setValue($body[0]->body);
 				$amfbody->setSpecialHandling("RemotingMessage");
 				$amfbody->setMetadata("clientId", $body[0]->clientId);
 				$amfbody->setMetadata("messageId", $body[0]->messageId);
-				
+
 				$GLOBALS['amfphp']['lastMessageId'] = $body[0]->messageId;
-				
+
 				$methodname = $body[0]->operation;
 				$classAndPackage = $body[0]->source;
 
@@ -72,6 +72,7 @@ function adapterAction (&$amfbody) {
 						$classname = getClassname($classAndPackage);
 						$classpath = getServiceClass($classAndPackage, $servicesPath);
 					}
+				}
 				else
 				{
 					$classname = $classAndPackage;
@@ -88,9 +89,9 @@ function adapterAction (&$amfbody) {
 				if(!realpath($classpath))
 					$classpath = conf("paths/aerialframework")."core/$classname.php";
 
-				if(realpath($services_path."/".$uriclasspath))
-					$classpath = realpath($services_path."/".$uriclasspath);
-				
+				if(realpath($servicesPath."/".$uriclasspath))
+					$classpath = realpath($servicesPath."/".$uriclasspath);
+
 				//$classpath = $baseClassPath . $uriclasspath;
 				//die($classpath);
 			}
@@ -110,18 +111,18 @@ function adapterAction (&$amfbody) {
 				{
 					$GLOBALS['amfphp']["ping"] = false;
 				}
-					
+
 				if(!empty($body[0]->body))
 				{
 					$credentials = explode(":", base64_decode($body[0]->body));
 					Bootstrapper::getInstance()->setCredentials($credentials[0], $credentials[1]);
 				}
 			}
-			
+
 			if(!$handled)
 			{
 				//NetDebug::trace($messageType);
-				
+
 				//print_r($amfbody);
 				//die();
 				$handled = true;
@@ -141,21 +142,21 @@ function adapterAction (&$amfbody) {
 					$id = $val[0];
 					$keys = explode("=", $id);
 					$currset = intval($keys[1]);
-					
+
 					$set = $_SESSION['amfphp_recordsets'][$currset];
-					
+
 					$uriclasspath = $set['class'];
 					$classpath = $baseClassPath . $set['class'];
 					$methodname = $set['method'];
-					
+
 					$classname = substr(strrchr('/' . $set['class'], '/'), 1, -4);
-					
+
 					//Now set args for body
 					$amfbody->setValue(array_merge($set['args'], array($val[1], $val[2])));
-					
+
 					//Tell amfbody that this is a dynamic paged resultset
 					$amfbody->setSpecialHandling('pageFetch');
-				} 
+				}
 				else if($classname == "PageAbleResult" && $methodname == 'release')
 				{
 					$amfbody->setSpecialHandling('pageRelease');
@@ -164,22 +165,22 @@ function adapterAction (&$amfbody) {
 				else {
 					$uriclasspath = $trunced . ".php";
 					//$classpath = $baseClassPath . $trunced . ".php";
-					
+
 					if(realpath(conf("paths/internal-services")."/".$uriclasspath))
 						$classpath = realpath(conf("paths/internal-services")."/".$uriclasspath);
-						
+
 					if(realpath($servicesPath."/".$uriclasspath))
 						$classpath = realpath($servicesPath."/".$uriclasspath);
-				} 
+				}
 			} else {
 				$classname = substr($trunced, $lpos + 1);
 				$classpath = $baseClassPath . str_replace(".", "/", $trunced) . ".php"; // removed to strip the basecp out of the equation here
 				$uriclasspath = str_replace(".", "/", $trunced) . ".php"; // removed to strip the basecp out of the equation here
-			} 
+			}
 		}
 	} else { // This is a web service and is unsupported
 		trigger_error("Web services are not supported in this release", E_USER_ERROR);
-	} 
+	}
 
 	$amfbody->classPath = $classpath;
 	$amfbody->uriClassPath = $uriclasspath;
@@ -220,7 +221,7 @@ function getServiceClass($classAndPackage, $services_path)
 /**
  * ExecutionAction executes the required methods
  */
-function executionAction (&$amfbody) 
+function executionAction (&$amfbody)
 {
 	$specialHandling = $amfbody->getSpecialHandling();
 
@@ -229,9 +230,9 @@ function executionAction (&$amfbody)
 		$construct = &$amfbody->getClassConstruct();
 		$method = $amfbody->methodName;
 		$args = $amfbody->getValue();
-		
+
 		if($specialHandling == 'describeService')
-		{               
+		{
 			include_once(AMFPHP_BASE . "util/DescribeService.php");
 			$ds = new DescribeService();
 			$results = $ds->describe($construct, $amfbody->className);
@@ -239,7 +240,7 @@ function executionAction (&$amfbody)
 		else if($specialHandling == 'pageFetch')
 		{
 			$args[count($args) - 2] = $args[count($args) - 2] - 1;
-			
+
 			$dataset = Executive::doMethodCall($amfbody, $construct, $method, $args);
 			$results = array("cursor" => $args[count($args) - 2] + 1,
 							 "data" => $dataset);
@@ -271,7 +272,7 @@ function executionAction (&$amfbody)
 				}
 				else
 				{
-					if(conf("encryption/use-encryption",false,false) &&
+					if(conf("options/use-encryption",false,false) &&
 								get_class($construct) != "EncryptionService" && $method != "startSession")
 					{
 						throw new Aerial_Encryption_Exception(Aerial_Encryption_Exception::ENCRYPTION_NOT_USED_ERROR);
@@ -310,8 +311,8 @@ function executionAction (&$amfbody)
 		{
 			if($specialHandling == 'RemotingMessage')
 			{
-				
-				$wrapper = new AcknowledgeMessage($amfbody->getMetadata("messageId"), 
+
+				$wrapper = new AcknowledgeMessage($amfbody->getMetadata("messageId"),
 												  $amfbody->getMetadata("clientId"));
 				$wrapper->body = $results;
 				$amfbody->setResults($wrapper);
@@ -320,14 +321,14 @@ function executionAction (&$amfbody)
 			{
 				$amfbody->setResults($results);
 			}
-			
-			$amfbody->responseURI = $amfbody->responseIndex . "/onResult";  
+
+			$amfbody->responseURI = $amfbody->responseIndex . "/onResult";
 		}
 		return false;
 	}
 	elseif($specialHandling == 'Ping')
 	{
-		$wrapper = new AcknowledgeMessage($amfbody->getMetadata("messageId"), 
+		$wrapper = new AcknowledgeMessage($amfbody->getMetadata("messageId"),
 										  $amfbody->getMetadata("clientId"));
 		$amfbody->setResults($wrapper);
 		$amfbody->responseURI = $amfbody->responseIndex . "/onResult";

@@ -90,7 +90,9 @@ class AMFBaseSerializer {
 			if($this->native)
 			    $this->outBuffer .= amf_encode($body->getResults(),$this->encodeFlags, $encodeCallback);
 			else
-			    $this->writeData($body->getResults());
+			{
+				$this->writeData($body->getResults());
+			}
 
 			$tempBuf2 = $this->outBuffer;
 			$this->outBuffer = $tempBuf;
@@ -99,7 +101,31 @@ class AMFBaseSerializer {
 		} 
 		
 		return $this->outBuffer;
-	} 
+	}
+
+	/**
+	 * Serializes a given object into an AMF stream
+	 *
+	 * @param  $results
+	 * @return string
+	 */
+	function serializeSpecial($results)
+	{
+		$this->outBuffer = "";
+
+		try
+		{
+			$this->writeAmf3Data($results);
+		}
+		catch(Exception $e)
+		{
+			throw new Aerial_Encryption_Exception(Aerial_Encryption_Exception::AMF_ENCODING_ERROR);
+		}
+
+		$tempBuf2 = $this->outBuffer;
+
+		return $tempBuf2;
+	}
 	
 	function encodeCallback($value)
 	{

@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project-options>
-    <aerial>
-        <version>1.0beta</version>
-    </aerial>
-    <code-generation>
-        <package>org.aerialframework</package>
-        <bootstrap>org.aerialframework.bootstrap.Aerial</bootstrap>
-		<as3-models>src_flex/[package]/vo/</as3-models>
-		<as3-services>src_flex/[package]/services/</as3-services>
-        <vo-suffix>VO</vo-suffix>
-        <service-suffix>Service</service-suffix>
-    </code-generation>
+  <aerial>
+    <version>1.0beta</version>
+  </aerial>
+  <code-generation>
+    <package>org.aerialframework</package>
+    <bootstrap>src_flex/[package]/bootstrap/</bootstrap>
+    <as3-models>src_flex/[package]/vo/</as3-models>
+    <as3-services>src_flex/[package]/services/</as3-services>
+    <vo-suffix>VO</vo-suffix>
+    <service-suffix>Service</service-suffix>
+  </code-generation>
 </project-options>

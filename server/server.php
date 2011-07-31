@@ -178,7 +178,7 @@
 				"base" => $_basePath,
 				"config" => dirname($_configPath),
 				"project" => dirname(dirname($_configPath)),        // convention: config must always be in root of project
-				"aerial" => conf("paths/lib", true, false)."/php/aerialframework",
+				"aerialframework" => conf("paths/lib", true, false)."/php/aerialframework",
 				"encryption" => conf("paths/lib", true, false)."/php/aerialframework/encryption",
 				"internal-services" => conf("paths/lib", true, false)."/php",
 				"doctrine" => conf("paths/lib", true, false)."/php/doctrine",

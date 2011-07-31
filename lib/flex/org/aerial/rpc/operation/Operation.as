@@ -1,4 +1,4 @@
-package org.aerial.rpc.operation
+package org.aerialframework.rpc.operation
 {
 	import flash.events.Event;
 	
@@ -10,7 +10,7 @@ package org.aerial.rpc.operation
 	import mx.rpc.events.ResultEvent;
 	import mx.rpc.http.Operation;
 	
-	import org.aerial.rpc.AbstractService;
+	import org.aerialframework.rpc.AbstractService;
 	
 	public class Operation implements IOperation
 	{

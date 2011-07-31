@@ -4,7 +4,7 @@
  * Date: 2011/01/20
  * Time: 1:38 AM
  */
-package org.aerial.system
+package org.aerialframework.system
 {
     public class DoctrineQuery
     {

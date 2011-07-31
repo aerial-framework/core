@@ -1,4 +1,4 @@
-package org.aerial.rpc.messages
+package org.aerialframework.rpc.messages
 {
     import mx.messaging.messages.ErrorMessage;
 

@@ -1,5 +1,5 @@
-package org.aerial.rpc{
-	import org.aerial.rpc.operation.Operation;
+package org.aerialframework.rpc{
+	import org.aerialframework.rpc.operation.Operation;
 
 	public interface IService{
 		

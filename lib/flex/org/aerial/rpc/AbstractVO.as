@@ -1,4 +1,4 @@
-package org.aerial.rpc
+package org.aerialframework.rpc
 {
 	import flash.net.registerClassAlias;
 	import flash.utils.IDataInput;
@@ -14,7 +14,7 @@ package org.aerial.rpc
 		private var getPrivateProperty:Function;
 		private var setPrivateProperty:Function;
 		
-		public function AbstractVO(aliasName:String, getProp:Function, setProp:Function)
+		public function AbstractVO(getProp:Function, setProp:Function)
 		{
 			getPrivateProperty = getProp;
 			setPrivateProperty = setProp;

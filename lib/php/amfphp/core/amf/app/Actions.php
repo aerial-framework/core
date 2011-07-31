@@ -72,7 +72,7 @@ function adapterAction (&$amfbody) {
 					$classpath = conf("paths/amfphp")."services/$classname.php";
 
 				if(!realpath($classpath))
-					$classpath = conf("paths/aerial")."core/$classname.php";
+					$classpath = conf("paths/aerialframework")."core/$classname.php";
 
 				if(realpath($services_path."/".$uriclasspath))
 					$classpath = realpath($services_path."/".$uriclasspath);

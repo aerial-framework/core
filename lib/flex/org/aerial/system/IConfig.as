@@ -1,4 +1,4 @@
-package org.aerial.system
+package org.aerialframework.system
 {
 	public interface IConfig
 	{

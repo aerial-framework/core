@@ -1,4 +1,4 @@
-package org.aerial.rpc
+package org.aerialframework.rpc
 {
 	import flash.utils.getQualifiedClassName;
 	
@@ -6,13 +6,13 @@ package org.aerial.rpc
 	import mx.rpc.AsyncToken;
 	import mx.rpc.remoting.RemoteObject;
 	
-	import org.aerial.rpc.IService;
-	import org.aerial.rpc.operation.Operation;
-	import org.aerial.system.DoctrineQuery;
+	import org.aerialframework.rpc.IService;
+	import org.aerialframework.rpc.operation.Operation;
+	import org.aerialframework.system.DoctrineQuery;
 	
 	public class AbstractService extends RemoteObject implements IService
 	{
-		import org.aerial.rpc.messages.AerialErrorMessage; AerialErrorMessage;
+		import org.aerialframework.rpc.messages.AerialErrorMessage; AerialErrorMessage;
 		
 		private var _voClass:Class;
 		

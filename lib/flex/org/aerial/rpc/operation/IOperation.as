@@ -1,8 +1,8 @@
-package org.aerial.rpc.operation
+package org.aerialframework.rpc.operation
 {
 	import mx.rpc.AsyncToken;
 	
-	import org.aerial.rpc.AbstractService;
+	import org.aerialframework.rpc.AbstractService;
 	
 	public interface IOperation
 	{

@@ -4,6 +4,8 @@
 		public $_config;
 		public $_config_alt;
 
+		public $createDirectories = false;
+
 		/*private $started = false;*/
 
 		public function start()
@@ -19,15 +21,9 @@
 			set_error_handler(array($this, "errorHandler"));
 			set_exception_handler(array($this, "exceptionHandler"));
 
-			/*if(!$this->started)
-			{*/
-				$this->loadAerial();
-			/*	$this->started = true;
-			}
-			else
-			{
-				AerialStartupManager::info("All Aerial components loaded successfully in session.");
-			}*/
+			$this->createDirectories = (@$_GET["createDirectories"] && $_GET["createDirectories"] == "true");
+
+			$this->loadAerial();
 
 			if(!$request)
 				echo '</body></html>';
@@ -108,34 +104,72 @@
 
 			if(!$modelsPath)             // models path is relative, so try resolve the absolute value
 			{
-				$modelsPath = realpath($_basePath."/".conf("paths/php-models"));
+				$isRelative = $this->isPathRelative(conf("paths/php-models"));
 
-				if(!$modelsPath)
+				if($isRelative)
+					$modelsPath = $_basePath."/".conf("paths/php-models");
+				else
+					$modelsPath = conf("paths/php-models");
+
+				if(!realpath($modelsPath))
 				{
 					// if no models path could be found at this point, try creating it
-					if(mkdir(conf("paths/php-models"), 0766, true))
-						$modelsPath = conf("paths/php-models");
-					else
+					if($this->createDirectories)
 					{
-						// still could not create a models path - fail!
-						AerialStartupManager::error("PHP models path could not be found [".conf("paths/php-models")."]");
+						mkdir($modelsPath, 0766, true);
+					}
+					
+					$modelsPath = realpath($modelsPath);
+
+					if(!$modelsPath)
+					{
+						if(!$this->createDirectories)
+						{
+							$thisPage = $this->getCurrentPageURL();
+
+							AerialStartupManager::warn("PHP models path could not be found [".conf("paths/php-models")."]".
+										"<br/>Click <a href='$thisPage?createDirectories=true'>here</a> to create them.");
+						}
+						else
+						{
+							AerialStartupManager::error("PHP models path could not be found [".conf("paths/php-models")."]");
+						}
 					}
 				}
 			}
 
 			if(!$servicesPath)             // services path is relative, so try resolve the absolute value
 			{
-				$servicesPath = realpath($_basePath."/".conf("paths/php-services"));
+				$isRelative = $this->isPathRelative(conf("paths/php-services"));
 
-				if(!$servicesPath)
+				if($isRelative)
+					$servicesPath = $_basePath."/".conf("paths/php-services");
+				else
+					$servicesPath = conf("paths/php-services");
+
+				if(!realpath($servicesPath))
 				{
 					// if no services path could be found at this point, try creating it
-					if(mkdir(conf("paths/php-services"), 0766, true))
-						$modelsPath = conf("paths/php-services");
-					else
+					if($this->createDirectories)
 					{
-						// still could not create a services path - fail!
-						AerialStartupManager::error("PHP services path could not be found [".conf("paths/php-services")."]");
+						mkdir($servicesPath, 0766, true);
+					}
+
+					$servicesPath = realpath($servicesPath);
+
+					if(!$servicesPath)
+					{
+						if(!$this->createDirectories)
+						{
+							$thisPage = $this->getCurrentPageURL();
+
+							AerialStartupManager::warn("PHP services path could not be found [".conf("paths/php-services")."]".
+										"<br/>Click <a href='$thisPage?createDirectories=true'>here</a> to create them.");
+						}
+						else
+						{
+							AerialStartupManager::error("PHP services path could not be found [".conf("paths/php-services")."]");
+						}
 					}
 				}
 			}
@@ -174,6 +208,38 @@
 
 				Bootstrapper::getInstance();
 			}
+		}
+
+		private function isPathRelative($path)
+		{
+			$base = $this->getBasePath();
+
+			// replace all slashes with a forward slash for consistency
+			$base = preg_replace('%[/\\\\]+%', '/', $base);
+			$path = preg_replace('%[/\\\\]+%', '/', $path);
+
+			return strpos($path, $base) === false;
+		}
+
+		private function getCurrentPageURL()
+		{
+			$pageURL = 'http';
+			if ($_SERVER["HTTPS"] == "on")
+			{
+				$pageURL .= "s";
+			}
+			$pageURL .= "://";
+			if ($_SERVER["SERVER_PORT"] != "80")
+			{
+				$pageURL .= $_SERVER["SERVER_NAME"] . ":" . $_SERVER["SERVER_PORT"] . $_SERVER["REQUEST_URI"];
+			}
+			else
+			{
+				$pageURL .= $_SERVER["SERVER_NAME"] . $_SERVER["REQUEST_URI"];
+			}
+
+			$pageURL = explode("?", $pageURL);
+			return $pageURL[0];
 		}
 
 		/**

@@ -1,21 +1,26 @@
 package org.aerialframework.encryption
 {
-    import org.aerialframework.libs.as3crypto.crypto.prng.ARC4;
-    import org.aerialframework.libs.as3crypto.crypto.rsa.RSAKey;
-    import org.aerialframework.libs.as3crypto.util.Hex;
-    import org.aerialframework.libs.as3crypto.util.der.PEM;
-
     import flash.events.EventDispatcher;
     import flash.utils.ByteArray;
 
+    import mx.rpc.AsyncResponder;
+
     import mx.rpc.AsyncToken;
+    import mx.rpc.Fault;
     import mx.rpc.Responder;
     import mx.rpc.events.FaultEvent;
+    import mx.rpc.events.InvokeEvent;
     import mx.rpc.events.ResultEvent;
 
     import org.aerialframework.bootstrap.Aerial;
     import org.aerialframework.errors.AerialError;
     import org.aerialframework.events.EncryptionEvent;
+    import org.aerialframework.libs.as3crypto.crypto.prng.ARC4;
+    import org.aerialframework.libs.as3crypto.crypto.rsa.RSAKey;
+    import org.aerialframework.libs.as3crypto.util.Hex;
+    import org.aerialframework.libs.as3crypto.util.der.PEM;
+    import org.aerialframework.rpc.AbstractService;
+    import org.aerialframework.rpc.operation.PendingOperation;
 
     [Event(name="encryptedSessionStarted", type="org.aerialframework.events.EncryptionEvent")]
     [Event(name="encryptedSessionFailed", type="org.aerialframework.events.EncryptionEvent")]
@@ -30,9 +35,15 @@ package org.aerialframework.encryption
 
         private var _encryptionKey:ByteArray;
         private var _usingEncryption:Boolean;
-        private var _encryptedSessionStarted:Boolean;
         private var _encryptSourceAndOperation:Boolean;
         private var _keySize:uint;
+
+        private var _encryptedSessionInitialized:Boolean;
+        private var _encryptedSessionStarted:Boolean;
+
+        private var _encryptedSessionFailed:Boolean;
+
+        private var _pendingOperations:Array;
 
         {
             _instance = new Encryption();
@@ -72,18 +83,43 @@ package org.aerialframework.encryption
 
             _encryptionKey = Encryption.getRandomKey(keySize);
 
-            trace(new publicKey);
             var pubKey:RSAKey = PEM.readRSAPublicKey(new publicKey);
 
             var encrypted:String = Encryption.encryptRSA(_encryptionKey, pubKey);
 
             var requestToken:AsyncToken = encryptionService.startSession(encrypted);
             requestToken.addResponder(new Responder(sessionStartStatusHandler, sessionStartStatusFaultHandler));
+
+            _encryptedSessionInitialized = true;
+        }
+
+        public function get encryptedSessionInitialized():Boolean
+        {
+            return _encryptedSessionInitialized;
         }
 
         public function get encryptionKey():ByteArray
         {
             return _encryptionKey;
+        }
+
+        public function get pendingOperations():Array
+        {
+            return _pendingOperations;
+        }
+
+        public function addPendingOperation(pending:PendingOperation):void
+        {
+            if(!_pendingOperations)
+                _pendingOperations = [];
+
+            _pendingOperations.push(pending);
+
+            if(this.encryptedSessionFailed)
+            {
+                fakeOperationFailure();
+                _pendingOperations = [];
+            }
         }
 
         private function sessionStartStatusHandler(event:ResultEvent):void
@@ -104,11 +140,53 @@ package org.aerialframework.encryption
 
             var type:String = result ? EncryptionEvent.ENCRYPTED_SESSION_STARTED : EncryptionEvent.ENCRYPTED_SESSION_FAILED;
             this.dispatchEvent(new EncryptionEvent(type));
+
+            if(result)          // if the encrypted session has started successfully
+            {
+                for each(var pending:PendingOperation in this.pendingOperations)
+                {
+                    var encryptedServiceName:String = Encryption.encryptRC4(Hex.toArray(Hex.fromString(pending.operation.service.source)), this.encryptionKey);
+                    (pending.operation.service as AbstractService).source = encryptedServiceName;
+
+                    var token:AsyncToken = pending.operation.send(pending.args);
+                    token.addResponder(new AsyncResponder(pending.resultHandler, pending.faultHandler, pending.tokenData));
+                    
+                    (pending.operation.service as AbstractService).source = pending.serviceName;
+                }
+            }
+            else
+            {
+                fakeOperationFailure();
+            }
+
+            _encryptedSessionFailed = false;
+            _pendingOperations = [];
+        }
+
+        private function fakeOperationFailure():void
+        {
+            for each(var pending:PendingOperation in this.pendingOperations)
+            {
+                var fakeFault:Fault = new Fault("EncryptionError", EncryptionEvent.ENCRYPTED_SESSION_FAILED);
+                pending.faultHandler.apply(this, [new FaultEvent(FaultEvent.FAULT, false, false, fakeFault)]);
+            }
         }
 
         private function sessionStartStatusFaultHandler(event:FaultEvent):void
         {
             this.dispatchEvent(new EncryptionEvent(EncryptionEvent.ENCRYPTED_SESSION_FAILED));
+
+            fakeOperationFailure();
+
+            _pendingOperations = [];
+
+            _encryptedSessionFailed = true;
+            _encryptedSessionStarted = false;
+        }
+
+        public function get encryptedSessionFailed():Boolean
+        {
+            return _encryptedSessionFailed;
         }
 
         public function get encryptedSessionStarted():Boolean

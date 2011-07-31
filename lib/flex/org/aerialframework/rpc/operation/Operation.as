@@ -1,5 +1,6 @@
 package org.aerialframework.rpc.operation
 {
+    import org.aerialframework.errors.AerialError;
     import org.aerialframework.libs.as3crypto.util.Hex;
 
     import mx.rpc.AbstractOperation;
@@ -155,25 +156,48 @@ package org.aerialframework.rpc.operation
 
             var encryption:Encryption = Encryption.instance;
 
-            if(Aerial.USE_ENCRYPTION && encryption.encryptedSessionStarted && encryption.encryptSourceAndOperation)
+            var initialized:Boolean = Encryption.instance.encryptedSessionInitialized;
+            var started:Boolean = Encryption.instance.encryptedSessionStarted;
+
+            if(Aerial.USE_ENCRYPTION)
             {
+                if(_method == "startSession")
+                    started = true;             // fake encryption started if the startSession operation is being executed
+
+                if(!initialized)            // if the user has not initialized the session, nothing can be done yet
+                {
+                    throw new AerialError(AerialError.ENCRYPTED_SESSION_NOT_STARTED_ERROR);
+                    return null;
+                }
+
                 var plainServiceName:String = _service.source;
 
                 var encryptedMethodName:String = Encryption.encryptRC4(Hex.toArray(Hex.fromString(_method)), encryption.encryptionKey);
                 var encryptedServiceName:String = Encryption.encryptRC4(Hex.toArray(Hex.fromString(_service.source)), encryption.encryptionKey);
 
-                _op = _service.getOperation(encryptedMethodName);
-                _service.source = encryptedServiceName;
+                if(encryption.encryptSourceAndOperation)
+                {
+                    _op = _service.getOperation(encryptedMethodName);
 
-                _token = _op.send(_args);
+                    if(started)         // if not started, the service source will be encrypted when called
+                        _service.source = encryptedServiceName;
+                }
+
+                if(!started)
+                {
+                    Encryption.instance.addPendingOperation(new PendingOperation(_op, _args, plainServiceName,
+                            _tokenData, notifyResultHandler, notifyFaultHandler));
+                }
+                else
+                    _token = _op.send(_args);
 
                 // restore service source
-                _service.source = plainServiceName;
+                if(encryption.encryptSourceAndOperation && started)
+                    _service.source = plainServiceName;
             }
-            else
-                _token = _op.send(_args);
 
-            if(_resultHandler !== null) _token.addResponder(new AsyncResponder(notifyResultHandler, notifyFaultHandler, _tokenData));
+            if(_resultHandler !== null && ((Aerial.USE_ENCRYPTION && started) || !Aerial.USE_ENCRYPTION))
+                _token.addResponder(new AsyncResponder(notifyResultHandler, notifyFaultHandler, _tokenData));
 
             return _token;
         }

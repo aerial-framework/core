@@ -6,26 +6,22 @@
 		you need to. Take care not to add this file to your source-control system.
 	-->
 
-    <!-- path options
-
-        config -> use comments like this
-        
-    -->
-
 	<paths>
-        <!--<lib>/home/danny/Desktop/aerial-new-structure/lib</lib>-->
         <lib>../lib</lib>
 
-        <php-models>/home/danny/Desktop/aerial-new-structure/src_php/za/co/rsajobs/vo</php-models>
-        <php-services>/home/danny/Desktop/aerial-new-structure/src_php/za/co/rsajobs/services</php-services>
+        <php-models>src_php\org\aerialframework\vo</php-models>
+        <php-services>src_php\org\aerialframework\services</php-services>
 	</paths>
 
     <!-- general options -->
-    
+
 	<options>
-		<debug-mode>true</debug-mode>
+		<debug-mode expose="true">true</debug-mode>
 		<server-url expose="true"></server-url>
-		<use-arraycollection>true</use-arraycollection> <!-- ambiguous, Rob think this should be in .aerial file - to discuss later -->
+        <use-encryption expose="true">false</use-encryption>
+
+        <collection-class>flex.messaging.io.ArrayCollection</collection-class>
+
 		<use-authentication>false</use-authentication>
 		<timezone>UTC</timezone>
 	</options>
@@ -35,9 +31,9 @@
     <database>
         <engine>mysql</engine>
         <host>localhost</host>
-        <schema>rsajobs</schema> <!-- rename to schema -->
-        <username>rsajobs</username>
-        <password>rsajobs</password>
+        <schema></schema>
+        <username></username>
+        <password></password>
         <port>3306</port>
     </database>
 

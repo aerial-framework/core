@@ -1,7 +1,7 @@
 <?php
 	class Encrypted
 	{
-		public $_explicitType = "org.aerial.encryption.EncryptedVO";
+		public $_explicitType = "org.aerialframework.encryption.EncryptedVO";
 
 		// ByteArray containing encrypted data
 		public $data;

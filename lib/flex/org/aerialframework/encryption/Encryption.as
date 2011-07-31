@@ -23,7 +23,7 @@ package org.aerialframework.encryption
     {
         private static const pool:String = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890!@#$%^&*()";
 
-        [Embed(source="/org/aerial/encryption/exchange.pub",mimeType="application/octet-stream")]
+        [Embed(source="/org/aerialframework/encryption/exchange.pub",mimeType="application/octet-stream")]
         private static var publicKey:Class;
 
         private static var _instance:Encryption;

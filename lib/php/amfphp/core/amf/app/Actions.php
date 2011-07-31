@@ -59,7 +59,7 @@ function adapterAction (&$amfbody) {
 
 				// ignore initial session start request
 				$canUseEncryption = Encryption::canUseEncryption();
-				if($canUseEncryption && $classAndPackage != "core.aerial.EncryptionService" && $methodname != "startSession")
+				if($canUseEncryption && $classAndPackage != "core.aerialframework.EncryptionService" && $methodname != "startSession")
 				{
 					// no classpath could be obtained from the request yet, which means it might be encrypted
 					if(!$classpath)
@@ -250,11 +250,11 @@ function executionAction (&$amfbody)
 		{
 			try
 			{
-				if($args[0]["_explicitType"] == "org.aerial.encryption.EncryptedVO" && $args[0]["resetKey"] == true)
+				if($args[0]["_explicitType"] == "org.aerialframework.encryption.EncryptedVO" && $args[0]["resetKey"] == true)
 					unset($_SESSION["KEY"]);
 
 				// check to see if the incoming request is encrypted
-				if(@$args[0]["_explicitType"] == "org.aerial.encryption.EncryptedVO" && Encryption::canUseEncryption())
+				if(@$args[0]["_explicitType"] == "org.aerialframework.encryption.EncryptedVO" && Encryption::canUseEncryption())
 				{
 					$bytes = $args[0]["data"];
 

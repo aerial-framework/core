@@ -7,7 +7,7 @@
 
 		public function startSession($encrypted)
 		{
-			if($encrypted["_explicitType"] != "org.aerial.encryption.EncryptedVO")
+			if($encrypted["_explicitType"] != "org.aerialframework.encryption.EncryptedVO")
 				throw new Aerial_Encryption_Exception(Aerial_Encryption_Exception::INVALID_KEY_ERROR);
 
 			$e = new Encrypted();

@@ -14,7 +14,7 @@ package org.aerialframework.encryption
 		{
 			super("Aerial");
 
-			this.source = "core.aerial.EncryptionService";
+			this.source = "core.aerialframework.EncryptionService";
 			this.endpoint = Aerial.SERVER_URL;
 		}
 

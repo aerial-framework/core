@@ -195,6 +195,8 @@ package org.aerialframework.rpc.operation
                 if(encryption.encryptSourceAndOperation && started)
                     _service.source = plainServiceName;
             }
+            else
+                _token = _op.send(_args);
 
             if(_resultHandler !== null && ((Aerial.USE_ENCRYPTION && started) || !Aerial.USE_ENCRYPTION))
                 _token.addResponder(new AsyncResponder(notifyResultHandler, notifyFaultHandler, _tokenData));

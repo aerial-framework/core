@@ -273,7 +273,7 @@ class Gateway {
 			$endTime = microtime(true);
 			$totalSeconds = round($endTime - $this->startTime, 4);
 
-			AerialStartupManager::info("<strong>AMFPHP</strong> is configured correctly (started up in $totalSeconds ms)");
+			AerialStartupManager::info("<strong>AMFPHP</strong> is configured correctly (started up in $totalSeconds seconds)");
 		}
 	}
 	

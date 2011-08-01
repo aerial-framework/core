@@ -102,8 +102,16 @@
 
 			if(!realpath(conf("paths/lib")))
 			{
-				AerialStartupManager::error("The path to the <strong>Aerial library</strong> is invalid or canot be accessed: ".
-							"[<strong>".conf("paths/lib", true, false)."</strong>]");
+				if(realpath($_basePath."/".conf("paths/lib")))          // check against the base path
+				{
+					// reassign config path
+					$this->_config->paths->lib = realpath($_basePath."/".conf("paths/lib"));
+				}
+				else
+				{
+					AerialStartupManager::error("The path to the <strong>Aerial library</strong> is invalid or cannot be accessed: ".
+					                            "[<strong>".conf("paths/lib", true, false)."</strong>]");
+				}
 			}
 
 			if(!$this->_config)
@@ -284,6 +292,17 @@
 			$location = realpath((string) $projectXML->location);
 			$filetype = substr($location, strrpos($location, ".") + 1);
 
+			if(!$location)
+			{
+				// if no base can be found, try using the base path from this file
+				$referencePoint = realpath(dirname(__FILE__));
+				if($referencePoint)
+				{
+					$fromConfig = (string) $projectXML->location;
+					$location = realpath($referencePoint."/".$fromConfig);
+				}
+			}
+
 			if($filetype != "xml")
 				$location = $location."/config.xml";
 
@@ -438,7 +457,9 @@
 		return $value;
 	}
 
-class AerialStartupManager
+
+
+	class AerialStartupManager
 	{
 		private static $displayedProductionMessage;
 

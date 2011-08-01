@@ -77,20 +77,24 @@ function adapterAction (&$amfbody) {
 				{
 					$classname = $classAndPackage;
 				}
-				$uriclasspath = str_replace('.','/',$classAndPackage) . '.php';
+				$uriclasspath = str_replace('.', '/', $classAndPackage) . '.php';
 
-				// try find the correct path to the PHP service for the incoming request
-				if(conf("paths/lib")."php/".$uriclasspath)
-					$classpath = conf("paths/lib")."php/".$uriclasspath;
+				if(!$classpath)
+				{
+					// try find the correct path to the PHP service for the incoming request
+					if(conf("paths/lib")."php/".$uriclasspath)
+						$classpath = conf("paths/lib")."php/".$uriclasspath;
 
-				if(!realpath($classpath))
-					$classpath = conf("paths/amfphp")."services/$classname.php";
+					if(!realpath($classpath))
+						$classpath = conf("paths/amfphp")."services/$classname.php";
 
-				if(!realpath($classpath))
-					$classpath = conf("paths/aerialframework")."core/$classname.php";
+					if(!realpath($classpath))
+						$classpath = conf("paths/aerialframework")."core/$classname.php";
 
-				if(realpath($servicesPath."/".$uriclasspath))
-					$classpath = realpath($servicesPath."/".$uriclasspath);
+					$servicesPath = realpath($servicesPath);
+					if(realpath($servicesPath."/".$uriclasspath))
+						$classpath = realpath($servicesPath."/".$uriclasspath);
+				}
 
 				//$classpath = $baseClassPath . $uriclasspath;
 				//die($classpath);
@@ -182,9 +186,13 @@ function adapterAction (&$amfbody) {
 		trigger_error("Web services are not supported in this release", E_USER_ERROR);
 	}
 
+	$lpos = strrpos($classname, ".");
+	if($lpos > 0)
+		$lpos += 1;
+
 	$amfbody->classPath = $classpath;
 	$amfbody->uriClassPath = $uriclasspath;
-	$amfbody->className = $classname;
+	$amfbody->className = substr($classname, $lpos);
 	$amfbody->methodName = $methodname;
 
 	return true;

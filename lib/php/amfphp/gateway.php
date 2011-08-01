@@ -138,9 +138,12 @@
 		$gateway->disableStandalonePlayer();
 	}
 
-	function is_undefined($obj)
+	if(!function_exists("is_undefined"))
 	{
-		return is_object($obj) ? get_class($obj) == "undefined" : false;
+		function is_undefined($obj)
+		{
+			return is_object($obj) ? get_class($obj) == "undefined" : false;
+		}
 	}
 	
 	//If you are running into low-level issues with corrupt messages and 

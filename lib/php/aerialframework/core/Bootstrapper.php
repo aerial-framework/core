@@ -72,7 +72,9 @@
 
 			require_once(conf("paths/aerialframework")."core/Configuration.php");
 
-			AerialStartupManager::info("<strong>Doctrine</strong> is configured correctly.");
+			$numModels = count(Aerial_Core::getLoadedModels());
+			AerialStartupManager::info("<strong>Doctrine ORM</strong> is configured correctly (with <em>$numModels</em> models) ".
+			                           "and a valid connection to the database.");
 		}
 
 		private function validatePaths()

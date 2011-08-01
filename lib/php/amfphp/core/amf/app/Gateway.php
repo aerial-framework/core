@@ -54,6 +54,8 @@ class Gateway {
 	var $incomingMessagesFolder = NULL;
 	var $useSslFirstMethod = true;
 	var $_enableGzipCompression = false;
+
+	var $startTime;
 	
 	/**
 	 * The Gateway constructor method.
@@ -62,6 +64,8 @@ class Gateway {
 	 * can immediately propogate to the instance.  
 	 */
 	function Gateway() {
+		$this->startTime = microtime(true);
+
 		//Include right executive for php version
 		//Try catch are not syntactically correct in PHP4, so we can't even include
 		//them in PHP 4.
@@ -266,7 +270,10 @@ class Gateway {
 		}
 		else
 		{
-			AerialStartupManager::info("<strong>AMFPHP</strong> is configured correctly");
+			$endTime = microtime(true);
+			$totalSeconds = round($endTime - $this->startTime, 4);
+
+			AerialStartupManager::info("<strong>AMFPHP</strong> is configured correctly (started up in $totalSeconds ms)");
 		}
 	}
 	

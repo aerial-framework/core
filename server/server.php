@@ -6,10 +6,14 @@
 
 		public $createDirectories = false;
 
+		private $startTime;
+
 		/*private $started = false;*/
 
 		public function start()
 		{
+			$this->startTime = microtime(true);
+
 			$request = @$GLOBALS["HTTP_RAW_POST_DATA"];
 			if(!$request)
 				$request = file_get_contents('php://input');
@@ -41,7 +45,10 @@
 			include_once(AMFPHP_BASE."../gateway.php");
 			include_once(AMFPHP_BASE."../globals.php");
 
-			AerialStartupManager::info("<strong>Aerial</strong> is configured correctly");
+			$endTime = microtime(true);
+			$totalSeconds = round($endTime - $this->startTime, 4);
+
+			AerialStartupManager::info("<strong>Aerial</strong> is configured correctly (started up in $totalSeconds seconds)");
 
 			restore_error_handler();
 			restore_exception_handler();

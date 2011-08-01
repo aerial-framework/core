@@ -53,10 +53,10 @@ package org.aerialframework.rpc
             return op;
         }
 
-        public function save(vo:Object):Operation
+        public function save(vo:Object, returnCompleteObject:Boolean = false):Operation
         {
             validateVO(vo);
-            var op:Operation = new Operation(this, "save", vo);
+            var op:Operation = new Operation(this, "save", vo, returnCompleteObject);
 
             return op;
         }

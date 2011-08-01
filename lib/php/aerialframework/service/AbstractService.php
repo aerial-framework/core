@@ -37,9 +37,9 @@ abstract class AbstractService
 	 * Alias of "save" function
 	 * @param $object
 	 */
-	public function update($object)
+	public function update($object, $returnCompleteObject = false)
 	{
-		return self::save($object);
+		return self::save($object, $returnCompleteObject);
 	}
 
 	public function insert($object, $returnCompleteObject = false)

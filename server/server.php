@@ -29,8 +29,7 @@
 
 			$this->loadAerial();
 
-			if(!$request)
-				echo '</body></html>';
+			$this->endHTMLOutput();
 		}
 
 		private function loadAerial()
@@ -72,7 +71,7 @@
 
 		private function startHTMLOutput()
 		{
-			if(AerialStartupManager::hasAMFRequest())
+			if(AerialStartupManager::hasAMFRequest() || !AerialStartupManager::isDirectCall())
 				return;
 
 			echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Frameset//EN"
@@ -86,6 +85,14 @@
 					<link rel="stylesheet" type="text/css" href="assets/styles/style.css" />
 
 					<body>';
+		}
+
+		private function endHTMLOutput()
+		{
+			if(AerialStartupManager::hasAMFRequest() || !AerialStartupManager::isDirectCall())
+				return;
+
+			echo "\n\t</body>\n</html>";
 		}
 
 		private function initializeAerial()
@@ -487,7 +494,18 @@
 
 		public static function hasAMFRequest()
 		{
-			return self::$_request != null;
+			return self::$_request != null && self::isDirectCall();
+		}
+
+		/**
+		 *  To determine if Aerial is being used for a request, compare the requested script filename with the current file
+		 *	 ...if they match, it is most likely an AMF request (direct call to server.php, not including server.php in another file)
+		 *
+		 * @return string
+		 */
+		public static function isDirectCall()
+		{
+			return realpath($_SERVER["SCRIPT_FILENAME"]) === realpath(__FILE__);
 		}
 
 		public static function getAMFRequest()
@@ -497,8 +515,8 @@
 
 		public static function getGroup()
 		{
-			$pid = posix_getgid();
-			$group = posix_getgrgid($pid);
+			$pid = @posix_getgid();
+			$group = @posix_getgrgid($pid);
 			return $group["name"];
 		}
 
@@ -525,23 +543,27 @@
 			}
 
 			// if an AMF request has been received, let amfPHP handle the errors, only display startup problems
-			if(self::$_request)
+			if(AerialStartupManager::hasAMFRequest())
 			{
 				self::simpleLog($message, $type);
 				return;
 			}
 
-			switch($type)
+			// only display success messages if no AMF request is present (i.e. direct call to server.php)
+			if(AerialStartupManager::isDirectCall())
 			{
-				case E_USER_ERROR:
-					die("<div class='error'><h2>Fatal Error</h2><p>".$message."</p></h2></div>");
-					break;
-				case E_USER_WARNING:
-					echo("<div class='warning'><h2>Warning</h2><p>".$message."</p></h2></div>");
-					break;
-				case "Success":
-					echo("<div class='success'><h2>Info</h2><p>".$message."</p></h2></div>");
-					break;
+				switch($type)
+				{
+					case E_USER_ERROR:
+						die("<div class='error'><h2>Fatal Error</h2><p>".$message."</p></h2></div>");
+						break;
+					case E_USER_WARNING:
+						echo("<div class='warning'><h2>Warning</h2><p>".$message."</p></h2></div>");
+						break;
+					case "Success":
+						echo("<div class='success'><h2>Info</h2><p>".$message."</p></h2></div>");
+						break;
+				}
 			}
 		}
 

@@ -163,7 +163,7 @@ class MethodTable
 		if( extension_loaded( "eAccelerator" ))
 		{
 			//Touch the file so the results of getDocComment will be accurate
-			touch($sourcePath);
+			@touch($sourcePath);
 		}
 		
 		$included = include_once($sourcePath);

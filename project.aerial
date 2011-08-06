@@ -1,8 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project-options>
+  
   <aerial>
     <version>1.0beta</version>
   </aerial>
+  
+  <project>
+	<name>New Aerial Project</name>
+	<config-path></config-path>
+  </project>
+  
   <code-generation>
     <package>org.aerialframework</package>
     <bootstrap>src_flex/[package]/bootstrap/</bootstrap>
@@ -11,4 +18,5 @@
     <vo-suffix>VO</vo-suffix>
     <service-suffix>Service</service-suffix>
   </code-generation>
+  
 </project-options>

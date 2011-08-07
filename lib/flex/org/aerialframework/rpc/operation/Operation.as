@@ -9,7 +9,6 @@ package org.aerialframework.rpc.operation
     import mx.rpc.events.FaultEvent;
     import mx.rpc.events.ResultEvent;
 
-    import org.aerialframework.bootstrap.Aerial;
     import org.aerialframework.encryption.Encryption;
     import org.aerialframework.rpc.AbstractService;
 
@@ -159,7 +158,7 @@ package org.aerialframework.rpc.operation
             var initialized:Boolean = Encryption.instance.encryptedSessionInitialized;
             var started:Boolean = Encryption.instance.encryptedSessionStarted;
 
-            if(Aerial.USE_ENCRYPTION)
+            if(_service.aerialConfig.USE_ENCRYPTION)
             {
                 if(_method == "startSession")
                     started = true;             // fake encryption started if the startSession operation is being executed
@@ -198,7 +197,7 @@ package org.aerialframework.rpc.operation
             else
                 _token = _op.send(_args);
 
-            if(_resultHandler !== null && ((Aerial.USE_ENCRYPTION && started) || !Aerial.USE_ENCRYPTION))
+            if(_resultHandler !== null && ((_service.aerialConfig.USE_ENCRYPTION && started) || !_service.aerialConfig.USE_ENCRYPTION))
                 _token.addResponder(new AsyncResponder(notifyResultHandler, notifyFaultHandler, _tokenData));
 
             return _token;

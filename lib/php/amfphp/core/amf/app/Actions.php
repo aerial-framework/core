@@ -22,8 +22,10 @@ function adapterAction (&$amfbody) {
 	$methodname = "";
 	$isWebServiceURI = false;
 
-	$servicesPath = conf("paths/php-services");
+	//$servicesPath = conf("paths/php-services");
+	$servicesPath = ConfigXml::getInstance()->servicesPath;
 
+	
 	$target = $amfbody->targetURI;
 
 	if (strpos($target, "http://") === false && strpos($target, "https://") === false) { // check for a http link which means web service
@@ -220,8 +222,8 @@ function getServiceClass($classAndPackage, $services_path)
 {
 	$uriclasspath = str_replace('.','/',$classAndPackage) . '.php';
 
-	if(realpath(conf("paths/internal-services")."/".$uriclasspath))
-		$classpath = realpath(conf("paths/internal-services")."/".$uriclasspath);
+	if(realpath(LIB_PATH . "/". $uriclasspath))
+		$classpath = realpath(LIB_PATH . "/". $uriclasspath);
 
 	if(realpath($services_path."/".$uriclasspath))
 		$classpath = realpath($services_path."/".$uriclasspath);
@@ -283,7 +285,7 @@ function executionAction (&$amfbody)
 				}
 				else
 				{
-					if(conf("options/use-encryption",false,false) &&
+					if(ConfigXml::getInstance()->config->options->{'use-encryption'} == 'true' &&
 								get_class($construct) != "EncryptionService" && $method != "startSession")
 					{
 						throw new Aerial_Encryption_Exception(Aerial_Encryption_Exception::ENCRYPTION_NOT_USED_ERROR);

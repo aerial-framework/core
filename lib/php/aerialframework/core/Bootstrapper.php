@@ -1,9 +1,9 @@
 <?php
 
 import('doctrine.Doctrine');
+import('aerialframework.doctrine-extensions.Aerial');
 import('aerialframework.core.Authentication');
 import('aerialframework.core.Configuration');
-import('aerialframework.doctrine-extensions.Aerial');
 import('aerialframework.utils.ModelMapper');
 import('aerialframework.utils.Date');
 import('aerialframework.utils.firephp.fb');
@@ -60,7 +60,7 @@ class Bootstrapper
 			AerialStartupManager::error("<strong>Doctrine Exception: </strong><i>".$e->getMessage()."</i>");
 		}
 
-		Aerial_Core::loadModels(ConfigXml::getInstance()->modelsPath);  //We've already checked existence in ConfigXml
+		Aerial_Core::loadModels(ConfigXml::getInstance()->modelsPath); 
 			
 		Authentication::getInstance();
 

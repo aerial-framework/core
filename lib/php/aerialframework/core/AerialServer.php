@@ -9,8 +9,6 @@ class AerialServer
 	public $_config;
 	public $_config_alt;
 	
-	private $config;
-	
 	public $createDirectories = false;
 
 	private $startTime;
@@ -19,8 +17,7 @@ class AerialServer
 	
 	public function __construct()
 	{
-		$this->config = ConfigXml::getInstance()->config;
-		date_default_timezone_set($this->config->options->timezone);				// Required for PHP >= 5.3
+		date_default_timezone_set(ConfigXml::getInstance()->timezone);				// Required for PHP >= 5.3
 	}
 
 	public function start()

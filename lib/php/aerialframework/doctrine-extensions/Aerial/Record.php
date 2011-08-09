@@ -1,5 +1,4 @@
 <?php
-//require_once(conf("paths/doctrine")."Doctrine/Record.php");
 
 abstract class Aerial_Record extends Doctrine_Record
 {

@@ -2,8 +2,22 @@
 class ConfigXml
 {
 	public $config;
+	
 	public $modelsPath;
 	public $servicesPath;
+	public $serverUrl;
+	public $debugMode = false;
+	public $useEncryption = false;
+	public $useAuthentication = false;
+	public $timezone = 'UTC';
+	public $collectionClass = 'flex.messaging.io.ArrayCollection';
+	
+	public $dbEngine;
+	public $dbHost;
+	public $dbSchema;
+	public $dbUsername;
+	public $dbPassword;
+	public $dbPort;
 	
 	private static $instance;
 	
@@ -12,6 +26,21 @@ class ConfigXml
 		$this->init();
 		$this->setPath('php-models');
 		$this->setPath('php-services');
+		$this->serverUrl = $this->config->options->{'server-url'};
+		$this->debugMode = ($this->config->options->{'debug-mode'} == 'true');
+		$this->useEncryption = ($this->config->options->{'use-encryption'} == 'true');
+		$this->useAuthentication = ($this->config->options->{'use-authentication'} == 'true');
+		$this->timezone = $this->config->options->timezone;
+		$this->collectionClass = (string) $this->config->options->{'collection-class'};
+		
+		$this->dbEngine = $this->config->database->engine;
+		$this->dbHost = $this->config->database->host;
+		$this->dbSchema = $this->config->database->schema;
+		$this->dbUsername = $this->config->database->username;
+		$this->dbPassword = $this->config->database->password;
+		$this->dbPort = $this->config->database->port;
+		
+		//Still need to do <authentication>.  
 	}
 	
 	public static function getInstance()
@@ -116,12 +145,6 @@ class ConfigXml
 		}
 	}
 	
-	public function createPaths()
-	{
-		//Not sure if we should be creating any directories
-		//mkdir($modelsPath, 0766, true);
-	}
-
 	public function toString()
 	{
 		$dom = new DOMDocument('1.0');

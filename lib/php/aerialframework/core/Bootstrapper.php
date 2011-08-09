@@ -25,7 +25,7 @@ class Bootstrapper
 
 	private function __construct()
 	{
-		$this->config = ConfigXml::getInstance()->config;
+		$this->config = ConfigXml::getInstance();
 
 		spl_autoload_register(array('Doctrine', 'autoload'));
 		spl_autoload_register(array('Doctrine_Core', 'modelsAutoload'));
@@ -43,12 +43,12 @@ class Bootstrapper
 		$this->setCustomConnections();
 
 		$connectionString =
-		$this->config->database->engine . "://".
-		$this->config->database->username . ":".
-		$this->config->database->password . "@" .
-		$this->config->database->host . ":" .
-		$this->config->database->port . "/" .
-		$this->config->database->schema
+		$this->config->dbEngine . "://".
+		$this->config->dbUsername . ":".
+		$this->config->dbPassword . "@" .
+		$this->config->dbHost . ":" .
+		$this->config->dbPort . "/" .
+		$this->config->dbSchema
 		;
 
 		try
@@ -60,7 +60,7 @@ class Bootstrapper
 			AerialStartupManager::error("<strong>Doctrine Exception: </strong><i>".$e->getMessage()."</i>");
 		}
 
-		Aerial_Core::loadModels(ConfigXml::getInstance()->modelsPath); 
+		Aerial_Core::loadModels($this->config->modelsPath); 
 			
 		Authentication::getInstance();
 

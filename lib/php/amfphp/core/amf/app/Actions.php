@@ -22,9 +22,7 @@ function adapterAction (&$amfbody) {
 	$methodname = "";
 	$isWebServiceURI = false;
 
-	//$servicesPath = conf("paths/php-services");
 	$servicesPath = ConfigXml::getInstance()->servicesPath;
-
 	
 	$target = $amfbody->targetURI;
 
@@ -285,7 +283,7 @@ function executionAction (&$amfbody)
 				}
 				else
 				{
-					if(ConfigXml::getInstance()->config->options->{'use-encryption'} == 'true' &&
+					if(ConfigXml::getInstance()->useEncryption &&
 								get_class($construct) != "EncryptionService" && $method != "startSession")
 					{
 						throw new Aerial_Encryption_Exception(Aerial_Encryption_Exception::ENCRYPTION_NOT_USED_ERROR);

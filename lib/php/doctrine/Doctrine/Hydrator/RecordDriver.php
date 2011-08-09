@@ -16,7 +16,7 @@
  *
  * This software consists of voluntary contributions made by many individuals
  * and is licensed under the LGPL. For more information, see
- * <http://www.phpdoctrine.org>.
+ * <http://www.doctrine-project.org>.
  */
 
 /**
@@ -25,7 +25,7 @@
  * @package     Doctrine
  * @subpackage  Hydrate
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link        www.phpdoctrine.org
+ * @link        www.doctrine-project.org
  * @since       1.0
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
@@ -45,11 +45,11 @@ class Doctrine_Hydrator_RecordDriver extends Doctrine_Hydrator_Graph
         return $coll;
     }
     
-    public function initRelated(&$record, $name)
+    public function initRelated(&$record, $name, $keyColumn = null)
     {
         if ( ! isset($this->_initializedRelations[$record->getOid()][$name])) {
             $relation = $record->getTable()->getRelation($name);
-            $coll = Doctrine_Collection::create($relation->getTable()->getComponentName());
+            $coll = Doctrine_Collection::create($relation->getTable()->getComponentName(), $keyColumn);
             $coll->setReference($record, $relation);
             $record[$name] = $coll;
             $this->_initializedRelations[$record->getOid()][$name] = true;

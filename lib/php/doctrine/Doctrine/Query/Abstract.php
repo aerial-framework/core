@@ -16,7 +16,7 @@
  *
  * This software consists of voluntary contributions made by many individuals
  * and is licensed under the LGPL. For more information, see
- * <http://www.phpdoctrine.org>.
+ * <http://www.doctrine-project.org>.
  */
 
 /**
@@ -25,7 +25,7 @@
  * @package     Doctrine
  * @subpackage  Query
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link        www.phpdoctrine.org
+ * @link        www.doctrine-project.org
  * @since       1.0
  * @version     $Revision: 1393 $
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
@@ -264,6 +264,13 @@ abstract class Doctrine_Query_Abstract
     protected $_preQueried = false;
 
     /**
+     * Fix for http://www.doctrine-project.org/jira/browse/DC-701
+     *
+     * @var bool Boolean variable for whether the limitSubquery method of accessing tables via a many relationship should be used.
+     */
+    protected $disableLimitSubquery = false;
+
+    /**
      * Constructor.
      *
      * @param Doctrine_Connection  The connection object the query will use.
@@ -376,7 +383,7 @@ abstract class Doctrine_Query_Abstract
      * @param string $name          the name of the query part to be set
      * @param string $part          query part string
      * @throws Doctrine_Query_Exception   if trying to set unknown query part
-     * @return Doctrine_Hydrate     this object
+     * @return mixed     this object
      */
     public function getSqlQueryPart($part)
     {
@@ -393,7 +400,7 @@ abstract class Doctrine_Query_Abstract
      * @param string $name          the name of the query part to be set
      * @param string $part          query part string
      * @throws Doctrine_Query_Exception   if trying to set unknown query part
-     * @return Doctrine_Hydrate     this object
+     * @return Doctrine_Query     this object
      */
     public function setSqlQueryPart($name, $part)
     {
@@ -421,7 +428,7 @@ abstract class Doctrine_Query_Abstract
      * @param string $name          the name of the query part to be added
      * @param string $part          query part string
      * @throws Doctrine_Query_Exception   if trying to add unknown query part
-     * @return Doctrine_Hydrate     this object
+     * @return Doctrine_Query     this object
      */
     public function addSqlQueryPart($name, $part)
     {
@@ -442,7 +449,7 @@ abstract class Doctrine_Query_Abstract
      *
      * @param string $name          the name of the query part to be removed
      * @throws Doctrine_Query_Exception   if trying to remove unknown query part
-     * @return Doctrine_Hydrate     this object
+     * @return Doctrine_Query     this object
      */
     public function removeSqlQueryPart($name)
     {
@@ -465,7 +472,7 @@ abstract class Doctrine_Query_Abstract
      *
      * @param string $name          the name of the query part to be removed
      * @throws Doctrine_Query_Exception   if trying to remove unknown query part
-     * @return Doctrine_Hydrate     this object
+     * @return Doctrine_Query     this object
      */
     public function removeDqlQueryPart($name)
     {
@@ -755,7 +762,7 @@ abstract class Doctrine_Query_Abstract
      *
      * @param Doctrine_Hydrate $query   the query object from which the
      *                                  aliases are copied from
-     * @return Doctrine_Hydrate         this object
+     * @return Doctrine_Query         this object
      */
     public function copySubqueryInfo(Doctrine_Query_Abstract $query)
     {
@@ -1835,7 +1842,7 @@ abstract class Doctrine_Query_Abstract
      * @param Doctrine_Cache_Interface|bool $driver      cache driver
      * @param integer $timeToLive                        how long the cache entry is valid
      * @param string $resultCacheHash                     The key to use for storing the queries result cache entry
-     * @return Doctrine_Hydrate         this object
+     * @return Doctrine_Query         this object
      */
     public function useResultCache($driver = true, $timeToLive = null, $resultCacheHash = null)
     {
@@ -1883,7 +1890,7 @@ abstract class Doctrine_Query_Abstract
      *
      * @param Doctrine_Cache_Interface|bool $driver      cache driver
      * @param integer $timeToLive                        how long the cache entry is valid
-     * @return Doctrine_Hydrate         this object
+     * @return Doctrine_Query         this object
      */
     public function useQueryCache($driver = true, $timeToLive = null)
     {
@@ -1903,7 +1910,7 @@ abstract class Doctrine_Query_Abstract
      * expireCache
      *
      * @param boolean $expire       whether or not to force cache expiration
-     * @return Doctrine_Hydrate     this object
+     * @return Doctrine_Query     this object
      */
     public function expireResultCache($expire = true)
     {
@@ -1915,7 +1922,7 @@ abstract class Doctrine_Query_Abstract
      * expireQueryCache
      *
      * @param boolean $expire       whether or not to force cache expiration
-     * @return Doctrine_Hydrate     this object
+     * @return Doctrine_Query     this object
      */
     public function expireQueryCache($expire = true)
     {
@@ -1927,7 +1934,7 @@ abstract class Doctrine_Query_Abstract
      * setResultCacheLifeSpan
      *
      * @param integer $timeToLive   how long the cache entry is valid (in seconds)
-     * @return Doctrine_Hydrate     this object
+     * @return Doctrine_Query     this object
      */
     public function setResultCacheLifeSpan($timeToLive)
     {
@@ -1953,7 +1960,7 @@ abstract class Doctrine_Query_Abstract
      * setQueryCacheLifeSpan
      *
      * @param integer $timeToLive   how long the cache entry is valid
-     * @return Doctrine_Hydrate     this object
+     * @return Doctrine_Query     this object
      */
     public function setQueryCacheLifeSpan($timeToLive)
     {
@@ -2139,5 +2146,26 @@ abstract class Doctrine_Query_Abstract
     public function __toString()
     {
         return $this->getDql();
+    }
+
+    /**
+     * Gets the disableLimitSubquery property.
+     *
+     * @return boolean
+     */
+    public function getDisableLimitSubquery()
+    {
+        return $this->disableLimitSubquery;
+    }
+
+    /**
+     * Allows you to set the disableLimitSubquery property -- setting this to true will
+     * restrict the query object from using the limit sub query method of tranversing many relationships.
+     *
+     * @param boolean $disableLimitSubquery
+     */
+    public function setDisableLimitSubquery($disableLimitSubquery)
+    {
+        $this->disableLimitSubquery = $disableLimitSubquery;
     }
 }

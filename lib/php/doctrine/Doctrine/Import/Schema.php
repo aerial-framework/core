@@ -16,7 +16,7 @@
  *
  * This software consists of voluntary contributions made by many individuals
  * and is licensed under the LGPL. For more information, see
- * <http://www.phpdoctrine.org>.
+ * <http://www.doctrine-project.org>.
  */
 
 /**
@@ -26,7 +26,7 @@
  *
  * @package     Doctrine
  * @subpackage  Import
- * @link        www.phpdoctrine.org
+ * @link        www.doctrine-project.org
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @version     $Revision: 1838 $
  * @author      Nicolas Bérard-Nault <nicobn@gmail.com>
@@ -97,7 +97,6 @@ class Doctrine_Import_Schema
                                                           'attributes',
                                                           'templates',
                                                           'actAs',
-														  'mapClass',
                                                           'options',
                                                           'package',
                                                           'package_custom_path',
@@ -124,7 +123,9 @@ class Doctrine_Import_Schema
                                                           'zerofill',
                                                           'owner',
                                                           'extra',
-                                                          'comment'),
+                                                          'comment',
+                                                          'charset',
+                                                          'collation'),
 
                                    'relation'   =>  array('key',
                                                           'class',
@@ -282,7 +283,7 @@ class Doctrine_Import_Schema
             if ( ! empty($models) && !in_array($definition['className'], $models)) {
                 continue;
             }
-
+            
             $builder->buildRecord($definition);
         }
     }
@@ -336,7 +337,6 @@ class Doctrine_Import_Schema
             $this->_validateSchemaElement('root', array_keys($table), $className);
 
             $columns = array();
-			$mapClass = @$table['mapClass'];
 
             $className = isset($table['className']) ? (string) $table['className']:(string) $className;
 
@@ -397,7 +397,17 @@ class Doctrine_Import_Schema
                     $colDesc['primary'] = isset($field['primary']) ? (bool) (isset($field['primary']) && $field['primary']):null;
                     $colDesc['default'] = isset($field['default']) ? $field['default']:null;
                     $colDesc['autoincrement'] = isset($field['autoincrement']) ? (bool) (isset($field['autoincrement']) && $field['autoincrement']):null;
-                    $colDesc['sequence'] = isset($field['sequence']) ? (string) $field['sequence']:null;
+
+                    if (isset($field['sequence'])) {
+                        if (true === $field['sequence']) {
+                            $colDesc['sequence'] = $tableName;
+                        } else {
+                            $colDesc['sequence'] = (string) $field['sequence'];
+                        }
+                    } else {
+                        $colDesc['sequence'] = null;
+                    }
+
                     $colDesc['values'] = isset($field['values']) ? (array) $field['values']:null;
 
                     // Include all the specified and valid validators in the colDesc
@@ -425,7 +435,6 @@ class Doctrine_Import_Schema
             $build[$className]['className'] = $className;
             $build[$className]['tableName'] = $tableName;
             $build[$className]['columns'] = $columns;
-			$build[$className]['mapClass'] = $mapClass;
             
             // Make sure that anything else that is specified in the schema makes it to the final array
             $build[$className] = Doctrine_Lib::arrayDeepMerge($table, $build[$className]);

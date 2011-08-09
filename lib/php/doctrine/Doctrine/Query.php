@@ -1,6 +1,6 @@
 <?php
 /*
- *  $Id: Query.php 6792 2009-11-23 22:27:26Z jwage $
+ *  $Id: Query.php 7674 2010-06-08 22:59:01Z jwage $
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -16,7 +16,7 @@
  *
  * This software consists of voluntary contributions made by many individuals
  * and is licensed under the LGPL. For more information, see
- * <http://www.phpdoctrine.org>.
+ * <http://www.doctrine-project.org>.
  */
 
 /**
@@ -28,9 +28,9 @@
  * @package     Doctrine
  * @subpackage  Query
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link        www.phpdoctrine.org
+ * @link        www.doctrine-project.org
  * @since       1.0
- * @version     $Revision: 6792 $
+ * @version     $Revision: 7674 $
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @todo        Proposal: This class does far too much. It should have only 1 task: Collecting
  *              the DQL query parts and the query parameters (the query state and caching options/methods
@@ -280,6 +280,10 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
     {
         $collection = $this->execute($params, $hydrationMode);
 
+        if (is_scalar($collection)) {
+            return $collection;
+        }
+
         if (count($collection) === 0) {
             return false;
         }
@@ -343,7 +347,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
     /**
      * Check if a dql alias has a sql aggregate alias
      *
-     * @param string $dqlAlias 
+     * @param string $dqlAlias
      * @return boolean
      */
     public function hasSqlAggregateAlias($dqlAlias)
@@ -480,7 +484,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
         }
 
         $sql = array();
-        foreach ($fields as $fieldName) {
+        foreach ($fields as $fieldAlias => $fieldName) {
             $columnName = $table->getColumnName($fieldName);
             if (($owner = $table->getColumnOwner($columnName)) !== null &&
                     $owner !== $table->getComponentName()) {
@@ -492,10 +496,17 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
                        . ' AS '
                        . $this->_conn->quoteIdentifier($tableAlias . '__' . $columnName);
             } else {
-                $columnName = $table->getColumnName($fieldName);
+                // Fix for http://www.doctrine-project.org/jira/browse/DC-585
+                // Take the field alias if available
+                if (isset($this->_aggregateAliasMap[$fieldAlias])) {
+                    $aliasSql = $this->_aggregateAliasMap[$fieldAlias];
+                } else {
+                    $columnName = $table->getColumnName($fieldName);
+                    $aliasSql = $this->_conn->quoteIdentifier($tableAlias . '__' . $columnName);
+                }
                 $sql[] = $this->_conn->quoteIdentifier($tableAlias) . '.' . $this->_conn->quoteIdentifier($columnName)
                        . ' AS '
-                       . $this->_conn->quoteIdentifier($tableAlias . '__' . $columnName);
+                       . $aliasSql;
             }
         }
 
@@ -566,6 +577,8 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
     public function getExpressionOwner($expr)
     {
         if (strtoupper(substr(trim($expr, '( '), 0, 6)) !== 'SELECT') {
+            // Fix for http://www.doctrine-project.org/jira/browse/DC-754
+            $expr = preg_replace('/([\'\"])[^\1]*\1/', '', $expr);
             preg_match_all("/[a-z_][a-z0-9_]*\.[a-z_][a-z0-9_]*[\.[a-z0-9]+]*/i", $expr, $matches);
 
             $match = current($matches);
@@ -612,7 +625,6 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
             }
 
             $terms = $this->_tokenizer->sqlExplode($reference, ' ');
-
             $pos   = strpos($terms[0], '(');
 
             if (count($terms) > 1 || $pos !== false) {
@@ -623,7 +635,15 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
                     $alias = substr($expression, 0, $pos);
                 }
 
-                $componentAlias = $this->getExpressionOwner($expression);
+                // Fix for http://www.doctrine-project.org/jira/browse/DC-706
+                if ($pos !== false && substr($expression, 0, 1) !== "'" && substr($expression, 0, $pos) == '') {
+                    $_queryComponents = $this->_queryComponents;
+                    reset($_queryComponents);
+                    $componentAlias = key($_queryComponents);
+                } else {
+                    $componentAlias = $this->getExpressionOwner($expression);
+                }
+
                 $expression = $this->parseClause($expression);
 
                 $tableAlias = $this->getSqlTableAlias($componentAlias);
@@ -640,6 +660,13 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
                 $this->_queryComponents[$componentAlias]['agg'][$index] = $alias;
 
                 $this->_neededTables[] = $tableAlias;
+
+                // Fix for http://www.doctrine-project.org/jira/browse/DC-585
+                // Add selected columns to pending fields
+                if (preg_match('/^([^\(]+)\.(\'?)(.*?)(\'?)$/', $expression, $field)) {
+                    $this->_pendingFields[$componentAlias][$alias] = $field[3];
+                }
+
             } else {
                 $e = explode('.', $terms[0]);
 
@@ -800,7 +827,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
 
     }
 
-    public function parseFunctionExpression($expr)
+    public function parseFunctionExpression($expr, $parseCallback = null)
     {
         $pos = strpos($expr, '(');
         $name = substr($expr, 0, $pos);
@@ -814,7 +841,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
         // parse args
 
         foreach ($this->_tokenizer->sqlExplode($argStr, ',') as $arg) {
-           $args[] = $this->parseClause($arg);
+           $args[] = $parseCallback ? call_user_func_array($parseCallback, array($arg)) : $this->parseClause($arg);
         }
 
         // convert DQL function to its RDBMS specific equivalent
@@ -1342,7 +1369,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
         $q .= ( ! empty($this->_sqlParts['orderby'])) ? ' ORDER BY ' . implode(', ', $this->_sqlParts['orderby'])  : '';
 
         if ($modifyLimit) {
-            $q = $this->_conn->modifyLimitQuery($q, $this->_sqlParts['limit'], $this->_sqlParts['offset']);
+            $q = $this->_conn->modifyLimitQuery($q, $this->_sqlParts['limit'], $this->_sqlParts['offset'], false, false, $this);
         }
 
         $q .= $this->_sqlParts['forUpdate'] === true ? ' FOR UPDATE ' : '';
@@ -1393,19 +1420,19 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
                 $e = $this->_tokenizer->bracketExplode($part, ' ');
                 foreach ($e as $f) {
                     if ($f == 0 || $f % 2 == 0) {
-                        $partOriginal = trim($f);
+                        $partOriginal = str_replace(',', '', trim($f));
                         $callback = create_function('$e', 'return trim($e, \'[]`"\');');
                         $part = trim(implode('.', array_map($callback, explode('.', $partOriginal))));
-                
+
                         if (strpos($part, '.') === false) {
                             continue;
                         }
-                
+
                         // don't add functions
                         if (strpos($part, '(') !== false) {
                             continue;
                         }
-                
+
                         // don't add primarykey column (its already in the select clause)
                         if ($part !== $primaryKey) {
                             $subquery .= ', ' . $partOriginal;
@@ -1439,14 +1466,21 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
             }
         }
 
+        // Add having fields that got stripped out of select
+        preg_match_all('/`[a-z0-9_]+`\.`[a-z0-9_]+`/i', implode(' ', $having), $matches, PREG_PATTERN_ORDER);
+        if (count($matches[0]) > 0) {
+            $subquery .= ', ' . implode(', ', array_unique($matches[0]));
+        }
+
         $subquery .= ' FROM';
 
         foreach ($this->_sqlParts['from'] as $part) {
             // preserve LEFT JOINs only if needed
             if (substr($part, 0, 9) === 'LEFT JOIN') {
                 $e = explode(' ', $part);
-
-                if (empty($this->_sqlParts['orderby']) && empty($this->_sqlParts['where']) && empty($this->_sqlParts['having'])) {
+                // Fix for http://www.doctrine-project.org/jira/browse/DC-706
+                // Fix for http://www.doctrine-project.org/jira/browse/DC-594
+                if (empty($this->_sqlParts['orderby']) && empty($this->_sqlParts['where']) && empty($this->_sqlParts['having']) && empty($this->_sqlParts['groupby'])) {
                     continue;
                 }
             }
@@ -1485,8 +1519,10 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
 
             $part = str_replace(array('"', "'", '`'), "", $part);
 
-            if ($this->hasSqlTableAlias($part)) {
-                $parts[$k] = $this->_conn->quoteIdentifier($this->generateNewSqlTableAlias($part));
+            // Fix DC-645, Table aliases ending with ')' where not replaced properly
+            preg_match('/^(\(?)(.*?)(\)?)$/', $part, $matches);
+            if ($this->hasSqlTableAlias($matches[2])) {
+                $parts[$k] = $matches[1].$this->_conn->quoteIdentifier($this->generateNewSqlTableAlias($matches[2])).$matches[3];
                 continue;
             }
 
@@ -1731,8 +1767,9 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
                                                                  'parent'   => $parent,
                                                                  'relation' => $relation,
                                                                  'map'      => null);
-                if ( ! $relation->isOneToOne()) {
-                   $this->_needsSubquery = true;
+                // Fix for http://www.doctrine-project.org/jira/browse/DC-701
+                if ( ! $relation->isOneToOne() && ! $this->disableLimitSubquery) {
+                    $this->_needsSubquery = true;
                 }
 
                 $localAlias   = $this->getSqlTableAlias($parent, $localTable->getTableName());
@@ -2051,6 +2088,11 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
                         $selectFields .= ', ' . $field;
                     }
                 }
+                // Add having fields that got stripped out of select
+                preg_match_all('/`[a-z0-9_]+`\.`[a-z0-9_]+`/i', $having, $matches, PREG_PATTERN_ORDER);
+                if (count($matches[0]) > 0) {
+                    $selectFields .= ', ' . implode(', ', array_unique($matches[0]));
+                }
             }
 
             // If we do not have a custom group by, apply the default one
@@ -2092,7 +2134,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
         $params = $this->_conn->convertBooleans($params);
 
         if ($this->_resultCache) {
-            $conn = $this->getConnection(); 
+            $conn = $this->getConnection();
             $cacheDriver = $this->getResultCacheDriver();
             $hash = $this->getResultCacheHash($params).'_count';
             $cached = ($this->_expireResultCache) ? false : $cacheDriver->fetch($hash);

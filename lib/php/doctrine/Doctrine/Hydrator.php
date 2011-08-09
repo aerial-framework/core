@@ -16,7 +16,7 @@
  *
  * This software consists of voluntary contributions made by many individuals
  * and is licensed under the LGPL. For more information, see
- * <http://www.phpdoctrine.org>.
+ * <http://www.doctrine-project.org>.
  */
 
 /**
@@ -26,7 +26,7 @@
  * @package     Doctrine
  * @subpackage  Hydrate
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link        www.phpdoctrine.org
+ * @link        www.doctrine-project.org
  * @since       1.0
  * @version     $Revision: 3192 $
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
@@ -52,7 +52,8 @@ class Doctrine_Hydrator
      * Set the hydration mode
      *
      * @param mixed $hydrationMode  One of the Doctrine_Core::HYDRATE_* constants or 
-     *                              a string representing the name of the hydration mode
+     *                              a string representing the name of the hydration mode or
+     *                              or an instance of the hydration class
      */
     public function setHydrationMode($hydrationMode)
     {
@@ -118,7 +119,17 @@ class Doctrine_Hydrator
     public function getHydratorDriver($mode, $tableAliases)
     {
         $driverClass = $this->getHydratorDriverClassName($mode);
-        $driver = new $driverClass($this->_queryComponents, $tableAliases, $mode);
+        if (is_object($driverClass)) {
+            if (!$driverClass instanceOf Doctrine_Hydrator_Abstract) {
+                throw new Doctrine_Hydrator_Exception('Invalid hydration class specified: '.get_class($driverClass));
+            }
+            $driver = $driverClass;
+            $driver->setQueryComponents($this->_queryComponents);
+            $driver->setTableAliases($tableAliases);
+            $driver->setHydrationMode($mode);
+        } else {
+            $driver = new $driverClass($this->_queryComponents, $tableAliases, $mode);
+        }
 
         return $driver;
     }

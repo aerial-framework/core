@@ -1,6 +1,6 @@
 <?php
 /*
- *  $Id: Manager.php 6763 2009-11-18 20:36:23Z jwage $
+ *  $Id: Manager.php 7657 2010-06-08 17:57:01Z jwage $
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -16,7 +16,7 @@
  *
  * This software consists of voluntary contributions made by many individuals
  * and is licensed under the LGPL. For more information, see
- * <http://www.phpdoctrine.org>.
+ * <http://www.doctrine-project.org>.
  */
 
 /**
@@ -27,9 +27,9 @@
  * @package     Doctrine
  * @subpackage  Manager
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link        www.phpdoctrine.org
+ * @link        www.doctrine-project.org
  * @since       1.0
- * @version     $Revision: 6763 $
+ * @version     $Revision: 7657 $
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
 class Doctrine_Manager extends Doctrine_Configurable implements Countable, IteratorAggregate
@@ -76,6 +76,7 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
         Doctrine_Core::HYDRATE_ON_DEMAND        => 'Doctrine_Hydrator_RecordDriver',
         Doctrine_Core::HYDRATE_ARRAY_HIERARCHY  => 'Doctrine_Hydrator_ArrayHierarchyDriver',
         Doctrine_Core::HYDRATE_RECORD_HIERARCHY => 'Doctrine_Hydrator_RecordHierarchyDriver',
+        Doctrine_Core::HYDRATE_ARRAY_SHALLOW    => 'Doctrine_Hydrator_ArrayShallowDriver',
     );
 
     protected $_connectionDrivers = array(
@@ -160,6 +161,7 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
                         Doctrine_Core::ATTR_COLLECTION_CLASS             => 'Doctrine_Collection',
                         Doctrine_Core::ATTR_TABLE_CLASS                  => 'Doctrine_Table',
                         Doctrine_Core::ATTR_CASCADE_SAVES                => true,
+                        Doctrine_Core::ATTR_TABLE_CLASS_FORMAT           => '%sTable'
                         ); 
             foreach ($attributes as $attribute => $value) {
                 $old = $this->getAttribute($attribute);
@@ -406,7 +408,7 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
         // silence any warnings
         $parts = @parse_url($dsn);
 
-        $names = array('dsn', 'scheme', 'host', 'port', 'user', 'pass', 'path', 'query', 'fragment', 'unix_socket');
+        $names = array('dsn', 'scheme', 'host', 'port', 'user', 'pass', 'path', 'query', 'fragment');
 
         foreach ($names as $name) {
             if ( ! isset($parts[$name])) {

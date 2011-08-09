@@ -1,6 +1,6 @@
 <?php
 /*
- *  $Id: Regexp.php 7490 2010-03-29 19:53:27Z jwage $
+ *  $Id$
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -20,46 +20,25 @@
  */
 
 /**
- * Doctrine_Validator_Regexp
- *
+ * Extended version of Doctrine_Hydrator_ScalarDriver, passes its _gatherRowData function a value of false for $aliasPrefix in order to cause it to generate the sorts of array keys one would see in a HYDRATE_ARRAY type return.
+ * Note: This hydrator will have issues with fields in the return that have the same name (such as 2 fields each called id) -- the second field value will overwrite the first field.
  * @package     Doctrine
- * @subpackage  Validator
+ * @subpackage  Hydrate
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        www.doctrine-project.org
- * @since       1.0
- * @version     $Revision: 7490 $
- * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
+ * @since       1.2.3
+ * @version     $Revision$
+ * @author      Will Ferrer
  */
-class Doctrine_Validator_Regexp extends Doctrine_Validator_Driver
+class Doctrine_Hydrator_ArrayShallowDriver extends Doctrine_Hydrator_ScalarDriver
 {
-    /**
-     * checks if given value satisfies a regular expression
-     *
-     * @param mixed $value
-     * @param mixed $args
-     * @return boolean
-     */
-    public function validate($value)
+    public function hydrateResultSet($stmt)
     {
-        if (is_null($value)) {
-            return true;
+        $cache = array();
+        $result = array();
+        while ($data = $stmt->fetch(Doctrine_Core::FETCH_ASSOC)) {
+            $result[] = $this->_gatherRowData($data, $cache, false);
         }
-        if ( ! isset($this->args)) {
-           return true;
-        }
-        if (is_array($this->args)) {
-            foreach ($this->args as $regexp) {
-                if ( ! preg_match($regexp, $value)) {
-                    return false;
-                }
-            }
-            return true;
-        } else {
-            if (preg_match($this->args, $value)) {
-                return true;
-            }
-        }
-
-        return false;
+        return $result;
     }
 }

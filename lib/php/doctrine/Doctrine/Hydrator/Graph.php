@@ -16,7 +16,7 @@
  *
  * This software consists of voluntary contributions made by many individuals
  * and is licensed under the LGPL. For more information, see
- * <http://www.phpdoctrine.org>.
+ * <http://www.doctrine-project.org>.
  */
 
 /**
@@ -26,7 +26,7 @@
  * @package     Doctrine
  * @subpackage  Hydrate
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link        www.phpdoctrine.org
+ * @link        www.doctrine-project.org
  * @since       1.0
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
@@ -75,18 +75,20 @@ abstract class Doctrine_Hydrator_Graph extends Doctrine_Hydrator_Abstract
         $idTemplate = array();
 
         // Initialize 
-     	foreach ($this->_queryComponents as $dqlAlias => $data) { 
-     	    $componentName = $data['table']->getComponentName(); 
-     	    $instances[$componentName] = $data['table']->getRecordInstance(); 
-     	    $listeners[$componentName] = $data['table']->getRecordListener(); 
-     	    $identifierMap[$dqlAlias] = array(); 
-     	    $prev[$dqlAlias] = null; 
-     	    $idTemplate[$dqlAlias] = ''; 
-     	} 
-     	$cache = array();
-     	
-        $result = $this->getElementCollection($rootComponentName);
+        foreach ($this->_queryComponents as $dqlAlias => $data) { 
+            $componentName = $data['table']->getComponentName(); 
+            $instances[$componentName] = $data['table']->getRecordInstance(); 
+            $listeners[$componentName] = $data['table']->getRecordListener(); 
+            $identifierMap[$dqlAlias] = array(); 
+            $prev[$dqlAlias] = null; 
+            $idTemplate[$dqlAlias] = ''; 
+        } 
+        $cache = array();
 
+        $result = $this->getElementCollection($rootComponentName);
+        if ($result instanceof Doctrine_Collection && $indexField = $this->_getCustomIndexField($rootAlias)) {
+            $result->setKeyColumn($indexField);
+        }
         if ($stmt === false || $stmt === 0) {
             return $result;
         }
@@ -115,6 +117,12 @@ abstract class Doctrine_Hydrator_Graph extends Doctrine_Hydrator_Abstract
         }
 
         do {
+            $table = $this->_queryComponents[$rootAlias]['table'];
+        
+            if ($table->getConnection()->getAttribute(Doctrine_Core::ATTR_PORTABILITY) & Doctrine_Core::PORTABILITY_RTRIM) {
+                array_map('rtrim', $data);
+            }
+        
             $id = $idTemplate; // initialize the id-memory
             $nonemptyComponents = array();
             $rowData = $this->_gatherRowData($data, $cache, $id, $nonemptyComponents);
@@ -133,7 +141,6 @@ abstract class Doctrine_Hydrator_Graph extends Doctrine_Hydrator_Abstract
             //
             // hydrate the data of the root component from the current row
             //
-            $table = $this->_queryComponents[$rootAlias]['table'];
             $componentName = $table->getComponentName();
             // Ticket #1115 (getInvoker() should return the component that has addEventListener)
             $event->setInvoker($table);
@@ -155,7 +162,7 @@ abstract class Doctrine_Hydrator_Graph extends Doctrine_Hydrator_Abstract
                     if ( ! isset($element[$field])) {
                         throw new Doctrine_Hydrator_Exception("Couldn't hydrate. Found a non-existent key named '$field'.");
                     } else if (isset($result[$element[$field]])) {
-                        throw new Doctrine_Hydrator_Exception("Couldn't hydrate. Found non-unique key mapping named '$field'.");
+                        throw new Doctrine_Hydrator_Exception("Couldn't hydrate. Found non-unique key mapping named '{$element[$field]}' for the field named '$field'.");
                     }
                     $result[$element[$field]] = $element;
                 } else {
@@ -204,8 +211,10 @@ abstract class Doctrine_Hydrator_Graph extends Doctrine_Hydrator_Abstract
                     continue;
                 }
 
+                $indexField = $this->_getCustomIndexField($dqlAlias);
+
                 // check the type of the relation
-                if ( ! $relation->isOneToOne() && $this->initRelated($prev[$parent], $relationAlias)) {
+                if ( ! $relation->isOneToOne() && $this->initRelated($prev[$parent], $relationAlias, $indexField)) {
                     $oneToOne = false;
                     // append element
                     if (isset($nonemptyComponents[$dqlAlias])) {
@@ -230,8 +239,13 @@ abstract class Doctrine_Hydrator_Graph extends Doctrine_Hydrator_Abstract
                             }
                             $identifierMap[$path][$id[$parent]][$id[$dqlAlias]] = $this->getLastKey($prev[$parent][$relationAlias]);                            
                         }
+                        $collection = $prev[$parent][$relationAlias];
+                        if ($collection instanceof Doctrine_Collection && $indexField) {
+                            $collection->setKeyColumn($indexField);
+                        }
+
                         // register collection for later snapshots
-                        $this->registerCollection($prev[$parent][$relationAlias]);
+                        $this->registerCollection($collection);
                     }
                 } else {
                     // 1-1 relation
@@ -347,7 +361,7 @@ abstract class Doctrine_Hydrator_Graph extends Doctrine_Hydrator_Abstract
 
     abstract public function registerCollection($coll);
  
-    abstract public function initRelated(&$record, $name);
+    abstract public function initRelated(&$record, $name, $keyColumn = null);
  
     abstract public function getNullPointer();
  

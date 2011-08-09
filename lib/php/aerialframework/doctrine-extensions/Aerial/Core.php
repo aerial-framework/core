@@ -1,5 +1,5 @@
 <?php
-require_once(conf("paths/doctrine")."Doctrine/Core.php");
+//import('doctrine.Doctrine.Core');
 
 class Aerial_Core extends Doctrine_Core
 {

@@ -28,7 +28,7 @@ class AerialStartupManager
 
 	public static function hasAMFRequest()
 	{
-		return self::$_request != null && self::isDirectCall();
+		return self::$_request != null;
 	}
 
 	/**

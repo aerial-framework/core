@@ -3,9 +3,9 @@
 	/**
 	 * XML-RPC server
 	 */
-	include("globals.php");
+	include_once("globals.php");
 
-	include "core/xmlrpc/app/Gateway.php";
+	include_once("core/xmlrpc/app/Gateway.php");
 	
 	$gateway = new Gateway();
 	

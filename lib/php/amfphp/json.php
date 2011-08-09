@@ -4,9 +4,9 @@
 	 * JSON gateway
 	 */
 	
-	include("globals.php");
+	include_once("globals.php");
 	
-	include "core/json/app/Gateway.php";
+	include_once("core/json/app/Gateway.php");
 	
 	$gateway = new Gateway();
 	

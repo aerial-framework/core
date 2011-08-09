@@ -2,5 +2,6 @@
 
 define('CONFIG_PATH', dirname(__FILE__));
 
-include(realpath(CONFIG_PATH . "/../../aerial/lib/php/include.php"));
+if(!@include_once((realpath(CONFIG_PATH . "/../aerial/lib/php/include.php"))))
+	die("Cannot find Aerial library");
 

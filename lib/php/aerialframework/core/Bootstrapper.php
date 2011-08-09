@@ -1,155 +1,113 @@
 <?php
-	class Bootstrapper
+
+import('doctrine.Doctrine');
+import('aerialframework.doctrine-extensions.Aerial');
+import('aerialframework.core.Authentication');
+import('aerialframework.core.Configuration');
+import('aerialframework.utils.ModelMapper');
+import('aerialframework.utils.Date');
+import('aerialframework.utils.firephp.fb');
+
+import('aerialframework.encryption.Encrypted');
+import('aerialframework.encryption.Encryption');
+import('aerialframework.encryption.rc4crypt');
+
+import('aerialframework.exceptions.Aerial_Encryption_Exception');
+import('aerialframework.exceptions.Aerial_Exception');
+
+class Bootstrapper
+{
+	public $conn;
+	public $manager;
+	private $config;
+
+	private static $instance;
+
+	private function __construct()
 	{
-		public $conn;
-		public $manager;
+		$this->config = ConfigXml::getInstance();
 
-		private static $_instance;
+		spl_autoload_register(array('Doctrine', 'autoload'));
+		spl_autoload_register(array('Doctrine_Core', 'modelsAutoload'));
+		spl_autoload_register(array('Aerial', 'autoload'));
 
-		public function __construct()
+		$this->manager = Doctrine_Manager::getInstance();
+			
+		$this->manager->registerHydrator(Aerial_Core::HYDRATE_AMF_COLLECTION, Aerial_Core::HYDRATE_AMF_COLLECTION);
+		$this->manager->registerHydrator(Aerial_Core::HYDRATE_AMF_ARRAY, Aerial_Core::HYDRATE_AMF_ARRAY);
+			
+		$this->manager->setAttribute(Doctrine_Core::ATTR_MODEL_LOADING, Doctrine_Core::MODEL_LOADING_CONSERVATIVE);
+		$this->manager->setAttribute(Doctrine_Core::ATTR_AUTO_ACCESSOR_OVERRIDE, true);
+		$this->manager->setAttribute(Doctrine_Core::ATTR_AUTOLOAD_TABLE_CLASSES, true);
+
+		$this->setCustomConnections();
+
+		$connectionString =
+		$this->config->dbEngine . "://".
+		$this->config->dbUsername . ":".
+		$this->config->dbPassword . "@" .
+		$this->config->dbHost . ":" .
+		$this->config->dbPort . "/" .
+		$this->config->dbSchema
+		;
+
+		try
 		{
-			if(isset(self::$_instance))
-				trigger_error("You must not call the constructor directly! This class is a Singleton");
+			$this->conn = Doctrine_Manager::connection($connectionString, "doctrine");
+		}
+		catch(Exception $e)
+		{
+			AerialStartupManager::error("<strong>Doctrine Exception: </strong><i>".$e->getMessage()."</i>");
 		}
 
-		private static function init()
-		{
-			self::$_instance->validatePaths();
-
-			spl_autoload_register(array('Doctrine', 'autoload'));
-			spl_autoload_register(array('Doctrine_Core', 'modelsAutoload'));
-			spl_autoload_register(array('Aerial', 'autoload'));
-
-			require_once(conf("paths/aerialframework").'doctrine-extensions/Aerial/Connection/Aerial_Connection.php');
-			require_once(conf("paths/aerialframework")."exceptions/Aerial_Exception.php");
-			require_once(conf("paths/aerialframework")."exceptions/Aerial_Encryption_Exception.php");
+		Aerial_Core::loadModels($this->config->modelsPath); 
 			
-			require_once(conf("paths/encryption")."Encrypted.php");
-			require_once(conf("paths/encryption")."Encryption.php");
-			require_once(conf("paths/encryption")."rc4crypt.php");
-			
-			self::$_instance->manager = Doctrine_Manager::getInstance();
-			
-			self::$_instance->manager->registerHydrator(Aerial_Core::HYDRATE_AMF_COLLECTION, Aerial_Core::HYDRATE_AMF_COLLECTION);
-			self::$_instance->manager->registerHydrator(Aerial_Core::HYDRATE_AMF_ARRAY, Aerial_Core::HYDRATE_AMF_ARRAY);
-			
-			self::$_instance->manager->setAttribute(Doctrine_Core::ATTR_MODEL_LOADING, Doctrine_Core::MODEL_LOADING_CONSERVATIVE);
-			self::$_instance->manager->setAttribute(Doctrine_Core::ATTR_AUTO_ACCESSOR_OVERRIDE, true);
-			self::$_instance->manager->setAttribute(Doctrine_Core::ATTR_AUTOLOAD_TABLE_CLASSES, true);
+		Authentication::getInstance();
 
-			require_once(conf("paths/aerialframework")."doctrine-extensions/Aerial/Record/Aerial_Record.php");
-
-			self::setCustomConnections();
-
-			$connectionString = conf("database/engine", false, false)."://".
-							conf("database/username", false, false).":".
-							conf("database/password", false, false).
-							"@".conf("database/host", false, false).
-							":".conf("database/port", false, false).
-							"/".conf("database/schema", false, false);
-
-			try
-			{
-				self::$_instance->conn = Doctrine_Manager::connection($connectionString, "doctrine");
-			}
-			catch(Exception $e)
-			{
-				AerialStartupManager::error("<strong>Doctrine Exception: </strong><i>".$e->getMessage()."</i>");
-			}
-
-			$modelsPath = conf("paths/php-models", true, false);
-			$servicesPath = conf("paths/php-services", true, false);
-
-			if(file_exists($modelsPath))
-			    Aerial_Core::loadModels($modelsPath);
-			else
-				AerialStartupManager::warn("No Aerial <strong>models</strong> found - check your 'php-models' value in <i>config.xml</i>");
-
-			if(!file_exists($servicesPath))
-				AerialStartupManager::warn("No Aerial <strong>services</strong> found - check your 'php-services' value in <i>config.xml</i>");
-			
-			Authentication::getInstance();
-
-			require_once(conf("paths/aerialframework")."core/Configuration.php");
-
-			$numModels = count(Aerial_Core::getLoadedModels());
-			AerialStartupManager::info("<strong>Doctrine ORM</strong> is configured correctly (with <em>$numModels</em> models) ".
+		$numModels = count(Aerial_Core::getLoadedModels());
+		AerialStartupManager::info("<strong>Doctrine ORM</strong> is configured correctly (with <em>$numModels</em> models) ".
 			                           "and a valid connection to the database.");
-		}
-
-		private function validatePaths()
-		{
-			$libPath = realpath(conf("paths/lib"));
-
-			$modelsPath = realpath(conf("paths/php-models", true, false));
-			$servicesPath = realpath(conf("paths/php-services", true, false));
-
-			$directories = array(
-				"Library" => $libPath,
-				"Aerial models" => $modelsPath,
-				"Aerial services" => $servicesPath
-			);
-
-			foreach($directories as $key => $directory)
-			{
-				if(!file_exists($directory) && !@mkdir($directory, 0766, true))
-					AerialStartupManager::error("The path to the <strong>$key</strong> directory is invalid in <i>config.xml</i>");
-
-				if(!is_readable($directory))
-				{
-					AerialStartupManager::warn("The <strong>$key</strong> directory is unreadable.
-						Please ensure that the directory defined in <i>config.xml</i> has read access.");
-				}
-			}
-
-			require_once(conf("paths/doctrine").'Doctrine.php');
-			require_once(conf("paths/aerialframework")."core/Authentication.php");
-			require_once(conf("paths/aerialframework").'doctrine-extensions/Aerial.php');
-			require_once(conf("paths/aerialframework")."utils/ModelMapper.php");
-			require_once(conf("paths/aerialframework")."utils/Date.php");
-			require_once(conf("paths/aerialframework")."utils/firephp/fb.php");
-		}
-		
-		public static function setCredentials($username, $password)
-		{
-			$credentials = new stdClass();
-			$credentials->username = $username;
-			$credentials->password = $password;
-			 
-			session_start();
-            $_SESSION["credentials"] = $credentials;
-    	}
-
-		public static function getInstance()
-		{
-			if(!isset(self::$_instance))
-			{
-				self::$_instance = new self();
-				self::init();
-			}
-
-			return self::$_instance;
-		}
-
-		/**
-		 * Register custom Doctrine connections to catch connection exceptions
-		 *
-		 * @static
-		 * @return void
-		 */
-		private static function setCustomConnections()
-		{
-			self::$_instance->manager->registerConnectionDriver('sqlite', 'Aerial_Connection');
-			self::$_instance->manager->registerConnectionDriver('sqlite2', 'Aerial_Connection');
-			self::$_instance->manager->registerConnectionDriver('sqlite3', 'Aerial_Connection');
-			self::$_instance->manager->registerConnectionDriver('dblib', 'Aerial_Connection');
-			self::$_instance->manager->registerConnectionDriver('mysql', 'Aerial_Connection');
-			self::$_instance->manager->registerConnectionDriver('oci8', 'Aerial_Connection');
-			self::$_instance->manager->registerConnectionDriver('oci', 'Aerial_Connection');
-			self::$_instance->manager->registerConnectionDriver('pgsql', 'Aerial_Connection');
-			self::$_instance->manager->registerConnectionDriver('odbc', 'Aerial_Connection');
-			self::$_instance->manager->registerConnectionDriver('mock', 'Aerial_Connection');
-			self::$_instance->manager->registerConnectionDriver('oracle', 'Aerial_Connection');
-		}
 	}
+
+	public static function setCredentials($username, $password)
+	{
+		$credentials = new stdClass();
+		$credentials->username = $username;
+		$credentials->password = $password;
+
+		session_start();
+		$_SESSION["credentials"] = $credentials;
+	}
+
+	public static function getInstance()
+	{
+		if (!isset(self::$instance))
+		{
+			$className = __CLASS__;
+			self::$instance = new $className;
+		}
+		return self::$instance;
+	}
+
+	/**
+	 * Register custom Doctrine connections to catch connection exceptions
+	 *
+	 * @static
+	 * @return void
+	 */
+	private function setCustomConnections()
+	{
+		$this->manager->registerConnectionDriver('sqlite', 'Aerial_Connection');
+		$this->manager->registerConnectionDriver('sqlite2', 'Aerial_Connection');
+		$this->manager->registerConnectionDriver('sqlite3', 'Aerial_Connection');
+		$this->manager->registerConnectionDriver('dblib', 'Aerial_Connection');
+		$this->manager->registerConnectionDriver('mysql', 'Aerial_Connection');
+		$this->manager->registerConnectionDriver('oci8', 'Aerial_Connection');
+		$this->manager->registerConnectionDriver('oci', 'Aerial_Connection');
+		$this->manager->registerConnectionDriver('pgsql', 'Aerial_Connection');
+		$this->manager->registerConnectionDriver('odbc', 'Aerial_Connection');
+		$this->manager->registerConnectionDriver('mock', 'Aerial_Connection');
+		$this->manager->registerConnectionDriver('oracle', 'Aerial_Connection');
+	}
+}
 ?>

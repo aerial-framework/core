@@ -38,7 +38,7 @@ class MessageException {
 		$this->details = $file; // pass the details
 		$this->level = MessageException::getFriendlyError($code); 
 		$this->line = $line; // pass the line number
-		if(conf("options/debug-mode", false, false))
+		if(ConfigXml::getInstance()->debugMode)
 			$this->debug = $debug;
 	}
 	
@@ -62,14 +62,14 @@ class MessageException {
 
 		if($GLOBALS['amfphp']['encoding'] == 'amf3')
 		{
-			$errorMessageClass = conf("options/debug-mode", false, false) ? "AerialErrorMessage" : "ErrorMessage";
+			$errorMessageClass = ConfigXml::getInstance()->debugMode ? "AerialErrorMessage" : "ErrorMessage";
 
 			$results = new $errorMessageClass();
 			$results->correlationId = $GLOBALS['amfphp']['lastMessageId'];
 			$results->faultCode = $exception->code;
 			$results->faultDetail = $exception->details . ' on line ' . $exception->line;
 			$results->faultString = $exception->description;
-			if(conf("options/debug-mode", false, false))
+			if(ConfigXml::getInstance()->debugMode)
 				$results->debug = $exception->debug;
 		}
 		elseif($GLOBALS['amfphp']['encoding'] == 'amf0')

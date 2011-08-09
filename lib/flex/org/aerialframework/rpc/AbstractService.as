@@ -1,12 +1,12 @@
 package org.aerialframework.rpc
 {
+    
     import flash.utils.ByteArray;
     import flash.utils.getQualifiedClassName;
-
+    
     import mx.rpc.AbstractOperation;
     import mx.rpc.remoting.RemoteObject;
-
-    import org.aerialframework.bootstrap.Aerial;
+    
     import org.aerialframework.encryption.EncryptedVO;
     import org.aerialframework.encryption.Encryption;
     import org.aerialframework.errors.AerialError;
@@ -19,12 +19,14 @@ package org.aerialframework.rpc
         AerialErrorMessage;
 
         private var _voClass:Class;
+		public var aerialConfig:Object;
 
-        public function AbstractService(source:String, endpoint:String, voClass:Class)
+        public function AbstractService(source:String, config:Object, voClass:Class)
         {
             super("Aerial");
+			aerialConfig = config;
             this.source = source;
-            this.endpoint = endpoint;
+            this.endpoint = config.SERVER_URL;
             _voClass = voClass;
 
             this.convertParametersHandler = preprocessArguments;
@@ -80,7 +82,7 @@ package org.aerialframework.rpc
         {
             var argument:Array = [];
 
-            if(Aerial.USE_ENCRYPTION)
+            if(aerialConfig.USE_ENCRYPTION)
             {
                 if(Encryption.instance.usingEncryption && !Encryption.instance.encryptedSessionStarted)
                 {
@@ -95,7 +97,7 @@ package org.aerialframework.rpc
                 }
             }
 
-            if(Aerial.USE_ENCRYPTION && Encryption.instance.encryptedSessionStarted)
+            if(aerialConfig.USE_ENCRYPTION && Encryption.instance.encryptedSessionStarted)
             {
                 var encrypted:EncryptedVO = new EncryptedVO();
                 encrypted.data = new ByteArray();
@@ -120,7 +122,7 @@ package org.aerialframework.rpc
 
         private function processResults(result:*, operation:AbstractOperation):*
         {
-            if(!(result is EncryptedVO) || !Aerial.USE_ENCRYPTION)
+            if(!(result is EncryptedVO) || !aerialConfig.USE_ENCRYPTION)
                 return result;
 
             if(!Encryption.instance.encryptedSessionStarted)

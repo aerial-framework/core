@@ -2,11 +2,11 @@
 	//Set start time before loading framework
 	list($usec, $sec) = explode(" ", microtime());
 	$amfphp['startTime'] = ((float)$usec + (float)$sec);
-
+	
+	define('AMFPHP_BASE', realpath(LIB_PATH . "/amfphp/core") . DIRECTORY_SEPARATOR);
 	$basePath = AMFPHP_BASE;
 
-	$servicesPath = conf("paths/lib")."php";
-	$models_path = conf("paths/php-models");
-
-	$voPath = realpath($models_path."/..");
+	$servicesPath = ConfigXml::getInstance()->modelsPath;
+	
+	$voPath = ConfigXml::getInstance()->modelsPath;
 ?>

@@ -92,7 +92,7 @@ class Executive {
         if($_SESSION["authenticated"] === true)         // session already authenticated
             return;
 
-        if(!conf("options/use-authentication", false))
+        if(!ConfigXml::getInstance()->useAuthentication)
             return;
 
 		die(conf("options/use-authentication", false));

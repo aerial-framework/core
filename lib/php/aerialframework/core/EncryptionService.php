@@ -1,6 +1,6 @@
 <?php
-	require_once(conf("paths/encryption")."Encrypted.php");
-
+	import('aerialframework.encryption.Encrypted.php');
+	
 	class EncryptionService
 	{
 		private $keyResource;
@@ -32,7 +32,7 @@
 			{
 				try
 				{
-					$fp = fopen(conf("paths/encryption")."exchange.key", "r");
+					$fp = fopen(LIB_PATH . DIRECTORY_SEPARATOR . "encryption" ."exchange.key", "r");
 
 					$priv_key = fread($fp, 8192);
 					fclose($fp);

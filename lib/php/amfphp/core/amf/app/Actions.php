@@ -89,18 +89,18 @@ function adapterAction (&$amfbody) {
 				if(!$classpath)
 				{
 					// try find the correct path to the PHP service for the incoming request
-					if(conf("paths/lib")."php/".$uriclasspath)
-						$classpath = conf("paths/lib")."php/".$uriclasspath;
+					if(LIB_PATH . DIRECTORY_SEPARATOR . "php/".$uriclasspath)
+						$classpath = LIB_PATH . DIRECTORY_SEPARATOR . "php/" . $uriclasspath;
 
 					if(!$classpath || !realpath($classpath))
-						$classpath = realpath(conf("paths/amfphp")."services/$classname.php");
+						$classpath = realpath(LIB_PATH . DIRECTORY_SEPARATOR . "amfphp" . DIRECTORY_SEPARATOR . "services/$classname.php");
 
 					if(!$classpath || !realpath($classpath))
-						$classpath = realpath(conf("paths/aerialframework")."core/$classname.php");
+						$classpath = realpath(LIB_PATH . DIRECTORY_SEPARATOR . "aerialframework" . "core/$classname.php");
 
-					$servicesPath = realpath($servicesPath);
-					if(realpath($servicesPath."/".$uriclasspath))
-						$classpath = realpath($servicesPath."/".$uriclasspath);
+					//$servicesPath = realpath($servicesPath);
+					if(realpath($servicesPath . DIRECTORY_SEPARATOR . $uriclasspath))
+						$classpath = realpath($servicesPath. DIRECTORY_SEPARATOR . $uriclasspath);
 				}
 
 				//$classpath = $baseClassPath . $uriclasspath;
@@ -177,11 +177,11 @@ function adapterAction (&$amfbody) {
 					$uriclasspath = $trunced . ".php";
 					//$classpath = $baseClassPath . $trunced . ".php";
 
-					if(realpath(conf("paths/internal-services")."/".$uriclasspath))
-						$classpath = realpath(conf("paths/internal-services")."/".$uriclasspath);
+					if(realpath(LIB_PATH . DIRECTORY_SEPARATOR . $uriclasspath))
+						$classpath = realpath(LIB_PATH . DIRECTORY_SEPARATOR . $uriclasspath);
 
-					if(realpath($servicesPath."/".$uriclasspath))
-						$classpath = realpath($servicesPath."/".$uriclasspath);
+					if(realpath($servicesPath. DIRECTORY_SEPARATOR .$uriclasspath))
+						$classpath = realpath($servicesPath . DIRECTORY_SEPARATOR . $uriclasspath);
 				}
 			} else {
 				$classname = substr($trunced, $lpos + 1);

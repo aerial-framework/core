@@ -42,7 +42,7 @@
 
 		public function getDefinitionsFromYAML($packageName="org.aerialframework.vo")
 		{
-			$modelsPath = conf("paths/php-models", true, false);
+			$modelsPath = ConfigXml::getInstance()->modelsPath;
 
 			$options = array(
 				"baseClassName" => "Aerial_Record",
@@ -50,7 +50,7 @@
 				"actionscriptPackageName" => $packageName
 			);
 
-			$emulated = Aerial_Core::generateEmulatedModelsFromYaml(conf("paths/config").'schema.yml', $modelsPath, $options);
+			$emulated = Aerial_Core::generateEmulatedModelsFromYaml(CONFIG_PATH. DIRECTORY_SEPARATOR . 'schema.yml', $modelsPath, $options);
 			foreach($emulated as $className => &$definition)
 			{
 				foreach($definition["fields"] as &$field)
@@ -77,10 +77,10 @@
 				"actionscriptPackageName" => $packageName
 			);
 
-			$modelsPath = conf("paths/php-models");
+			$modelsPath = ConfigXml::getInstance()->modelsPath;
 
 			if($fromYAML)
-				$dataToWrite = Aerial_Core::generateModelsFromYaml(conf("paths/config").'schema.yml', $modelsPath, $options);
+				$dataToWrite = Aerial_Core::generateModelsFromYaml(CONFIG_PATH . DIRECTORY_SEPARATOR .'schema.yml', $modelsPath, $options);
 			else
 			{
 				if(!file_exists($modelsPath))					// if the folder does not exist, create it to avoid errors!

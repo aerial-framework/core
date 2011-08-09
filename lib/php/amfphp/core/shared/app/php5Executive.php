@@ -95,7 +95,7 @@ class Executive {
         if(!ConfigXml::getInstance()->useAuthentication)
             return;
 
-		die(conf("options/use-authentication", false));
+		die(ConfigXml::getInstance()->useAuthentication);
         $class = $descriptor->className;
         $function = $descriptor->methodName;
 

@@ -12,10 +12,8 @@
 
 		public function __construct()
 		{
-			$php_path = conf("paths/lib")."php";
-
-			$this->internal_services_path = conf("paths/internal-services", true, false);
-			$this->services_path = realpath(conf("paths/php-services", true, false));
+			$this->internal_services_path = LIB_PATH;
+			$this->services_path = ConfigXml::getInstance()->servicesPath;
 		}
 
 		/**

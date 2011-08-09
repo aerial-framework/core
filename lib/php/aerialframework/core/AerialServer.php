@@ -104,40 +104,6 @@ class AerialServer
 	}
 
 
-
-	private function isPathRelative($path)
-	{
-		$base = $this->getBasePath();
-
-		// replace all slashes with a forward slash for consistency
-		$base = preg_replace('%[/\\\\]+%', '/', $base);
-		$path = preg_replace('%[/\\\\]+%', '/', $path);
-
-		return strpos($path, $base) === false;
-	}
-
-	private function getCurrentPageURL()
-	{
-		$pageURL = 'http';
-		if ($_SERVER["HTTPS"] == "on")
-		{
-			$pageURL .= "s";
-		}
-		$pageURL .= "://";
-		if ($_SERVER["SERVER_PORT"] != "80")
-		{
-			$pageURL .= $_SERVER["SERVER_NAME"] . ":" . $_SERVER["SERVER_PORT"] . $_SERVER["REQUEST_URI"];
-		}
-		else
-		{
-			$pageURL .= $_SERVER["SERVER_NAME"] . $_SERVER["REQUEST_URI"];
-		}
-
-		$pageURL = explode("?", $pageURL);
-		return $pageURL[0];
-	}
-
-
 	public function errorHandler($errno, $errstr, $errfile, $errline)
 	{
 		switch($errno)

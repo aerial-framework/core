@@ -1,22 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project-options>
-  
   <aerial>
     <version>1.0beta</version>
   </aerial>
-  
   <project>
-	<name>New Aerial Project</name>
-	<config-path></config-path>
+    <name>New Aerial Project</name>
+    <config-path></config-path>
+    <as3-source-path></as3-source-path>
+    <php-source-path></php-source-path>
   </project>
-  
   <code-generation>
     <package>org.aerialframework</package>
-    <bootstrap>src_flex/[package]/bootstrap/</bootstrap>
-    <as3-models>src_flex/[package]/vo/</as3-models>
-    <as3-services>src_flex/[package]/services/</as3-services>
     <vo-suffix>VO</vo-suffix>
     <service-suffix>Service</service-suffix>
   </code-generation>
-  
 </project-options>

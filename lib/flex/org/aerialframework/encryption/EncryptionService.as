@@ -10,12 +10,12 @@ package org.aerialframework.encryption
 
     public class EncryptionService extends RemoteObject
 	{
-		public function EncryptionService()
+		public function EncryptionService(config:Object)
 		{
 			super("Aerial");
 
-			this.source = "EncryptionService";
-			this.endpoint = Aerial.SERVER_URL;
+			this.source = "aerialframework.core.EncryptionService";
+			this.endpoint = config.SERVER_URL;
 		}
 
 		public function startSession(data:String):AsyncToken

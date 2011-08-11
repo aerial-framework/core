@@ -45,6 +45,8 @@ package org.aerialframework.encryption
 
         private var _pendingOperations:Array;
 
+        public var config:Object;
+
         {
             _instance = new Encryption();
         }
@@ -59,8 +61,10 @@ package org.aerialframework.encryption
          *
          * @param encryptSourceAndOperation Encrypt source and operation strings
          */
-        public function startEncryptedSession(encryptSourceAndOperation:Boolean=false, keySize:uint=1024):void
+        public function startEncryptedSession(config:Object, encryptSourceAndOperation:Boolean=false, keySize:uint=1024):void
         {
+            this.config = config;
+
             if(!Aerial.USE_ENCRYPTION)
             {
                 throw new AerialError(AerialError.ENCRYPTION_NOT_ENABLED_ERROR);
@@ -79,7 +83,7 @@ package org.aerialframework.encryption
 
             _usingEncryption = true;
 
-            var encryptionService:EncryptionService = new EncryptionService();
+            var encryptionService:EncryptionService = new EncryptionService(this.config);
 
             _encryptionKey = Encryption.getRandomKey(keySize);
 

@@ -107,10 +107,10 @@
 	define("PRODUCTION_SERVER", true);
 	
 	//Include things that need to be global, for integrating with other frameworks
-	include "globals.php";
+	include_once("globals.php");
 
 	//Include framework
-	include "core/amf/app/Gateway.php";
+	include_once("core/amf/app/Gateway.php");
 
 	$gateway = new Gateway();
 

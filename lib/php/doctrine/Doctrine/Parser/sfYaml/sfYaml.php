@@ -74,7 +74,7 @@ class sfYaml
       $file = $input;
 
       ob_start();
-      $retval = include($input);
+      $retval = include_once($input);
       $content = ob_get_clean();
 
       // if an array is returned by the config file assume it's in plain php form else in YAML

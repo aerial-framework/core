@@ -26,6 +26,7 @@ class AerialServer
 		}
 
 		AerialStartupManager::setAMFRequest($request);
+		AerialStartupManager::setStartupMessagesDisplayFlag($this->canDisplayStartupInfo());
 
 		$this->startHTMLOutput();
 
@@ -59,7 +60,7 @@ class AerialServer
 
 	private function startHTMLOutput()
 	{
-		if(!AerialStartupManager::hasAMFRequest() )
+		if(AerialStartupManager::showStartupMessages())
 			echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Frameset//EN"
 						"http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd">
 					<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en" dir="ltr">
@@ -73,9 +74,33 @@ class AerialServer
 					<body>';
 	}
 
+	/**
+	 * Determines whether or not the startup information can be displayed or not
+	 *
+	 * @return bool
+	 */
+	private function canDisplayStartupInfo()
+	{
+		$isAMFRequest = false;
+
+		// check if the incoming mimetype is consistent with the AMF mimetype
+		if(@$_SERVER["CONTENT_TYPE"] == "application/x-amf")
+			$isAMFRequest = true;
+
+		// if the request is indeed an AMF request, don't allow startup messages (HTML) to be displayed
+		if($isAMFRequest)
+			return false;
+
+		// only display startup messages if server.php is called directly
+		if(strpos(@$_SERVER["SCRIPT_NAME"], "server.php") !== false)
+			return true;
+
+		return false;
+	}
+
 	private function endHTMLOutput()
 	{
-		if(!AerialStartupManager::hasAMFRequest()) //|| !AerialStartupManager::isDirectCall()
+		if(AerialStartupManager::showStartupMessages())
 			echo "\n\t</body>\n</html>";
 	}
 

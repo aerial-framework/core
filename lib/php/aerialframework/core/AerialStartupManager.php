@@ -6,6 +6,8 @@ class AerialStartupManager
 
 	private static $_request;
 
+	private static $_showStartupMessages;
+
 	public static function setAMFRequest($request)
 	{
 		self::$_request = $request;
@@ -29,6 +31,16 @@ class AerialStartupManager
 	public static function hasAMFRequest()
 	{
 		return self::$_request != null;
+	}
+
+	public static function setStartupMessagesDisplayFlag($flag)
+	{
+		self::$_showStartupMessages = $flag;
+	}
+
+	public static function showStartupMessages()
+	{
+		return self::$_showStartupMessages;
 	}
 
 	/**
@@ -72,25 +84,25 @@ class AerialStartupManager
 		}
 
 		// if an AMF request has been received, let amfPHP handle the errors, only display startup problems
-		if(AerialStartupManager::hasAMFRequest())
+		if(!AerialStartupManager::showStartupMessages())
 		{
 			self::simpleLog($message, $type);
 			return;
 		}
 
 		// only display success messages if no AMF request is present (i.e. direct call to server.php)
-		if(!AerialStartupManager::hasAMFRequest())
+		if(AerialStartupManager::showStartupMessages())
 		{
 			switch($type)
 			{
 				case E_USER_ERROR:
-					die("<div class='error'><h2>Fatal Error</h2><p>".$message."</p></h2></div>");
+					die("<div class='error'><h2>Fatal Error</h2><p>".$message."</p></h2></div>\n");
 					break;
 				case E_USER_WARNING:
-					echo("<div class='warning'><h2>Warning</h2><p>".$message."</p></h2></div>");
+					echo("<div class='warning'><h2>Warning</h2><p>".$message."</p></h2></div>\n");
 					break;
 				case "Success":
-					echo("<div class='success'><h2>Info</h2><p>".$message."</p></h2></div>");
+					echo("<div class='success'><h2>Info</h2><p>".$message."</p></h2></div>\n");
 					break;
 			}
 		}
@@ -99,7 +111,7 @@ class AerialStartupManager
 	private static function simpleLog($message, $type)
 	{
 		if($type == E_USER_ERROR || $type == E_ERROR)
-		die("Aerial startup warning: ".strip_tags($message));
+			die("--Aerial startup warning--\n".strip_tags($message));
 	}
 }
 ?>

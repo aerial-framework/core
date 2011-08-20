@@ -99,7 +99,7 @@ class ConfigXml
 			
 		//Give up
 		if(!$absolutePath)
-			trigger_error("Please check the <$path> value in config.xml. ");
+			die("<strong>Aerial Error: </strong>The <i>'$path'</i> path in config.xml (or config-alt.xml) does not exist.");
 		
 		if($path == 'php-models')
 		{

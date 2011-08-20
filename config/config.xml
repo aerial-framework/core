@@ -7,8 +7,6 @@
 	-->
 
 	<paths>
-        <lib>../lib</lib>
-
         <php-models>src_php\org\aerialframework\vo</php-models>
         <php-services>src_php\org\aerialframework\services</php-services>
 	</paths>

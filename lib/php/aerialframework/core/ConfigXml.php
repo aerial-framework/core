@@ -76,19 +76,25 @@ class ConfigXml
 				$this->mergeXml($this->config, $configAlt);
 			}
 		}
-		
+
+		//Fix any Window type paths.
+		foreach ($this->config->paths->children() as $key => $value)
+		{
+			$this->config->paths->$key = str_replace('\\','/',$value);
+		}
+
 	}
-	
+
 	//Helper
 	private function setPath($path)
 	{
 		//Check if it's absolute.
 		$absolutePath =  realpath($this->config->paths->{$path});
-		
+
 		//Check if it's relative to the config.xml.
 		if(!$absolutePath)
 			$absolutePath = realpath(CONFIG_PATH . DIRECTORY_SEPARATOR . $this->config->paths->{$path});
-		
+
 		//Check if it's relative to the base path (above the web root).
 		if(!$absolutePath)
 			$absolutePath = realpath(BASE_PATH . DIRECTORY_SEPARATOR . $this->config->paths->{$path});

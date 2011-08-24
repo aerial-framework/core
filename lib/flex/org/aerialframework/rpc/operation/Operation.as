@@ -1,15 +1,15 @@
 package org.aerialframework.rpc.operation
 {
-    import org.aerialframework.errors.AerialError;
-    import org.aerialframework.libs.as3crypto.util.Hex;
-
     import mx.rpc.AbstractOperation;
     import mx.rpc.AsyncResponder;
     import mx.rpc.AsyncToken;
     import mx.rpc.events.FaultEvent;
     import mx.rpc.events.ResultEvent;
-
+    import mx.utils.OrderedObject;
+    
     import org.aerialframework.encryption.Encryption;
+    import org.aerialframework.errors.AerialError;
+    import org.aerialframework.libs.as3crypto.util.Hex;
     import org.aerialframework.rpc.AbstractService;
 
     public class Operation implements IOperation
@@ -26,7 +26,7 @@ package org.aerialframework.rpc.operation
         private var _offset:uint;
         private var _limit:uint;
         private var _page:uint;
-        private var _sort:Object;
+        private var _sort:OrderedObject;
         private var _relations:Array;
 
         public function Operation(service:AbstractService, remoteMethod:String, ...args)
@@ -37,7 +37,7 @@ package org.aerialframework.rpc.operation
             _args = args;
             _limit = 0;
             _offset = 0;
-            _sort = new Object();
+            _sort = new OrderedObject();
             _relations = new Array();
         }
 

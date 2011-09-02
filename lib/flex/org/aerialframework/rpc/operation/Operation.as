@@ -141,6 +141,14 @@ package org.aerialframework.rpc.operation
             }
             return  _execute();
         }
+		
+		public function count():AsyncToken
+		{
+			_limit = 0;
+			_offset = 0;
+			
+			return  _execute(true);
+		}
 
         public function execute(limit:uint = 0, offset:uint = 0):AsyncToken
         {
@@ -150,9 +158,9 @@ package org.aerialframework.rpc.operation
             return  _execute();
         }
 
-        private function _execute():AsyncToken
+        private function _execute(count:Boolean = false):AsyncToken
         {
-            _args.push(_returnCompleteObject, _limit, _offset, _sort, _relations);
+            _args.push(_returnCompleteObject, _limit, _offset, _sort, _relations, count);
 
             var encryption:Encryption = Encryption.instance;
 

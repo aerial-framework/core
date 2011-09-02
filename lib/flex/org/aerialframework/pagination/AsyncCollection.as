@@ -1,4 +1,4 @@
-package org.aerial.pagination
+package org.aerialframework.pagination
 {
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
@@ -19,7 +19,7 @@ package org.aerial.pagination
 	import mx.rpc.events.FaultEvent;
 	import mx.rpc.events.ResultEvent;
 	
-	import org.aerial.rpc.operation.Operation;
+	import org.aerialframework.rpc.operation.Operation;
 	
 	public class AsyncCollection extends EventDispatcher implements ICollectionView, IList
 	{

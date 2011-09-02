@@ -42,7 +42,7 @@ package org.aerialframework.rpc
         public function insert(vo:Object, returnCompleteObject:Boolean = false):Operation
         {
             validateVO(vo);
-            var op:Operation = new Operation(this, "insert", vo, returnCompleteObject);
+            var op:Operation = new Operation(this, "insert", returnCompleteObject, vo);
 
             return op;
         }
@@ -50,7 +50,7 @@ package org.aerialframework.rpc
         public function update(vo:Object, returnCompleteObject:Boolean = false):Operation
         {
             validateVO(vo);
-            var op:Operation = new Operation(this, "update", vo, returnCompleteObject);
+            var op:Operation = new Operation(this, "update", returnCompleteObject, vo);
 
             return op;
         }
@@ -58,7 +58,7 @@ package org.aerialframework.rpc
         public function save(vo:Object, returnCompleteObject:Boolean = false):Operation
         {
             validateVO(vo);
-            var op:Operation = new Operation(this, "save", vo, returnCompleteObject);
+            var op:Operation = new Operation(this, "save", returnCompleteObject, vo);
 
             return op;
         }
@@ -66,7 +66,7 @@ package org.aerialframework.rpc
         public function drop(vo:Object):Operation
         {
             validateVO(vo);
-            var op:Operation = new Operation(this, "drop", vo);
+            var op:Operation = new Operation(this, "drop", false, vo);
 
             return op;
         }
@@ -157,20 +157,20 @@ package org.aerialframework.rpc
 
         public function find(criteria:* = null):Operation
         {
-            var op:Operation = new Operation(this, "find", criteria);
+            var op:Operation = new Operation(this, "find", true, criteria);
             return op;
         }
 
         public function count():Operation
         {
-            var op:Operation = new Operation(this, "count");
+            var op:Operation = new Operation(this, "count", false);
 
             return op;
         }
 
         public function query(query:DoctrineQuery):Operation
         {
-            var op:Operation = new Operation(this, "query", query.properties);
+            var op:Operation = new Operation(this, "query", true, query.properties);
             return op;
         }
 

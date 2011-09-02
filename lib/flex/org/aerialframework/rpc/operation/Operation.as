@@ -20,7 +20,6 @@ package org.aerialframework.rpc.operation
         private var _resultHandler:Function;
         private var _faultHandler:Function;
         private var _tokenData:Object;
-        private var _token:AsyncToken;
         private var _op:AbstractOperation;
         private var _args:Array;
         private var _offset:uint;
@@ -28,8 +27,9 @@ package org.aerialframework.rpc.operation
         private var _page:uint;
         private var _sort:OrderedObject;
         private var _relations:Array;
+		private var _returnCompleteObject:Boolean;
 
-        public function Operation(service:AbstractService, remoteMethod:String, ...args)
+        public function Operation(service:AbstractService, remoteMethod:String, returnCompleteObject:Boolean, ...args)
         {
             _service = service;
             _method = remoteMethod;
@@ -39,6 +39,7 @@ package org.aerialframework.rpc.operation
             _offset = 0;
             _sort = new OrderedObject();
             _relations = new Array();
+			_returnCompleteObject = returnCompleteObject; 
         }
 
         public function callback(resultHandler:Function, faultHandler:Function = null, tokenData:Object = null):Operation
@@ -129,7 +130,7 @@ package org.aerialframework.rpc.operation
             {
                 _offset += _limit;
             }
-            return  _execute(_limit, _offset);
+            return  _execute();
         }
 
         public function previousPage():AsyncToken
@@ -138,7 +139,7 @@ package org.aerialframework.rpc.operation
             {
                 _offset -= _limit;
             }
-            return  _execute(_limit, _offset);
+            return  _execute();
         }
 
         public function execute(limit:uint = 0, offset:uint = 0):AsyncToken
@@ -146,18 +147,20 @@ package org.aerialframework.rpc.operation
             _limit = limit;
             _offset = offset;
 
-            return  _execute(_limit, _offset);
+            return  _execute();
         }
 
-        private function _execute(limit:uint, offset:uint):AsyncToken
+        private function _execute():AsyncToken
         {
-            _args.push(_limit, _offset, _sort, _relations);
+            _args.push(_returnCompleteObject, _limit, _offset, _sort, _relations);
 
             var encryption:Encryption = Encryption.instance;
 
             var initialized:Boolean = Encryption.instance.encryptedSessionInitialized;
             var started:Boolean = Encryption.instance.encryptedSessionStarted;
 
+			var _token:AsyncToken;
+			
             if(_service.aerialConfig.USE_ENCRYPTION)
             {
                 if(_method == "startSession")

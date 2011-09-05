@@ -81,21 +81,15 @@ class AerialServer
 	 */
 	private function canDisplayStartupInfo()
 	{
-		$isAMFRequest = false;
-
-		// check if the incoming mimetype is consistent with the AMF mimetype
+		// Check if the incoming mimetype is consistent with the AMF mimetype.
+		// If the request is indeed an AMF request, don't allow startup messages (HTML) to be displayed.
+		// Only display startup messages if server.php is called directly.
 		if(@$_SERVER["CONTENT_TYPE"] == "application/x-amf")
-			$isAMFRequest = true;
-
-		// if the request is indeed an AMF request, don't allow startup messages (HTML) to be displayed
-		if($isAMFRequest)
 			return false;
-
-		// only display startup messages if server.php is called directly
-		if(strpos(@$_SERVER["SCRIPT_NAME"], "server.php") !== false)
-			return true;
-
-		return false;
+		elseif(pathinfo($_SERVER['SCRIPT_NAME'],PATHINFO_BASENAME) == 'server.php')
+			return  true;
+		else 
+			return false;
 	}
 
 	private function endHTMLOutput()

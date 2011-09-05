@@ -63,14 +63,14 @@ abstract class AbstractService
 		
 	}
 
-	public function drop($object)
+	public function drop($object, $returnCompleteObject = false)
 	{
 		$object = ModelMapper::mapToModel($this->modelName, $object, true);
 		
 		return $object->delete();
 	}
 
-	public function find($criteria, $limit, $offset, $sort, $relations)
+	public function find($criteria, $returnCompleteObject = true, $limit, $offset, $sort, $relations, $count=false)
 	{
 		$q = Doctrine_Query::create()->from("$this->modelName r");
 
@@ -123,6 +123,10 @@ abstract class AbstractService
 		if($limit) $q->limit($limit);
 		if($offset) $q->offset($offset);
 
+		//==========================  Count/Execute  ===========================
+		if($count)
+			return $q->count();
+		
 		$q->setHydrationMode(Aerial_Core::HYDRATE_AMF_COLLECTION);
 		$results = $q->execute();
 

@@ -12,7 +12,6 @@ package org.aerialframework.encryption
     import mx.rpc.events.InvokeEvent;
     import mx.rpc.events.ResultEvent;
 
-    import org.aerialframework.bootstrap.Aerial;
     import org.aerialframework.errors.AerialError;
     import org.aerialframework.events.EncryptionEvent;
     import org.aerialframework.libs.as3crypto.crypto.prng.ARC4;
@@ -65,7 +64,7 @@ package org.aerialframework.encryption
         {
             this.config = config;
 
-            if(!Aerial.USE_ENCRYPTION)
+            if(!config.USE_ENCRYPTION)
             {
                 throw new AerialError(AerialError.ENCRYPTION_NOT_ENABLED_ERROR);
                 return;
@@ -75,7 +74,7 @@ package org.aerialframework.encryption
             this.keySize = keySize;
 
             // if the encrypted session has already been started, skip to the success event
-            if(Aerial.USE_ENCRYPTION && this.encryptedSessionStarted)
+            if(config.USE_ENCRYPTION && this.encryptedSessionStarted)
             {
                 this.dispatchEvent(new EncryptionEvent(EncryptionEvent.ENCRYPTED_SESSION_STARTED));
                 return;

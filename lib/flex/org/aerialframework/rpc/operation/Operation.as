@@ -1,15 +1,15 @@
 package org.aerialframework.rpc.operation
 {
-    import org.aerialframework.errors.AerialError;
-    import org.aerialframework.libs.as3crypto.util.Hex;
-
     import mx.rpc.AbstractOperation;
     import mx.rpc.AsyncResponder;
     import mx.rpc.AsyncToken;
     import mx.rpc.events.FaultEvent;
     import mx.rpc.events.ResultEvent;
-
+    import mx.utils.OrderedObject;
+    
     import org.aerialframework.encryption.Encryption;
+    import org.aerialframework.errors.AerialError;
+    import org.aerialframework.libs.as3crypto.util.Hex;
     import org.aerialframework.rpc.AbstractService;
 
     public class Operation implements IOperation
@@ -20,16 +20,16 @@ package org.aerialframework.rpc.operation
         private var _resultHandler:Function;
         private var _faultHandler:Function;
         private var _tokenData:Object;
-        private var _token:AsyncToken;
         private var _op:AbstractOperation;
         private var _args:Array;
         private var _offset:uint;
         private var _limit:uint;
         private var _page:uint;
-        private var _sort:Object;
+        private var _sort:OrderedObject;
         private var _relations:Array;
+		private var _returnCompleteObject:Boolean;
 
-        public function Operation(service:AbstractService, remoteMethod:String, ...args)
+        public function Operation(service:AbstractService, remoteMethod:String, returnCompleteObject:Boolean, ...args)
         {
             _service = service;
             _method = remoteMethod;
@@ -37,8 +37,9 @@ package org.aerialframework.rpc.operation
             _args = args;
             _limit = 0;
             _offset = 0;
-            _sort = new Object();
+            _sort = new OrderedObject();
             _relations = new Array();
+			_returnCompleteObject = returnCompleteObject; 
         }
 
         public function callback(resultHandler:Function, faultHandler:Function = null, tokenData:Object = null):Operation
@@ -129,7 +130,7 @@ package org.aerialframework.rpc.operation
             {
                 _offset += _limit;
             }
-            return  _execute(_limit, _offset);
+            return  _execute();
         }
 
         public function previousPage():AsyncToken
@@ -138,26 +139,36 @@ package org.aerialframework.rpc.operation
             {
                 _offset -= _limit;
             }
-            return  _execute(_limit, _offset);
+            return  _execute();
         }
+		
+		public function count():AsyncToken
+		{
+			_limit = 0;
+			_offset = 0;
+			
+			return  _execute(true);
+		}
 
         public function execute(limit:uint = 0, offset:uint = 0):AsyncToken
         {
             _limit = limit;
             _offset = offset;
 
-            return  _execute(_limit, _offset);
+            return  _execute();
         }
 
-        private function _execute(limit:uint, offset:uint):AsyncToken
+        private function _execute(count:Boolean = false):AsyncToken
         {
-            _args.push(_limit, _offset, _sort, _relations);
+            _args.push(_returnCompleteObject, _limit, _offset, _sort, _relations, count);
 
             var encryption:Encryption = Encryption.instance;
 
             var initialized:Boolean = Encryption.instance.encryptedSessionInitialized;
             var started:Boolean = Encryption.instance.encryptedSessionStarted;
 
+			var _token:AsyncToken;
+			
             if(_service.aerialConfig.USE_ENCRYPTION)
             {
                 if(_method == "startSession")

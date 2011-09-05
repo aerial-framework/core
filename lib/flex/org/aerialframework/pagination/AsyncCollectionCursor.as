@@ -1,4 +1,4 @@
-package org.aerial.pagination
+package org.aerialframework.pagination
 {
 	import flash.events.EventDispatcher;
 	import flash.events.IEventDispatcher;

@@ -1,4 +1,4 @@
-package org.aerial.pagination
+package org.aerialframework.pagination
 {
 	public class AsyncFailedItem
 	{

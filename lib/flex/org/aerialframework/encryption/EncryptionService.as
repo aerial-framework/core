@@ -6,8 +6,6 @@ package org.aerialframework.encryption
     import mx.rpc.remoting.Operation;
     import mx.rpc.remoting.RemoteObject;
 
-    import org.aerialframework.bootstrap.Aerial;
-
     public class EncryptionService extends RemoteObject
 	{
 		public function EncryptionService(config:Object)

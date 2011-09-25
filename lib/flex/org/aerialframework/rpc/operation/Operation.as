@@ -161,13 +161,13 @@ package org.aerialframework.rpc.operation
         private function _execute(count:Boolean = false):AsyncToken
         {
             _args.push(_returnCompleteObject, _limit, _offset, _sort, _relations, count);
-
+			var args:Array = _args;
             var encryption:Encryption = Encryption.instance;
 
             var initialized:Boolean = Encryption.instance.encryptedSessionInitialized;
             var started:Boolean = Encryption.instance.encryptedSessionStarted;
 
-			var _token:AsyncToken;
+			var asyncToken:AsyncToken;
 			
             if(_service.aerialConfig.USE_ENCRYPTION)
             {
@@ -195,23 +195,23 @@ package org.aerialframework.rpc.operation
 
                 if(!started)
                 {
-                    Encryption.instance.addPendingOperation(new PendingOperation(_op, _args, plainServiceName,
+                    Encryption.instance.addPendingOperation(new PendingOperation(_op, args, plainServiceName,
                             _tokenData, notifyResultHandler, notifyFaultHandler));
                 }
                 else
-                    _token = _op.send(_args);
+                    asyncToken = _op.send(args);
 
                 // restore service source
                 if(encryption.encryptSourceAndOperation && started)
                     _service.source = plainServiceName;
             }
             else
-                _token = _op.send(_args);
+                asyncToken = _op.send(args);
 
             if(_resultHandler !== null && ((_service.aerialConfig.USE_ENCRYPTION && started) || !_service.aerialConfig.USE_ENCRYPTION))
-                _token.addResponder(new AsyncResponder(notifyResultHandler, notifyFaultHandler, _tokenData));
+                asyncToken.addResponder(new AsyncResponder(notifyResultHandler, notifyFaultHandler, _tokenData));
 
-            return _token;
+            return asyncToken;
         }
     }
 }

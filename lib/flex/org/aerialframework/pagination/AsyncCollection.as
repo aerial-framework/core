@@ -21,6 +21,8 @@ package org.aerialframework.pagination
 	
 	import org.aerialframework.rpc.operation.Operation;
 	
+	[Event(name="resultEmpty", type="flash.events.Event")]
+	
 	public class AsyncCollection extends EventDispatcher implements ICollectionView, IList
 	{
 		private var _allowParallelRequests:Boolean;
@@ -37,6 +39,8 @@ package org.aerialframework.pagination
 		public var pagePrefetch:uint = 0;
 		public var pagePostfetch:uint = 0;
 		public var pageSize:uint = 10;
+		
+		public static const RESULT_EMPTY:String = "resultEmpty";
 		
 		public function AsyncCollection()
 		{
@@ -82,8 +86,19 @@ package org.aerialframework.pagination
 		
 		private function countResultHandler(event:ResultEvent):void
 		{
-			if(event.result)
+			//Return in case there was an internal error in the remote call.  FP should resend.
+			if(!event.hasOwnProperty("result"))
+				return;
+			
+			if(event.result === 0)
+			{
+				length = 0;
+				dispatchEvent(new Event(AsyncCollection.RESULT_EMPTY));		
+			}
+			else
+			{
 				length = uint(event.result);
+			}
 		}
 		
 		public function get list():ArrayList

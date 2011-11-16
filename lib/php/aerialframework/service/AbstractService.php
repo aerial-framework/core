@@ -70,6 +70,17 @@ abstract class AbstractService
 		return $object->delete();
 	}
 
+	public function dropItems($objects, $returnCompleteObject = false)
+	{
+		foreach ($objects as $object)
+		{
+			$object = ModelMapper::mapToModel($this->modelName, $object, true);
+			$object->delete();
+		}
+		
+		return true;
+	}
+	
 	public function find($criteria, $returnCompleteObject = true, $limit, $offset, $sort, $relations, $count=false)
 	{
 		$q = Doctrine_Query::create()->from("$this->modelName r");

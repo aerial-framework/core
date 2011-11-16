@@ -4,6 +4,7 @@ package org.aerialframework.rpc
     import flash.utils.ByteArray;
     import flash.utils.getQualifiedClassName;
     
+    import mx.collections.ArrayCollection;
     import mx.rpc.AbstractOperation;
     import mx.rpc.remoting.RemoteObject;
     
@@ -70,6 +71,14 @@ package org.aerialframework.rpc
 
             return op;
         }
+		
+		public function dropItems(vos:ArrayCollection):Operation
+		{
+			//validateVO(vo);
+			var op:Operation = new Operation(this, "dropItems", false, vos);
+			
+			return op;
+		}
 
         /**
          * Pre-processes an array of given arguments so that it will not send an array of arguments

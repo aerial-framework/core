@@ -74,7 +74,10 @@ package org.aerialframework.rpc
 		
 		public function dropItems(vos:ArrayCollection):Operation
 		{
-			//validateVO(vo);
+			for each(var vo:Object in vos)
+			{
+				validateVO(vo);
+			}
 			var op:Operation = new Operation(this, "dropItems", false, vos);
 			
 			return op;

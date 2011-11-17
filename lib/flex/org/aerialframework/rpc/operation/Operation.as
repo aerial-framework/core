@@ -98,7 +98,11 @@ package org.aerialframework.rpc.operation
         private function notifyResultHandler(event:ResultEvent, token:Object = null):void
         {
             event.preventDefault();
-            if(token)
+			if(_resultHandler.length == 0)
+			{
+				_resultHandler();					
+			}
+			else if(token)
             {
                 _resultHandler(event, token);
             }

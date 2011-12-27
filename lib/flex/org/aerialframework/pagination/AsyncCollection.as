@@ -7,8 +7,8 @@ package org.aerialframework.pagination
 	import mx.collections.ICollectionView;
 	import mx.collections.IList;
 	import mx.collections.ISort;
+	import mx.collections.ISortField;
 	import mx.collections.IViewCursor;
-	import mx.collections.Sort;
 	import mx.events.CollectionEvent;
 	import mx.events.CollectionEventKind;
 	import mx.resources.IResourceManager;
@@ -27,7 +27,7 @@ package org.aerialframework.pagination
 	{
 		private var _allowParallelRequests:Boolean;
 		private var _length:int;
-		private var _sort:Sort;
+		private var _sort:ISort;
 		private var _list:ArrayList; 
 		private var _queue:Object; 
 		private var _operation:Operation;
@@ -61,14 +61,6 @@ package org.aerialframework.pagination
 			dispatchEvent(event);	
 		}
 		
-		protected function operationChangeHandler(event:Event):void
-		{
-			//Can't use callback functions since there's no way to change pointers in AS3 
-			//and we're re-using this operation in different contexts.
-			var asyncToken:AsyncToken = _operation.count();
-			asyncToken.addResponder(new Responder(countResultHandler, null));
-		}
-		
 		public function get operation():Operation
 		{
 			return _operation;
@@ -82,6 +74,19 @@ package org.aerialframework.pagination
 				_operation = value;
 				dispatchEvent(new Event("operationChange"));
 			}
+		}
+		
+		protected function operationChangeHandler(event:Event):void
+		{
+			count();
+		}
+		
+		private function count():void
+		{
+			//Can't use callback functions since there's no way to change pointers in AS3 
+			//and we're re-using this operation in different contexts.
+			var asyncToken:AsyncToken = _operation.count();
+			asyncToken.addResponder(new Responder(countResultHandler, null)); 	
 		}
 		
 		private function countResultHandler(event:ResultEvent):void
@@ -101,11 +106,6 @@ package org.aerialframework.pagination
 			}
 		}
 		
-		public function get list():ArrayList
-		{
-			return _list;
-		}
-		
 		public function get length():int
 		{
 			return _length;
@@ -114,9 +114,12 @@ package org.aerialframework.pagination
 		public function set length(value:int):void
 		{
 			_length = value;
-			
 			_list.source = new Array(_length);
-			//dispatchEvent(_updateEvent);
+		}
+		
+		public function get list():ArrayList
+		{
+			return _list;
 		}
 		
 		public function get filterFunction():Function
@@ -166,7 +169,6 @@ package org.aerialframework.pagination
 				}
 				
 				delete(_queue[page]);
-				//dispatchEvent(_updateEvent);
 			}
 		}
 		
@@ -174,7 +176,6 @@ package org.aerialframework.pagination
 		{
 			trace(event.fault.faultString);
 		}
-		
 		
 		public function set filterFunction(value:Function):void
 		{
@@ -188,7 +189,8 @@ package org.aerialframework.pagination
 		
 		public function set sort(value:ISort):void
 		{
-			_sort = value as Sort;
+			_sort = value;
+			dispatchEvent(new Event("sortChanged"));
 		}
 		
 		public function createCursor():IViewCursor
@@ -218,9 +220,18 @@ package org.aerialframework.pagination
 		
 		public function refresh():Boolean
 		{
-			_list = new ArrayList();
+			//ToDo: Need to apply filters on the remote data. 
 			_queue = new Array();
-			dispatchEvent( new CollectionEvent( CollectionEvent.COLLECTION_CHANGE, false, false, CollectionEventKind.REFRESH ));			
+			if(sort && (sort.fields.length > 0))
+			{
+				var fieldName:String = (sort.fields[0] as ISortField).name;
+				var fieldDesc:Boolean = (sort.fields[0] as ISortField).descending;
+				_operation.sortClear();
+				_operation.sortBy(fieldName,(fieldDesc ? "DESC" : "ASC"));
+			}
+			
+			count();
+			dispatchEvent(new CollectionEvent(CollectionEvent.COLLECTION_CHANGE, false, false, CollectionEventKind.REFRESH));			
 			return true;
 		}
 		

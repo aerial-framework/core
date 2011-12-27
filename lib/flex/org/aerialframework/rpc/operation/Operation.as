@@ -91,7 +91,7 @@ package org.aerialframework.rpc.operation
             }
             else
             {
-                _sort = null;
+                _sort = new OrderedObject();
             }
         }
 

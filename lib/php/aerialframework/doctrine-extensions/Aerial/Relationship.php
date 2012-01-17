@@ -7,7 +7,7 @@ class Aerial_Relationship
 		$needle = array( "!=", ">=", "<=", "=", ">", "<",  "&", "IS ", "NOT ", "BETWEEN ", "LIKE ", "IN ");
 		//$needle is an array of values.
 		if(!is_array($needle))
-		$needle = array($needle);
+			$needle = array($needle);
 
 		foreach($needle as $what)
 		{
@@ -19,7 +19,9 @@ class Aerial_Relationship
 
 	public static function columns($dirty_key)
 	{
-		$cols = preg_split('#\w+$|.+\(\s*|\s*,\s*|\s*\)\s*#', $dirty_key, -1, PREG_SPLIT_NO_EMPTY);
+		$cols = preg_split('#(?xi) (?:\w+\s*)$ | ^.+?[\(|\[]\s*   |  (?: \s*[\)|\]]\s*)$#', $dirty_key, -1, PREG_SPLIT_NO_EMPTY);
+		if($cols)
+			$cols = preg_split('#(?xi) \s*,\s* (?! [^(]* \))#', $cols[0], -1, PREG_SPLIT_NO_EMPTY);
 
 		return $cols;
 	}
@@ -128,7 +130,7 @@ class Aerial_Relationship
 				$source_dirty_key = $new_dirty_key;
 			}
 			if($value)
-			$tree [$source_dirty_key] = self::merge($tree[$source_dirty_key], $value);
+				$tree [$source_dirty_key] = self::merge($tree[$source_dirty_key], $value);
 		}
 		else
 		{

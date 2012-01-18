@@ -4,14 +4,11 @@ class Aerial_Relationship
 
 	public static function strpos_criteria($column)
 	{
-		$needle = array( "!=", ">=", "<=", "=", ">", "<",  "&", "IS ", "NOT ", "BETWEEN ", "LIKE ", "IN ");
-		//$needle is an array of values.
-		if(!is_array($needle))
-			$needle = array($needle);
+		$needles = array( "!=", ">=", "<=", "=", ">", "<",  "&", "IS ", "NOT ", "BETWEEN ", "LIKE ", "IN ");
 
-		foreach($needle as $what)
+		foreach($needles as $needle)
 		{
-			if(($pos = stripos($column, $what))!==false) return $pos;
+			if(($pos = stripos($column, $needle))!==false) return $pos;
 		}
 
 		return false;
@@ -21,15 +18,87 @@ class Aerial_Relationship
 	{
 		$cols = preg_split('#(?xi) (?:\w+\s*)$ | ^.+?[\(|\[]\s*   |  (?: \s*[\)|\]]\s*)$#', $dirty_key, -1, PREG_SPLIT_NO_EMPTY);
 		if($cols)
-			$cols = preg_split('#(?xi) \s*,\s* (?! [^(]* \))#', $cols[0], -1, PREG_SPLIT_NO_EMPTY);
+			$cols = self::explode_complex(',', $cols[0]);
 
 		return $cols;
+	}
+
+	/*
+	 * Explodes a string but ignores delimiters within default (parentheses or square brackets) or specified braces.
+	* $delimiters & $braces can be a string or an array.
+	* Unique opening and closing braces are required.  Can't do something like array('##', '**');
+	* Example of setting braces: $braces = array('[]', '()', '{}');
+	**/
+	public static function explode_complex($delimiters, $string, $limit=null, $braces=null, $trim=true)
+	{
+		$result = array();
+		$start = $position = 0;
+		if($limit === 0) 
+			$limit = 1;
+
+		if(!is_array($delimiters))
+			$delimiters = array($delimiters);
+
+		if($braces)
+		{
+			if(!is_array($braces))
+				$braces = array($braces);
+
+			foreach ($braces as $brace) 
+			{
+				$open[] = substr($brace, 0,1);
+				$close[] = substr($brace, 1,1);
+			}
+		}
+		else
+		{
+			$open = array('(','[');
+			$close = array(')',']');
+		}
+
+		for($i=0; $i<=strlen($string); $i++)
+		{
+			$char = substr($string, $i, 1);
+
+			if(in_array($char, $open))
+			{
+				$position++;
+			}
+			elseif(in_array($char, $close))
+			{
+				$position--;
+			}
+			elseif(in_array($char, $delimiters) && $position == 0)
+			{
+				if(!is_null($limit))
+				{
+					if(count($result) == ($limit-1))
+					break;
+				}
+				if($table = substr($string, $start,  $i-$start))
+					$result[] = ($trim ? trim($table) : $table);
+				$start = $i + 1;
+			}
+		}
+
+		if($table = substr($string, $start, strlen($string) ))
+			$result[] = ($trim ? trim($table) : $table);
+
+		if($limit < 0)
+		{
+			$limit = min(abs($limit), count($result));
+			for ($i = 0; $i < $limit; $i++) 
+			{
+				array_pop($result);
+			}
+		}
+
+		return $result;
 	}
 
 	public function splitOR($column)
 	{
 		$cols = preg_split('#\s+OR\s+#', $column, -1, PREG_SPLIT_NO_EMPTY);
-
 		return $cols;
 	}
 
@@ -97,26 +166,10 @@ class Aerial_Relationship
 		return false;
 	}
 
-	public static function to_array($string, $rootTable) //Not using this function anywhere rigth now.
-	{
-		$array = explode(".", $string);
-		if($array[0] <> $rootTable) array_unshift($array, $rootTable);
-
-		$tmp =& $p;
-		foreach($array as $table)
-		{
-			$table = str_replace(' ','', $table); //White spaces need to be stripped out.
-			$tmp[$table] = array(); //Could comment this out so it equals null but would have to change logic everywhere else.
-			$tmp =& $tmp[$table];
-		}
-
-		return $p;
-	}
-
 	public static function merge( array &$array1,  $string )
 	{
 		$tree = $array1;
-		@list($dirty_key, $value) = explode(".", $string, 2);
+		@list($dirty_key, $value) = self::explode_complex(".", $string, 2);
 
 		$source_dirty_key = self::key_exists($dirty_key,$tree);
 
@@ -130,13 +183,13 @@ class Aerial_Relationship
 				$source_dirty_key = $new_dirty_key;
 			}
 			if($value)
-				$tree [$source_dirty_key] = self::merge($tree[$source_dirty_key], $value);
+			$tree [$source_dirty_key] = self::merge($tree[$source_dirty_key], $value);
 		}
 		else
 		{
 			$tree [$dirty_key] = array();
 			if($value)
-			$tree[$dirty_key] = self::merge($tree[$dirty_key], $value);
+				$tree[$dirty_key] = self::merge($tree[$dirty_key], $value);
 		}
 
 		return $tree;
@@ -210,7 +263,7 @@ class Aerial_Relationship
 				{
 					$column = self::setSelectColumn($d_docTable, $selectedTables, $sqlAlias, $c); //Returns the column & criteria with the opperator stripped off.
 
-						
+
 					$criteriaPosition = self::strpos_criteria($column);
 
 					if($criteriaPosition !== false)
@@ -234,7 +287,6 @@ class Aerial_Relationship
 						$criteria[] = implode(" OR ",$colORs);
 					}
 				}
-
 			}
 
 			if(!$isRoot)
@@ -253,6 +305,4 @@ class Aerial_Relationship
 		}//Table Loop
 	}
 
-
 }
-?>

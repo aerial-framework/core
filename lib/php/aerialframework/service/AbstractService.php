@@ -23,14 +23,9 @@ abstract class AbstractService
 		$result = $object->trySave();
 		
 		if($result === true)
-		{
 			return $returnCompleteObject ? $object : $object->getIdentifier();
-		}
-		else
-		{
-			$object->save();
-		}
 		
+		$object->save();
 	}
 	
 	/**
@@ -53,14 +48,9 @@ abstract class AbstractService
 		$result = $object->trySave();		
 		
 		if($result === true)
-		{
 			return $returnCompleteObject ? $object : $object->getIdentifier();
-		}
-		else
-		{
-			$object->save();
-		}
 		
+		$object->save();
 	}
 
 	public function drop($object, $returnCompleteObject = false)
@@ -90,11 +80,13 @@ abstract class AbstractService
 		{
 			//Merge the relations into a single tree; validate all paths start with the root table.
 			$mergedRelations = array();
+
 			foreach($relations as $path)
 			{
-				list($dirty_key) = explode(".", $path, 2);
-				if(Aerial_Relationship::key($dirty_key) <> $this->modelName) $path = $this->modelName . "." . $path;
-					$mergedRelations = Aerial_Relationship::merge($mergedRelations, $path);
+				list($dirty_key) = Aerial_Relationship::explode_complex(".", $path, 2); 
+				if(Aerial_Relationship::key($dirty_key) <> $this->modelName) 
+					$path = $this->modelName . "." . $path;
+				$mergedRelations = Aerial_Relationship::merge($mergedRelations, $path);
 			}
 
 			//Build the DQL 'leftJoin' and 'Select' parts.
@@ -142,9 +134,7 @@ abstract class AbstractService
 		$results = $q->execute();
 
 		return $results;
-
 	}
-
 
 	public function count()
 	{
@@ -164,4 +154,3 @@ abstract class AbstractService
         return $q->execute();
     }
 }
-?>
